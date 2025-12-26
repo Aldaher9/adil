@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منصة القائد</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1e3a5f; --accent: #e67e22; --success: #25d366; --bg: #f4f7f6; }
+        * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
+        body { background: var(--bg); margin: 0; padding: 10px; color: #333; }
+        
+        /* الهيدر */
+        .header { 
+            background: var(--primary); color: white; padding: 15px; 
+            border-radius: 12px; display: flex; justify-content: space-between; 
+            align-items: center; margin-bottom: 10px;
+        }
+        
+        /* زر الترس - تم تكبير مساحة اللمس ليعمل فوراً */
+        .settings-btn { 
+            background: #e67e22; border: none; color: white; 
+            width: 50px; height: 50px; border-radius: 50%; 
+            font-size: 24px; cursor: pointer; display: flex; 
+            align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* النافذة المنبثقة */
+        #myModal { 
+            display: none; position: fixed; z-index: 9999; 
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8);
+        }
+        .modal-content { 
+            background: white; margin: 15% auto; padding: 20px; 
+            border-radius: 15px; width: 90%; max-width: 350px; text-align: center;
+        }
+
+        .btn { 
+            display: block; width: 100%; padding: 15px; margin: 10px 0;
+            border-radius: 10px; border: none; font-weight: bold; font-size: 16px;
+        }
+        .btn-upload { background: #eee; border: 1px dashed #999; }
+        .btn-sim { background: #8e44ad; color: white; }
+        .btn-export { background: #2c3e50; color: white; }
+        .btn-import { background: #27ae60; color: white; }
+        .btn-reset { background: #e74c3c; color: white; }
+        .btn-close { background: #666; color: white; margin-top: 20px; }
+
+        .status-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 6px solid var(--accent); }
+        .table-container { background: white; border-radius: 12px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f1f1f1; padding: 12px; font-size: 14px; }
+        td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
+        .wa-link { background: var(--success); color: white; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 14px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2 style="margin:0; font-size: 18px;">📍 منصة القائد</h2>
+    <button class="settings-btn" onclick="openSettings()">⚙️</button>
+</div>
+
+<div class="status-bar">
+    <div id="info" style="font-size: 14px; color: #666;">--</div>
+    <div id="txtPeriod" style="font-size: 20px; font-weight: bold; color: var(--accent);">بانتظار البيانات..</div>
+</div>
+
+<div id="myModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0;">إعدادات النظام</h3>
+        
+        <div class="btn-upload">
+            <label>رفع ملف XML</label>
+            <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%">
+        </div>
+
+        <button class="btn btn-sim" onclick="doSim()">🎲 تجربة محاكاة</button>
+        <button class="btn btn-export" onclick="doExport()">📊 تصدير البيانات</button>
+        
+        <label class="btn btn-import">
+            📥 استيراد أرقام (CSV)
+            <input type="file" accept=".csv" onchange="handleCSV(this)" style="display:none">
+        </label>
+
+        <button class="btn btn-reset" onclick="doReset()">🗑️ مسح شامل</button>
+        
+        <button class="btn btn-close" onclick="closeSettings()">إغلاق ✖</button>
+    </div>
+</div>
+
+<div class="table-container">
+    <table id="mainTable">
+        <thead>
+            <tr>
+                <th>الصف</th>
+                <th>المعلم</th>
+                <th>تواصل</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr><td colspan="3" style="padding:40px; color:#999;">اضغط ⚙️ لرفع الجدول</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+let phones = {};
+let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
+let isSim = false;
+let sDay, sTime;
+
+// دوال التحكم بالنافذة - أبسط طريقة ممكنة
+function openSettings() { document.getElementById('myModal').style.display = 'block'; }
+function closeSettings() { document.getElementById('myModal').style.display = 'none'; }
+
+window.onload = function() {
+    const st = localStorage.getItem('schoolData');
+    const ph = localStorage.getItem('teacherPhones');
+    if (ph) phones = JSON.parse(ph);
+    if (st) { data = JSON.parse(st); refresh(); setInterval(refresh, 20000); }
+};
+
+function handleXML(input) {
+    const reader = new FileReader();
+    reader.readAsText(input.files[0], "windows-1256");
+    reader.onload = function(e) {
+        const xml = new DOMParser().parseFromString(e.target.result, "text/xml");
+        data.teachers = {}; data.periods = [];
+        Array.from(xml.getElementsByTagName('teacher')).forEach(t => data.teachers[t.getAttribute('id')] = t.getAttribute('name'));
+        Array.from(xml.getElementsByTagName('class')).forEach(c => data.classes[c.getAttribute('id')] = c.getAttribute('short'));
+        Array.from(xml.getElementsByTagName('subject')).forEach(s => data.subjects[s.getAttribute('id')] = s.getAttribute('name'));
+        Array.from(xml.getElementsByTagName('period')).forEach(p => data.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
+        data.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({
+            d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
+        }));
+        localStorage.setItem('schoolData', JSON.stringify(data));
+        closeSettings();
+        refresh();
+    };
+}
+
+function doExport() {
+    let csv = "\ufeffاسم المعلم,رقم الهاتف\n";
+    for (let id in data.teachers) csv += `"${data.teachers[id]}","${phones[data.teachers[id]] || ""}"\n`;
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "data.csv"; a.click();
+}
+
+function handleCSV(input) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        e.target.result.split('\n').forEach((row, i) => {
+            if (i === 0) return;
+            const c = row.split(',').map(x => x.replace(/"/g, '').trim());
+            if (c[0]) phones[c[0]] = c[1];
+        });
+        localStorage.setItem('teacherPhones', JSON.stringify(phones));
+        closeSettings(); refresh();
+    };
+    reader.readAsText(input.files[0]);
+}
+
+function doSim() {
+    isSim = true;
+    sDay = Math.floor(Math.random() * 5) + 1;
+    sTime = data.periods[Math.floor(Math.random() * data.periods.length)].s;
+    closeSettings(); refresh();
+}
+
+function doReset() { if(confirm("مسح؟")) { localStorage.clear(); location.reload(); } }
+
+function refresh() {
+    const now = new Date();
+    const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
+    let t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+    
+    document.getElementById('info').innerText = days[isSim ? (sDay==1?0:sDay-1) : now.getDay()] + " | " + t;
+
+    const p = data.periods.find(p => { 
+        const cur = toM(t), s = toM(p.s), e = toM(p.e); 
+        return cur >= s && cur <= e; 
+    });
+
+    const tbody = document.getElementById('tableBody');
+    if (p) {
+        document.getElementById('txtPeriod').innerText = "الحصة: " + p.id;
+        const current = data.lessons.filter(l => l.d == d && l.p == p.id);
+        tbody.innerHTML = current.map(l => {
+            let n = data.teachers[l.t];
+            let ph = phones[n] || "";
+            let msg = `الأستاذ/ ${n}\nنذكركم بحصتكم:\nالحصة: ${p.id}\nالصف: ${data.classes[l.c]}`;
+            return `<tr>
+                <td><span style="background:#e67e22; color:white; padding:3px 7px; border-radius:5px; font-size:12px;">${data.classes[l.c]}</span></td>
+                <td style="font-weight:bold;">${n}</td>
+                <td>${ph ? `<a href="https://wa.me/${ph}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-link">واتساب</a>` : '---'}</td>
+            </tr>`;
+        }).join('');
+    } else {
+        document.getElementById('txtPeriod').innerText = "خارج الدوام";
+        tbody.innerHTML = "<tr><td colspan='3' style='padding:40px'>لا توجد حصص نشطة</td></tr>";
+    }
+}
+
+function toM(time) { const [h, m] = time.split(':'); return parseInt(h) * 60 + parseInt(m); }
+</script>
+</body>
+</html>
