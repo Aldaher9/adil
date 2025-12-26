@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - نظام الإدارة المطور</title>
+    <title>منصة القائد - نظام التواصل السريع</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #1e3a5f; --accent: #e67e22; --success: #25d366; --bg: #f4f7f6;
-            --class-gradient: linear-gradient(135deg, #2c3e50 0%, #1e3a5f 100%);
+            --primary: #1e3a5f; --accent: #e67e22; --danger: #e74c3c; 
+            --success: #25d366; --bg: #f4f7f6;
+            --btn-grad: linear-gradient(135deg, #1e3a5f 0%, #2c3e50 100%);
         }
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
         body { background: var(--bg); margin: 0; padding: 10px; color: #333; }
@@ -19,173 +20,128 @@
             align-items: center; margin-bottom: 10px;
         }
 
-        .action-bar { display: flex; gap: 10px; margin-bottom: 10px; }
-        .edit-toggle { 
-            flex: 1; background: white; border: 2px solid var(--primary); color: var(--primary);
-            padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;
-        }
-        .edit-active { background: var(--primary); color: white; }
-
-        .settings-btn { 
-            background: var(--accent); border: none; color: white; width: 45px; height: 45px; 
-            border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        .search-box {
+            width: 100%; padding: 12px; border: 2px solid #ddd;
+            border-radius: 10px; margin-bottom: 10px; font-size: 16px;
         }
 
-        #myModal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
-        .modal-content { background: white; margin: 15% auto; padding: 20px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; }
-
-        .status-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 6px solid var(--accent); }
-        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; padding: 12px; font-size: 13px; border-bottom: 2px solid #eee; }
-        td { padding: 12px 8px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
-
-        .class-box {
-            background: var(--class-gradient); color: white; padding: 8px 4px; border-radius: 8px;
-            font-weight: 700; font-size: 0.95rem; display: inline-block; min-width: 55px;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+        .teacher-card {
+            background: white; border-radius: 12px; padding: 15px;
+            margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-right: 5px solid var(--primary);
         }
 
-        .wa-link { background: var(--success); color: white; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        .teacher-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .teacher-name { font-weight: 700; font-size: 1.1rem; color: var(--primary); }
         
-        /* تصميم حقل التعديل */
-        .phone-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 14px; }
-        .save-btn { background: var(--primary); color: white; border: none; padding: 5px 10px; border-radius: 5px; margin-top: 5px; cursor: pointer; width: 100%; }
+        .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        
+        .action-btn {
+            border: none; padding: 10px 5px; border-radius: 8px; color: white;
+            font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none;
+            text-align: center; display: flex; align-items: center; justify-content: center;
+        }
+        
+        .btn-office { background: #3498db; } /* طلب للمكتب */
+        .btn-duty { background: #f39c12; }   /* موقع المناوبة */
+        .btn-lineup { background: #9b59b6; } /* الطابور الصباحي */
+        .btn-edit { background: #95a5a6; }   /* تعديل الرقم */
+
+        #editModal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        .modal-content { background: white; margin: 20% auto; padding: 20px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; }
+        
+        .phone-input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 18px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2 style="margin:0; font-size: 18px;">📍 منصة القائد</h2>
-    <button class="settings-btn" onclick="openSettings()">⚙️</button>
+    <h2 style="margin:0;">🗂️ إدارة التواصل</h2>
+    <span id="teacherCount" style="background:rgba(255,255,255,0.2); padding:4px 10px; border-radius:20px; font-size:14px;">0 معلم</span>
 </div>
 
-<div class="action-bar">
-    <button id="toggleEditBtn" class="edit-toggle" onclick="toggleEditMode()">✏️ تعديل أرقام المعلمين</button>
-</div>
+<input type="text" id="searchInput" class="search-box" placeholder="ابحث عن اسم المعلم..." onkeyup="filterTeachers()">
 
-<div class="status-bar">
-    <div id="info">--</div>
-    <div id="txtPeriod" style="font-weight: bold; color: var(--accent);">بانتظار الجدول..</div>
-</div>
+<div id="teachersList">
+    </div>
 
-<div id="myModal">
+<div id="editModal">
     <div class="modal-content">
-        <h3>إعدادات النظام</h3>
-        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:10px;">
-        <button style="width:100%; padding:10px; margin-bottom:5px;" onclick="doSim()">🎲 محاكاة</button>
-        <button style="width:100%; padding:10px; margin-bottom:5px;" onclick="doExport()">📊 تصدير CSV</button>
-        <button style="width:100%; padding:10px; color:red;" onclick="doReset()">🗑️ مسح الكل</button>
-        <button style="width:100%; padding:10px; margin-top:15px;" onclick="closeSettings()">إغلاق</button>
+        <h3 id="editName">تعديل الرقم</h3>
+        <input type="tel" id="newPhone" class="phone-input" placeholder="968XXXXXXXX">
+        <div style="display:flex; gap:10px;">
+            <button onclick="savePhone()" style="flex:1; padding:12px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold;">حفظ</button>
+            <button onclick="closeModal()" style="flex:1; padding:12px; background:#ccc; border:none; border-radius:8px;">إلغاء</button>
+        </div>
     </div>
 </div>
 
-<div class="table-container">
-    <table>
-        <thead>
-            <tr>
-                <th width="20%">الصف</th>
-                <th width="45%">المعلم</th>
-                <th width="35%">تواصل / تعديل</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-</div>
-
 <script>
-let phones = {};
-let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
-let isSim = false, sDay, sTime, isEditMode = false;
-
-function openSettings() { document.getElementById('myModal').style.display = 'block'; }
-function closeSettings() { document.getElementById('myModal').style.display = 'none'; }
-
-function toggleEditMode() {
-    isEditMode = !isEditMode;
-    const btn = document.getElementById('toggleEditBtn');
-    btn.classList.toggle('edit-active');
-    btn.innerText = isEditMode ? "✅ إنهاء التعديل" : "✏️ تعديل أرقام المعلمين";
-    refresh();
-}
-
-window.onload = function() {
-    const st = localStorage.getItem('schoolData'), ph = localStorage.getItem('teacherPhones');
-    if (ph) phones = JSON.parse(ph);
-    if (st) { data = JSON.parse(st); refresh(); setInterval(refresh, 30000); }
+// البيانات الأساسية
+let phones = JSON.parse(localStorage.getItem('teacherPhones')) || {
+    "أحمد البلوشي": "96892959789", "أحمد عبدالوهاب": "96890128035", "أحمد عيسى جمعه البوصافي": "96892876386",
+    "احمد سالم محمد الغمارى": "96895500478", "احمد عبدالتواب": "96876609518", "احمد محمد جمعه البوصافى": "96892923979"
 };
 
-function handleXML(input) {
-    const reader = new FileReader();
-    reader.readAsText(input.files[0], "windows-1256");
-    reader.onload = function(e) {
-        const xml = new DOMParser().parseFromString(e.target.result, "text/xml");
-        data.teachers = {}; data.periods = [];
-        Array.from(xml.getElementsByTagName('teacher')).forEach(t => data.teachers[t.getAttribute('id')] = t.getAttribute('name'));
-        Array.from(xml.getElementsByTagName('class')).forEach(c => data.classes[c.getAttribute('id')] = c.getAttribute('short'));
-        Array.from(xml.getElementsByTagName('subject')).forEach(s => data.subjects[s.getAttribute('id')] = s.getAttribute('name'));
-        Array.from(xml.getElementsByTagName('period')).forEach(p => data.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
-        data.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({
-            d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
-        }));
-        localStorage.setItem('schoolData', JSON.stringify(data));
-        closeSettings(); refresh();
-    };
+let currentEditingTeacher = "";
+
+function renderTeachers() {
+    const list = document.getElementById('teachersList');
+    const sortedNames = Object.keys(phones).sort();
+    document.getElementById('teacherCount').innerText = sortedNames.length + " معلم";
+    
+    list.innerHTML = sortedNames.map(name => {
+        const phone = phones[name];
+        // نصوص الرسائل الجاهزة
+        const msgOffice = encodeURIComponent(`الأستاذ/ ${name}\nيرجى التكرم بالحضور للمكتب الآن لأمر هام بارك الله فيك.`);
+        const msgDuty = encodeURIComponent(`الأستاذ/ ${name}\nنلاحظ عدم تواجدكم في موقع المناوبة الخاص بكم، يرجى التوجه للموقع للأهمية.`);
+        const msgLineup = encodeURIComponent(`الأستاذ/ ${name}\nيرجى الالتزام بالتواجد مع صفكم في الطابور الصباحي، شاكرين تعاونكم.`);
+
+        return `
+        <div class="teacher-card">
+            <div class="teacher-info">
+                <div class="teacher-name">${name}</div>
+                <button class="action-btn btn-edit" onclick="openEdit('${name}', '${phone}')">⚙️</button>
+            </div>
+            <div class="quick-actions">
+                <a href="https://wa.me/${phone}?text=${msgOffice}" target="_blank" class="action-btn btn-office">🏢 طلب للمكتب</a>
+                <a href="https://wa.me/${phone}?text=${msgDuty}" target="_blank" class="action-btn btn-duty">📍 موقع المناوبة</a>
+                <a href="https://wa.me/${phone}?text=${msgLineup}" target="_blank" class="action-btn btn-lineup">📢 الطابور</a>
+                <a href="tel:${phone}" class="action-btn" style="background:#2ecc71;">📞 اتصال مباشر</a>
+            </div>
+        </div>`;
+    }).join('');
 }
 
-function savePhone(teacherName, inputId) {
-    const newPhone = document.getElementById(inputId).value.trim();
-    phones[teacherName] = newPhone;
-    localStorage.setItem('teacherPhones', JSON.stringify(phones));
-    alert("تم حفظ رقم " + teacherName);
-}
-
-function refresh() {
-    const now = new Date(), days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-    let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
-    let t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('info').innerText = days[isSim ? (sDay==1?0:sDay-1) : now.getDay()] + " | " + t;
-
-    const p = data.periods.find(p => { 
-        const cur = toM(t), s = toM(p.s), e = toM(p.e); 
-        return cur >= s && cur <= e; 
+function filterTeachers() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.teacher-card');
+    cards.forEach(card => {
+        const name = card.querySelector('.teacher-name').innerText.toLowerCase();
+        card.style.display = name.includes(query) ? 'block' : 'none';
     });
+}
 
-    const tbody = document.getElementById('tableBody');
-    if (p) {
-        document.getElementById('txtPeriod').innerText = "الحصة: " + p.id;
-        const current = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a, b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", 'ar', {numeric: true}));
-        
-        tbody.innerHTML = current.map((l, idx) => {
-            let n = data.teachers[l.t], ph = phones[n] || "";
-            let msg = `الأستاذ/ ${n}\nنذكركم بحصتكم:\nالصف: ${data.classes[l.c]}\nالحصة: ${p.id}`;
-            
-            let actionCell = isEditMode ? 
-                `<input type="tel" id="inp${idx}" class="phone-input" value="${ph}" placeholder="ادخل الرقم">
-                 <button class="save-btn" onclick="savePhone('${n}', 'inp${idx}')">حفظ</button>` :
-                (ph ? `<a href="https://wa.me/${ph}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-link">واتساب</a>` : '---');
+function openEdit(name, phone) {
+    currentEditingTeacher = name;
+    document.getElementById('editName').innerText = name;
+    document.getElementById('newPhone').value = phone;
+    document.getElementById('editModal').style.display = 'block';
+}
 
-            return `<tr>
-                <td><div class="class-box">${data.classes[l.c]}</div></td>
-                <td style="font-weight:bold; font-size:14px;">${n}</td>
-                <td>${actionCell}</td>
-            </tr>`;
-        }).join('');
-    } else {
-        document.getElementById('txtPeriod').innerText = "خارج الدوام";
-        tbody.innerHTML = "<tr><td colspan='3' style='padding:40px'>لا توجد حصص حالياً</td></tr>";
+function closeModal() { document.getElementById('editModal').style.display = 'none'; }
+
+function savePhone() {
+    const val = document.getElementById('newPhone').value.trim();
+    if(val) {
+        phones[currentEditingTeacher] = val;
+        localStorage.setItem('teacherPhones', JSON.stringify(phones));
+        closeModal();
+        renderTeachers();
     }
 }
 
-function toM(time) { const [h, m] = time.split(':'); return parseInt(h) * 60 + parseInt(m); }
-function doSim() { isSim = true; sDay = Math.floor(Math.random() * 5) + 1; sTime = data.periods[0].s; closeSettings(); refresh(); }
-function doReset() { if(confirm("حذف الكل؟")) { localStorage.clear(); location.reload(); } }
-function doExport() {
-    let csv = "\ufeffالمعلم,الهاتف\n";
-    for(let id in data.teachers) csv += `"${data.teachers[id]}","${phones[data.teachers[id]]||""}"\n`;
-    const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "phones.csv"; a.click();
-}
+window.onload = renderTeachers;
 </script>
 </body>
 </html>
