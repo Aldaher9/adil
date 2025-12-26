@@ -3,30 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد</title>
+    <title>منصة القائد - التصميم الاحترافي</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #1e3a5f; --accent: #e67e22; --success: #25d366; --bg: #f4f7f6; }
+        :root { 
+            --primary: #1e3a5f; 
+            --accent: #e67e22; 
+            --success: #25d366; 
+            --bg: #f4f7f6;
+            /* ألوان الأيقونة الجديدة */
+            --class-gradient: linear-gradient(135deg, #2c3e50 0%, #1e3a5f 100%);
+        }
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
         body { background: var(--bg); margin: 0; padding: 10px; color: #333; }
         
-        /* الهيدر */
         .header { 
             background: var(--primary); color: white; padding: 15px; 
             border-radius: 12px; display: flex; justify-content: space-between; 
             align-items: center; margin-bottom: 10px;
         }
         
-        /* زر الترس - تم تكبير مساحة اللمس ليعمل فوراً */
         .settings-btn { 
-            background: #e67e22; border: none; color: white; 
+            background: var(--accent); border: none; color: white; 
             width: 50px; height: 50px; border-radius: 50%; 
             font-size: 24px; cursor: pointer; display: flex; 
             align-items: center; justify-content: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        /* النافذة المنبثقة */
+        /* نافذة الإعدادات */
         #myModal { 
             display: none; position: fixed; z-index: 9999; 
             left: 0; top: 0; width: 100%; height: 100%; 
@@ -37,11 +42,7 @@
             border-radius: 15px; width: 90%; max-width: 350px; text-align: center;
         }
 
-        .btn { 
-            display: block; width: 100%; padding: 15px; margin: 10px 0;
-            border-radius: 10px; border: none; font-weight: bold; font-size: 16px;
-        }
-        .btn-upload { background: #eee; border: 1px dashed #999; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
         .btn-sim { background: #8e44ad; color: white; }
         .btn-export { background: #2c3e50; color: white; }
         .btn-import { background: #27ae60; color: white; }
@@ -49,55 +50,67 @@
         .btn-close { background: #666; color: white; margin-top: 20px; }
 
         .status-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 6px solid var(--accent); }
-        .table-container { background: white; border-radius: 12px; overflow: hidden; }
+        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f1f1f1; padding: 12px; font-size: 14px; }
-        td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
-        .wa-link { background: var(--success); color: white; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 14px; display: inline-block; }
+        th { background: #f8f9fa; padding: 12px; font-size: 14px; border-bottom: 2px solid #eee; color: #666; }
+        td { padding: 15px 8px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
+
+        /* أيقونة الصف الاحترافية الجديدة */
+        .class-box {
+            background: var(--class-gradient);
+            color: white;
+            padding: 10px 6px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: inline-block;
+            min-width: 60px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255,255,255,0.1);
+            letter-spacing: 0.5px;
+        }
+
+        .wa-link { background: var(--success); color: white; text-decoration: none; padding: 10px 14px; border-radius: 8px; font-size: 14px; display: inline-block; font-weight: bold; }
+        
+        /* تجميل اسم المعلم */
+        .teacher-name { font-weight: 700; font-size: 15px; color: #2c3e50; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2 style="margin:0; font-size: 18px;">📍 منصة القائد</h2>
+    <h2 style="margin:0;">📍 منصة القائد</h2>
     <button class="settings-btn" onclick="openSettings()">⚙️</button>
 </div>
 
 <div class="status-bar">
-    <div id="info" style="font-size: 14px; color: #666;">--</div>
+    <div id="info">--</div>
     <div id="txtPeriod" style="font-size: 20px; font-weight: bold; color: var(--accent);">بانتظار البيانات..</div>
 </div>
 
 <div id="myModal">
     <div class="modal-content">
         <h3 style="margin-top:0;">إعدادات النظام</h3>
-        
-        <div class="btn-upload">
-            <label>رفع ملف XML</label>
+        <div style="background:#f9f9f9; padding:10px; border-radius:10px; border:1px dashed #ccc">
+            <label>رفع ملف الجدول (XML)</label>
             <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%">
         </div>
-
         <button class="btn btn-sim" onclick="doSim()">🎲 تجربة محاكاة</button>
         <button class="btn btn-export" onclick="doExport()">📊 تصدير البيانات</button>
-        
-        <label class="btn btn-import">
-            📥 استيراد أرقام (CSV)
-            <input type="file" accept=".csv" onchange="handleCSV(this)" style="display:none">
-        </label>
-
+        <label class="btn btn-import">📥 استيراد أرقام (CSV)<input type="file" accept=".csv" onchange="handleCSV(this)" style="display:none"></label>
         <button class="btn btn-reset" onclick="doReset()">🗑️ مسح شامل</button>
-        
         <button class="btn btn-close" onclick="closeSettings()">إغلاق ✖</button>
     </div>
 </div>
 
 <div class="table-container">
-    <table id="mainTable">
+    <table>
         <thead>
             <tr>
-                <th>الصف</th>
-                <th>المعلم</th>
-                <th>تواصل</th>
+                <th width="25%">الصف</th>
+                <th width="40%">المعلم</th>
+                <th width="35%">تواصل</th>
             </tr>
         </thead>
         <tbody id="tableBody">
@@ -112,7 +125,6 @@ let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] }
 let isSim = false;
 let sDay, sTime;
 
-// دوال التحكم بالنافذة - أبسط طريقة ممكنة
 function openSettings() { document.getElementById('myModal').style.display = 'block'; }
 function closeSettings() { document.getElementById('myModal').style.display = 'none'; }
 
@@ -137,8 +149,7 @@ function handleXML(input) {
             d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
         }));
         localStorage.setItem('schoolData', JSON.stringify(data));
-        closeSettings();
-        refresh();
+        closeSettings(); refresh();
     };
 }
 
@@ -147,7 +158,7 @@ function doExport() {
     for (let id in data.teachers) csv += `"${data.teachers[id]}","${phones[data.teachers[id]] || ""}"\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = "data.csv"; a.click();
+    a.href = URL.createObjectURL(blob); a.download = "teachers_data.csv"; a.click();
 }
 
 function handleCSV(input) {
@@ -189,14 +200,22 @@ function refresh() {
     const tbody = document.getElementById('tableBody');
     if (p) {
         document.getElementById('txtPeriod').innerText = "الحصة: " + p.id;
-        const current = data.lessons.filter(l => l.d == d && l.p == p.id);
+        
+        // الترتيب الذكي
+        const current = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a, b) => {
+            const nameA = data.classes[a.c] || "";
+            const nameB = data.classes[b.c] || "";
+            return nameA.localeCompare(nameB, 'ar', {numeric: true});
+        });
+
         tbody.innerHTML = current.map(l => {
             let n = data.teachers[l.t];
             let ph = phones[n] || "";
-            let msg = `الأستاذ/ ${n}\nنذكركم بحصتكم:\nالحصة: ${p.id}\nالصف: ${data.classes[l.c]}`;
+            let className = data.classes[l.c];
+            let msg = `الأستاذ/ ${n}\nنذكركم بحصتكم الحالية:\n- الحصة: ${p.id}\n- الصف: ${className}\n- المادة: ${data.subjects[l.s]}`;
             return `<tr>
-                <td><span style="background:#e67e22; color:white; padding:3px 7px; border-radius:5px; font-size:12px;">${data.classes[l.c]}</span></td>
-                <td style="font-weight:bold;">${n}</td>
+                <td><div class="class-box">${className}</div></td>
+                <td class="teacher-name">${n}</td>
                 <td>${ph ? `<a href="https://wa.me/${ph}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-link">واتساب</a>` : '---'}</td>
             </tr>`;
         }).join('');
