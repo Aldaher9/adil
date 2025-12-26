@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - التصميم الاحترافي</title>
+    <title>منصة القائد - نظام الإدارة المطور</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #1e3a5f; 
-            --accent: #e67e22; 
-            --success: #25d366; 
-            --bg: #f4f7f6;
-            /* ألوان الأيقونة الجديدة */
+            --primary: #1e3a5f; --accent: #e67e22; --success: #25d366; --bg: #f4f7f6;
             --class-gradient: linear-gradient(135deg, #2c3e50 0%, #1e3a5f 100%);
         }
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
@@ -22,85 +18,65 @@
             border-radius: 12px; display: flex; justify-content: space-between; 
             align-items: center; margin-bottom: 10px;
         }
-        
+
+        .action-bar { display: flex; gap: 10px; margin-bottom: 10px; }
+        .edit-toggle { 
+            flex: 1; background: white; border: 2px solid var(--primary); color: var(--primary);
+            padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;
+        }
+        .edit-active { background: var(--primary); color: white; }
+
         .settings-btn { 
-            background: var(--accent); border: none; color: white; 
-            width: 50px; height: 50px; border-radius: 50%; 
-            font-size: 24px; cursor: pointer; display: flex; 
-            align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background: var(--accent); border: none; color: white; width: 45px; height: 45px; 
+            border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
 
-        /* نافذة الإعدادات */
-        #myModal { 
-            display: none; position: fixed; z-index: 9999; 
-            left: 0; top: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8);
-        }
-        .modal-content { 
-            background: white; margin: 15% auto; padding: 20px; 
-            border-radius: 15px; width: 90%; max-width: 350px; text-align: center;
-        }
-
-        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
-        .btn-sim { background: #8e44ad; color: white; }
-        .btn-export { background: #2c3e50; color: white; }
-        .btn-import { background: #27ae60; color: white; }
-        .btn-reset { background: #e74c3c; color: white; }
-        .btn-close { background: #666; color: white; margin-top: 20px; }
+        #myModal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        .modal-content { background: white; margin: 15% auto; padding: 20px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; }
 
         .status-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 6px solid var(--accent); }
         .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; padding: 12px; font-size: 14px; border-bottom: 2px solid #eee; color: #666; }
-        td { padding: 15px 8px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
+        th { background: #f8f9fa; padding: 12px; font-size: 13px; border-bottom: 2px solid #eee; }
+        td { padding: 12px 8px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
 
-        /* أيقونة الصف الاحترافية الجديدة */
         .class-box {
-            background: var(--class-gradient);
-            color: white;
-            padding: 10px 6px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 1rem;
-            display: inline-block;
-            min-width: 60px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255,255,255,0.1);
-            letter-spacing: 0.5px;
+            background: var(--class-gradient); color: white; padding: 8px 4px; border-radius: 8px;
+            font-weight: 700; font-size: 0.95rem; display: inline-block; min-width: 55px;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
         }
 
-        .wa-link { background: var(--success); color: white; text-decoration: none; padding: 10px 14px; border-radius: 8px; font-size: 14px; display: inline-block; font-weight: bold; }
+        .wa-link { background: var(--success); color: white; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; }
         
-        /* تجميل اسم المعلم */
-        .teacher-name { font-weight: 700; font-size: 15px; color: #2c3e50; }
+        /* تصميم حقل التعديل */
+        .phone-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 14px; }
+        .save-btn { background: var(--primary); color: white; border: none; padding: 5px 10px; border-radius: 5px; margin-top: 5px; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2 style="margin:0;">📍 منصة القائد</h2>
+    <h2 style="margin:0; font-size: 18px;">📍 منصة القائد</h2>
     <button class="settings-btn" onclick="openSettings()">⚙️</button>
+</div>
+
+<div class="action-bar">
+    <button id="toggleEditBtn" class="edit-toggle" onclick="toggleEditMode()">✏️ تعديل أرقام المعلمين</button>
 </div>
 
 <div class="status-bar">
     <div id="info">--</div>
-    <div id="txtPeriod" style="font-size: 20px; font-weight: bold; color: var(--accent);">بانتظار البيانات..</div>
+    <div id="txtPeriod" style="font-weight: bold; color: var(--accent);">بانتظار الجدول..</div>
 </div>
 
 <div id="myModal">
     <div class="modal-content">
-        <h3 style="margin-top:0;">إعدادات النظام</h3>
-        <div style="background:#f9f9f9; padding:10px; border-radius:10px; border:1px dashed #ccc">
-            <label>رفع ملف الجدول (XML)</label>
-            <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%">
-        </div>
-        <button class="btn btn-sim" onclick="doSim()">🎲 تجربة محاكاة</button>
-        <button class="btn btn-export" onclick="doExport()">📊 تصدير البيانات</button>
-        <label class="btn btn-import">📥 استيراد أرقام (CSV)<input type="file" accept=".csv" onchange="handleCSV(this)" style="display:none"></label>
-        <button class="btn btn-reset" onclick="doReset()">🗑️ مسح شامل</button>
-        <button class="btn btn-close" onclick="closeSettings()">إغلاق ✖</button>
+        <h3>إعدادات النظام</h3>
+        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:10px;">
+        <button style="width:100%; padding:10px; margin-bottom:5px;" onclick="doSim()">🎲 محاكاة</button>
+        <button style="width:100%; padding:10px; margin-bottom:5px;" onclick="doExport()">📊 تصدير CSV</button>
+        <button style="width:100%; padding:10px; color:red;" onclick="doReset()">🗑️ مسح الكل</button>
+        <button style="width:100%; padding:10px; margin-top:15px;" onclick="closeSettings()">إغلاق</button>
     </div>
 </div>
 
@@ -108,31 +84,35 @@
     <table>
         <thead>
             <tr>
-                <th width="25%">الصف</th>
-                <th width="40%">المعلم</th>
-                <th width="35%">تواصل</th>
+                <th width="20%">الصف</th>
+                <th width="45%">المعلم</th>
+                <th width="35%">تواصل / تعديل</th>
             </tr>
         </thead>
-        <tbody id="tableBody">
-            <tr><td colspan="3" style="padding:40px; color:#999;">اضغط ⚙️ لرفع الجدول</td></tr>
-        </tbody>
+        <tbody id="tableBody"></tbody>
     </table>
 </div>
 
 <script>
 let phones = {};
 let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
-let isSim = false;
-let sDay, sTime;
+let isSim = false, sDay, sTime, isEditMode = false;
 
 function openSettings() { document.getElementById('myModal').style.display = 'block'; }
 function closeSettings() { document.getElementById('myModal').style.display = 'none'; }
 
+function toggleEditMode() {
+    isEditMode = !isEditMode;
+    const btn = document.getElementById('toggleEditBtn');
+    btn.classList.toggle('edit-active');
+    btn.innerText = isEditMode ? "✅ إنهاء التعديل" : "✏️ تعديل أرقام المعلمين";
+    refresh();
+}
+
 window.onload = function() {
-    const st = localStorage.getItem('schoolData');
-    const ph = localStorage.getItem('teacherPhones');
+    const st = localStorage.getItem('schoolData'), ph = localStorage.getItem('teacherPhones');
     if (ph) phones = JSON.parse(ph);
-    if (st) { data = JSON.parse(st); refresh(); setInterval(refresh, 20000); }
+    if (st) { data = JSON.parse(st); refresh(); setInterval(refresh, 30000); }
 };
 
 function handleXML(input) {
@@ -153,43 +133,17 @@ function handleXML(input) {
     };
 }
 
-function doExport() {
-    let csv = "\ufeffاسم المعلم,رقم الهاتف\n";
-    for (let id in data.teachers) csv += `"${data.teachers[id]}","${phones[data.teachers[id]] || ""}"\n`;
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = "teachers_data.csv"; a.click();
+function savePhone(teacherName, inputId) {
+    const newPhone = document.getElementById(inputId).value.trim();
+    phones[teacherName] = newPhone;
+    localStorage.setItem('teacherPhones', JSON.stringify(phones));
+    alert("تم حفظ رقم " + teacherName);
 }
-
-function handleCSV(input) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        e.target.result.split('\n').forEach((row, i) => {
-            if (i === 0) return;
-            const c = row.split(',').map(x => x.replace(/"/g, '').trim());
-            if (c[0]) phones[c[0]] = c[1];
-        });
-        localStorage.setItem('teacherPhones', JSON.stringify(phones));
-        closeSettings(); refresh();
-    };
-    reader.readAsText(input.files[0]);
-}
-
-function doSim() {
-    isSim = true;
-    sDay = Math.floor(Math.random() * 5) + 1;
-    sTime = data.periods[Math.floor(Math.random() * data.periods.length)].s;
-    closeSettings(); refresh();
-}
-
-function doReset() { if(confirm("مسح؟")) { localStorage.clear(); location.reload(); } }
 
 function refresh() {
-    const now = new Date();
-    const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    const now = new Date(), days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
     let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
     let t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-    
     document.getElementById('info').innerText = days[isSim ? (sDay==1?0:sDay-1) : now.getDay()] + " | " + t;
 
     const p = data.periods.find(p => { 
@@ -200,32 +154,38 @@ function refresh() {
     const tbody = document.getElementById('tableBody');
     if (p) {
         document.getElementById('txtPeriod').innerText = "الحصة: " + p.id;
+        const current = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a, b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", 'ar', {numeric: true}));
         
-        // الترتيب الذكي
-        const current = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a, b) => {
-            const nameA = data.classes[a.c] || "";
-            const nameB = data.classes[b.c] || "";
-            return nameA.localeCompare(nameB, 'ar', {numeric: true});
-        });
+        tbody.innerHTML = current.map((l, idx) => {
+            let n = data.teachers[l.t], ph = phones[n] || "";
+            let msg = `الأستاذ/ ${n}\nنذكركم بحصتكم:\nالصف: ${data.classes[l.c]}\nالحصة: ${p.id}`;
+            
+            let actionCell = isEditMode ? 
+                `<input type="tel" id="inp${idx}" class="phone-input" value="${ph}" placeholder="ادخل الرقم">
+                 <button class="save-btn" onclick="savePhone('${n}', 'inp${idx}')">حفظ</button>` :
+                (ph ? `<a href="https://wa.me/${ph}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-link">واتساب</a>` : '---');
 
-        tbody.innerHTML = current.map(l => {
-            let n = data.teachers[l.t];
-            let ph = phones[n] || "";
-            let className = data.classes[l.c];
-            let msg = `الأستاذ/ ${n}\nنذكركم بحصتكم الحالية:\n- الحصة: ${p.id}\n- الصف: ${className}\n- المادة: ${data.subjects[l.s]}`;
             return `<tr>
-                <td><div class="class-box">${className}</div></td>
-                <td class="teacher-name">${n}</td>
-                <td>${ph ? `<a href="https://wa.me/${ph}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-link">واتساب</a>` : '---'}</td>
+                <td><div class="class-box">${data.classes[l.c]}</div></td>
+                <td style="font-weight:bold; font-size:14px;">${n}</td>
+                <td>${actionCell}</td>
             </tr>`;
         }).join('');
     } else {
         document.getElementById('txtPeriod').innerText = "خارج الدوام";
-        tbody.innerHTML = "<tr><td colspan='3' style='padding:40px'>لا توجد حصص نشطة</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='3' style='padding:40px'>لا توجد حصص حالياً</td></tr>";
     }
 }
 
 function toM(time) { const [h, m] = time.split(':'); return parseInt(h) * 60 + parseInt(m); }
+function doSim() { isSim = true; sDay = Math.floor(Math.random() * 5) + 1; sTime = data.periods[0].s; closeSettings(); refresh(); }
+function doReset() { if(confirm("حذف الكل؟")) { localStorage.clear(); location.reload(); } }
+function doExport() {
+    let csv = "\ufeffالمعلم,الهاتف\n";
+    for(let id in data.teachers) csv += `"${data.teachers[id]}","${phones[data.teachers[id]]||""}"\n`;
+    const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "phones.csv"; a.click();
+}
 </script>
 </body>
 </html>
