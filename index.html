@@ -3,133 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد الذكية</title>
+    <title>منصة القائد - نظام الإدارة المطور</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #1e3a5f; --accent: #e67e22; --success: #25d366; 
-            --bg: #f4f7f6; --class-grad: linear-gradient(135deg, #2c3e50 0%, #1e3a5f 100%);
+            --primary: #1e3a5f; --accent: #e67e22; --success: #25d366; --bg: #f4f7f6;
+            --class-gradient: linear-gradient(135deg, #2c3e50 0%, #1e3a5f 100%);
         }
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
         body { background: var(--bg); margin: 0; padding: 10px; color: #333; }
         
-        /* الهيدر */
         .header { 
-            background: var(--primary); color: white; padding: 15px; border-radius: 12px; 
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+            background: var(--primary); color: white; padding: 15px; 
+            border-radius: 12px; display: flex; justify-content: space-between; 
+            align-items: center; margin-bottom: 10px;
         }
 
-        /* العناوين الجانبية */
-        .section-title { 
-            font-size: 1.1rem; font-weight: bold; color: var(--primary); 
-            margin: 15px 5px 10px; border-right: 4px solid var(--accent); padding-right: 10px;
+        .action-bar { display: flex; gap: 10px; margin-bottom: 10px; }
+        .edit-toggle { 
+            flex: 1; background: white; border: 2px solid var(--primary); color: var(--primary);
+            padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;
+        }
+        .edit-active { background: var(--primary); color: white; }
+
+        .settings-btn { 
+            background: var(--accent); border: none; color: white; width: 45px; height: 45px; 
+            border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
 
-        /* شريط الحالة الحالية */
-        .status-bar { 
-            background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;
-        }
-
-        /* الجداول والبطاقات */
-        .card-container { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; padding: 10px; font-size: 13px; color: #666; border-bottom: 2px solid #eee; }
-        td { padding: 12px 5px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
-
-        /* أيقونة الصف */
-        .class-box {
-            background: var(--class-grad); color: white; padding: 6px 4px; border-radius: 8px;
-            font-weight: 700; font-size: 0.9rem; display: inline-block; min-width: 50px;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.15);
-        }
-
-        /* أزرار التواصل */
-        .action-btns { display: flex; flex-direction: column; gap: 3px; }
-        .btn-wa { 
-            text-decoration: none; color: white; padding: 5px; border-radius: 4px; 
-            font-size: 10px; font-weight: bold; display: block;
-        }
-        .bg-office { background: #3498db; }
-        .bg-duty { background: #f39c12; }
-        .bg-lineup { background: #9b59b6; }
-
-        /* محرك البحث */
-        .search-box { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 10px; font-size: 14px; }
-
-        /* زر الإعدادات */
-        .settings-btn { background: var(--accent); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer; }
-        
-        #modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        #myModal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
         .modal-content { background: white; margin: 15% auto; padding: 20px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; }
+
+        .status-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 6px solid var(--accent); }
+        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 12px; font-size: 13px; border-bottom: 2px solid #eee; }
+        td { padding: 12px 8px; border-bottom: 1px solid #eee; text-align: center; vertical-align: middle; }
+
+        .class-box {
+            background: var(--class-gradient); color: white; padding: 8px 4px; border-radius: 8px;
+            font-weight: 700; font-size: 0.95rem; display: inline-block; min-width: 55px;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+        }
+
+        .wa-link { background: var(--success); color: white; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        
+        /* تصميم حقل التعديل */
+        .phone-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 14px; }
+        .save-btn { background: var(--primary); color: white; border: none; padding: 5px 10px; border-radius: 5px; margin-top: 5px; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2 style="margin:0; font-size: 1rem;">📍 منصة القائد التعليمية</h2>
-    <button class="settings-btn" onclick="openModal()">⚙️</button>
+    <h2 style="margin:0; font-size: 18px;">📍 منصة القائد</h2>
+    <button class="settings-btn" onclick="openSettings()">⚙️</button>
 </div>
 
-<div class="section-title">الحصص الجارية (الصفوف مرتبة)</div>
+<div class="action-bar">
+    <button id="toggleEditBtn" class="edit-toggle" onclick="toggleEditMode()">✏️ تعديل أرقام المعلمين</button>
+</div>
+
 <div class="status-bar">
-    <div id="info" style="font-size: 12px; color: #888;">--</div>
-    <div id="txtPeriod" style="font-size: 16px; font-weight: bold; color: var(--accent);">بانتظار البيانات..</div>
+    <div id="info">--</div>
+    <div id="txtPeriod" style="font-weight: bold; color: var(--accent);">بانتظار الجدول..</div>
 </div>
 
-<div class="card-container">
+<div id="myModal">
+    <div class="modal-content">
+        <h3>إعدادات النظام</h3>
+        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:10px;">
+        <button style="width:100%; padding:10px; margin-bottom:5px;" onclick="doSim()">🎲 محاكاة</button>
+        <button style="width:100%; padding:10px; margin-bottom:5px;" onclick="doExport()">📊 تصدير CSV</button>
+        <button style="width:100%; padding:10px; color:red;" onclick="doReset()">🗑️ مسح الكل</button>
+        <button style="width:100%; padding:10px; margin-top:15px;" onclick="closeSettings()">إغلاق</button>
+    </div>
+</div>
+
+<div class="table-container">
     <table>
         <thead>
             <tr>
                 <th width="20%">الصف</th>
-                <th width="40%">المعلم</th>
-                <th width="40%">تواصل سريع</th>
+                <th width="45%">المعلم</th>
+                <th width="35%">تواصل / تعديل</th>
             </tr>
         </thead>
-        <tbody id="currentLessonsTable">
-            <tr><td colspan="3" style="padding:20px; color:#999;">ارفع ملف XML للبدء ⚙️</td></tr>
-        </tbody>
+        <tbody id="tableBody"></tbody>
     </table>
-</div>
-
-<hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
-
-<div class="section-title">دليل المعلمين الشامل</div>
-<input type="text" id="searchInput" class="search-box" placeholder="بحث باسم المعلم..." onkeyup="filterAllTeachers()">
-
-<div class="card-container">
-    <table>
-        <thead>
-            <tr>
-                <th width="45%">اسم المعلم</th>
-                <th width="55%">تواصل / تعديل</th>
-            </tr>
-        </thead>
-        <tbody id="allTeachersTable">
-            </tbody>
-    </table>
-</div>
-
-<div id="modal">
-    <div class="modal-content">
-        <h3>إعدادات المنصة</h3>
-        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:10px;">
-        <button style="width:100%; padding:12px; margin-bottom:5px; background:var(--primary); color:white; border:none; border-radius:5px;" onclick="doSim()">🎲 تجربة محاكاة</button>
-        <button style="width:100%; padding:12px; background:#e74c3c; color:white; border:none; border-radius:5px;" onclick="doReset()">🗑️ مسح الذاكرة</button>
-        <button style="width:100%; padding:12px; margin-top:15px; border:none;" onclick="closeModal()">إغلاق</button>
-    </div>
 </div>
 
 <script>
-let phones = JSON.parse(localStorage.getItem('teacherPhones')) || {
-    "أحمد البلوشي": "96892959789", "أحمد عبدالوهاب": "96890128035", "أحمد عيسى جمعه البوصافي": "96892876386",
-    "احمد سالم محمد الغمارى": "96895500478", "احمد عبدالتواب": "96876609518", "احمد محمد جمعه البوصافى": "96892923979"
-};
-let data = JSON.parse(localStorage.getItem('schoolData')) || { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
-let isSim = false, sDay, sTime;
+let phones = {};
+let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
+let isSim = false, sDay, sTime, isEditMode = false;
 
-function openModal() { document.getElementById('modal').style.display = 'block'; }
-function closeModal() { document.getElementById('modal').style.display = 'none'; }
+function openSettings() { document.getElementById('myModal').style.display = 'block'; }
+function closeSettings() { document.getElementById('myModal').style.display = 'none'; }
+
+function toggleEditMode() {
+    isEditMode = !isEditMode;
+    const btn = document.getElementById('toggleEditBtn');
+    btn.classList.toggle('edit-active');
+    btn.innerText = isEditMode ? "✅ إنهاء التعديل" : "✏️ تعديل أرقام المعلمين";
+    refresh();
+}
+
+window.onload = function() {
+    const st = localStorage.getItem('schoolData'), ph = localStorage.getItem('teacherPhones');
+    if (ph) phones = JSON.parse(ph);
+    if (st) { data = JSON.parse(st); refresh(); setInterval(refresh, 30000); }
+};
 
 function handleXML(input) {
     const reader = new FileReader();
@@ -139,19 +123,21 @@ function handleXML(input) {
         data.teachers = {}; data.periods = [];
         Array.from(xml.getElementsByTagName('teacher')).forEach(t => data.teachers[t.getAttribute('id')] = t.getAttribute('name'));
         Array.from(xml.getElementsByTagName('class')).forEach(c => data.classes[c.getAttribute('id')] = c.getAttribute('short'));
+        Array.from(xml.getElementsByTagName('subject')).forEach(s => data.subjects[s.getAttribute('id')] = s.getAttribute('name'));
         Array.from(xml.getElementsByTagName('period')).forEach(p => data.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
         data.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({
-            d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID')
+            d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
         }));
         localStorage.setItem('schoolData', JSON.stringify(data));
-        closeModal(); refresh();
+        closeSettings(); refresh();
     };
 }
 
-function updatePhone(name, val) {
-    phones[name] = val;
+function savePhone(teacherName, inputId) {
+    const newPhone = document.getElementById(inputId).value.trim();
+    phones[teacherName] = newPhone;
     localStorage.setItem('teacherPhones', JSON.stringify(phones));
-    refresh();
+    alert("تم حفظ رقم " + teacherName);
 }
 
 function refresh() {
@@ -160,58 +146,46 @@ function refresh() {
     let t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
     document.getElementById('info').innerText = days[isSim ? (sDay==1?0:sDay-1) : now.getDay()] + " | " + t;
 
-    const p = data.periods.find(p => { const cur = toM(t), s = toM(p.s), e = toM(p.e); return cur >= s && cur <= e; });
+    const p = data.periods.find(p => { 
+        const cur = toM(t), s = toM(p.s), e = toM(p.e); 
+        return cur >= s && cur <= e; 
+    });
 
-    // 1. تعبئة الحصص الجارية (القسم العلوي)
-    const currentTbody = document.getElementById('currentLessonsTable');
-    if (p && data.lessons.length > 0) {
+    const tbody = document.getElementById('tableBody');
+    if (p) {
         document.getElementById('txtPeriod').innerText = "الحصة: " + p.id;
         const current = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a, b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", 'ar', {numeric: true}));
-        currentTbody.innerHTML = current.map(l => {
+        
+        tbody.innerHTML = current.map((l, idx) => {
             let n = data.teachers[l.t], ph = phones[n] || "";
-            let cls = data.classes[l.c];
+            let msg = `الأستاذ/ ${n}\nنذكركم بحصتكم:\nالصف: ${data.classes[l.c]}\nالحصة: ${p.id}`;
+            
+            let actionCell = isEditMode ? 
+                `<input type="tel" id="inp${idx}" class="phone-input" value="${ph}" placeholder="ادخل الرقم">
+                 <button class="save-btn" onclick="savePhone('${n}', 'inp${idx}')">حفظ</button>` :
+                (ph ? `<a href="https://wa.me/${ph}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-link">واتساب</a>` : '---');
+
             return `<tr>
-                <td><div class="class-box">${cls}</div></td>
-                <td><b>${n}</b></td>
-                <td><div class="action-btns">
-                    <a href="https://wa.me/${ph}?text=${encodeURIComponent('يرجى الحضور للمكتب')}" class="btn-wa bg-office">🏢 للمكتب</a>
-                    <a href="https://wa.me/${ph}?text=${encodeURIComponent('أين أنت عن المناوبة؟')}" class="btn-wa bg-duty">📍 مناوبة</a>
-                </div></td>
+                <td><div class="class-box">${data.classes[l.c]}</div></td>
+                <td style="font-weight:bold; font-size:14px;">${n}</td>
+                <td>${actionCell}</td>
             </tr>`;
         }).join('');
     } else {
-        currentTbody.innerHTML = "<tr><td colspan='3' style='padding:20px'>لا توجد حصص حالياً</td></tr>";
+        document.getElementById('txtPeriod').innerText = "خارج الدوام";
+        tbody.innerHTML = "<tr><td colspan='3' style='padding:40px'>لا توجد حصص حالياً</td></tr>";
     }
-
-    // 2. تعبئة جميع المعلمين (القسم السفلي)
-    renderAllTeachers();
-}
-
-function renderAllTeachers() {
-    const allTbody = document.getElementById('allTeachersTable');
-    const sortedNames = Object.keys(phones).sort();
-    allTbody.innerHTML = sortedNames.map((name, i) => `
-        <tr class="teacher-row">
-            <td style="text-align:right; padding-right:15px; font-size:13px;">${name}</td>
-            <td>
-                <input type="tel" value="${phones[name]}" onchange="updatePhone('${name}', this.value)" style="width:80px; font-size:11px; padding:4px;">
-                <a href="https://wa.me/${phones[name]}" target="_blank" style="text-decoration:none; font-size:14px;"> 💬</a>
-            </td>
-        </tr>
-    `).join('');
-}
-
-function filterAllTeachers() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const rows = document.querySelectorAll('.teacher-row');
-    rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none');
 }
 
 function toM(time) { const [h, m] = time.split(':'); return parseInt(h) * 60 + parseInt(m); }
-function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; closeModal(); refresh(); }
-function doReset() { if(confirm("حذف؟")) { localStorage.clear(); location.reload(); } }
-
-window.onload = () => { refresh(); setInterval(refresh, 30000); };
+function doSim() { isSim = true; sDay = Math.floor(Math.random() * 5) + 1; sTime = data.periods[0].s; closeSettings(); refresh(); }
+function doReset() { if(confirm("حذف الكل؟")) { localStorage.clear(); location.reload(); } }
+function doExport() {
+    let csv = "\ufeffالمعلم,الهاتف\n";
+    for(let id in data.teachers) csv += `"${data.teachers[id]}","${phones[data.teachers[id]]||""}"\n`;
+    const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "phones.csv"; a.click();
+}
 </script>
 </body>
 </html>
