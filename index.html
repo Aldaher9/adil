@@ -16,40 +16,47 @@
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; display: none; }
         
-        /* الهيدر المحسن مع الترحيب */
+        /* الهيدر المحسن */
         .header { background: var(--blue-grad); color: white; padding: 20px; border-radius: 0 0 25px 25px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3); position: sticky; top: 0; z-index: 50; }
-        .user-welcome { font-size: 0.9rem; font-weight: 500; opacity: 0.9; margin-bottom: 5px; }
+        .user-welcome { font-size: 0.85rem; font-weight: 500; opacity: 0.8; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header h1 { margin: 0; font-size: 1.1rem; font-weight: 800; }
-        .header-btn { background: rgba(255,255,255,0.15); border: none; color: white; width: 35px; height: 35px; border-radius: 10px; font-size: 18px; cursor: pointer; }
+        
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .header-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 8px 12px; border-radius: 12px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; font-weight: 600; }
+        .header-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.25); }
+        .logout-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); }
 
         .container { padding: 20px; display: none; }
         .container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .status-card { background: var(--card); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 20px; border-right: 6px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
-        .lesson-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; }
+        .lesson-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; border: 1px solid #f1f5f9; }
         .class-badge { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 800; min-width: 60px; text-align: center; font-size: 14px; }
         
         /* أجندة القائد */
         .agenda-input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        .agenda-input { flex-grow: 1; padding: 12px; border-radius: 12px; border: 2px solid #ddd; outline: none; }
-        .task-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); }
+        .agenda-input { flex-grow: 1; padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0; outline: none; transition: 0.3s; }
+        .agenda-input:focus { border-color: var(--accent); }
+        .task-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); border: 1px solid #f1f5f9; }
+        .task-text { font-weight: 500; color: var(--text); }
         .task-text.done { text-decoration: line-through; opacity: 0.5; }
-        .del-btn { color: #ef4444; border: none; background: none; font-size: 18px; cursor: pointer; }
+        .del-btn { color: #ef4444; border: none; background: #fee2e2; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 
-        .staff-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); }
-        .msg-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 10px; font-size: 13px; background: #f8fafc; font-weight: 600; }
+        .staff-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; }
+        .msg-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 10px; font-size: 13px; background: #f8fafc; font-weight: 600; color: var(--primary); }
         
-        .action-btn { border: none; padding: 12px; border-radius: 10px; color: white; font-weight: 700; font-size: 12px; cursor: pointer; display: block; margin-top: 8px; text-decoration: none; text-align: center; }
+        .action-btn { border: none; padding: 12px; border-radius: 10px; color: white; font-weight: 700; font-size: 12px; cursor: pointer; display: block; margin-top: 8px; text-decoration: none; text-align: center; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.98); }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100; }
-        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; font-size: 10px; cursor: pointer; flex: 1; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100; border-top: 1px solid #eee; }
+        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; font-size: 10px; cursor: pointer; flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--primary); font-weight: 800; }
         .nav-item span { display: block; font-size: 20px; margin-bottom: 2px; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; backdrop-filter: blur(5px); }
-        .modal-content { background: white; margin: 10% auto; width: 90%; max-width: 450px; padding: 25px; border-radius: 25px; }
+        .modal-content { background: white; margin: 10% auto; width: 90%; max-width: 450px; padding: 25px; border-radius: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
 </head>
@@ -57,42 +64,43 @@
 
 <div id="login-screen" style="position:fixed; inset:0; background:var(--bg); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div style="background:white; padding:40px; border-radius:30px; text-align:center; box-shadow:var(--shadow); width:100%; max-width:400px;">
-        <h1 style="color:var(--primary)">منصة القائد ⚡</h1>
-        <button onclick="handleGoogleLogin()" style="width:100%; padding:15px; background:white; border:1px solid #ddd; border-radius:15px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px;">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> دخول عبر جوجل
+        <h1 style="color:var(--primary); font-size: 2rem;">منصة القائد ⚡</h1>
+        <p style="color: #64748b; margin-bottom: 30px;">نظام الإدارة المدرسي الذكي</p>
+        <button onclick="handleGoogleLogin()" style="width:100%; padding:15px; background:white; border:2px solid #f1f5f9; border-radius:15px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:12px; font-size: 16px; transition: 0.3s;">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> الدخول عبر جوجل
         </button>
     </div>
 </div>
 
 <div class="header">
-    <div class="user-welcome" id="welcomeMsg">نرحب بالقائد...</div>
+    <div class="user-welcome" id="welcomeMsg">👤 نرحب بالقائد...</div>
     <div class="header-top">
         <h1>منصة القائد ⚡</h1>
-        <div>
-            <button class="header-btn" onclick="openModal()">⚙️</button>
-            <button class="header-btn" onclick="auth.signOut().then(()=>location.reload())" style="margin-right:5px;">🚪</button>
+        <div class="header-actions">
+            <button class="header-btn" onclick="openModal()" title="الإعدادات">⚙️ ضبط</button>
+            <button class="header-btn logout-btn" onclick="auth.signOut().then(()=>location.reload())" title="خروج">🚪 خروج</button>
         </div>
     </div>
 </div>
 
 <div id="view-schedule" class="container active">
     <div class="status-card">
-        <div><div id="infoDate">--</div><div id="infoPeriod" style="font-weight:800; font-size:1.1rem;">جاري التحميل..</div></div>
-        <div id="simBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold; font-size:12px;">محاكاة</div>
+        <div><div id="infoDate">--:--</div><div id="infoPeriod" style="font-weight:800; font-size:1.1rem; color: var(--primary);">جاري المزامنة..</div></div>
+        <div id="simBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold; font-size:12px;">وضع المحاكاة</div>
     </div>
     <div id="lessons-list"></div>
 </div>
 
 <div id="view-staff" class="container">
-    <input type="text" id="searchInput" class="search-bar" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:15px; border-radius:12px; border:2px solid #ddd; margin-bottom:15px;">
+    <input type="text" id="searchInput" class="search-bar" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:15px; border-radius:12px; border:2px solid #ddd; margin-bottom:15px; outline: none;">
     <div id="staff-list"></div>
 </div>
 
 <div id="view-agenda" class="container">
-    <h3 style="margin-top:0">📝 أجندة القائد</h3>
+    <h3 style="margin-top:0; color: var(--primary);">📝 أجندة المهام</h3>
     <div class="agenda-input-group">
-        <input type="text" id="taskInput" class="agenda-input" placeholder="أضف مهمة جديدة...">
-        <button onclick="addTask()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:bold;">إضافة</button>
+        <input type="text" id="taskInput" class="agenda-input" placeholder="اكتب مهمة جديدة هنا...">
+        <button onclick="addTask()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:800;">إضافة</button>
     </div>
     <div id="tasks-list"></div>
 </div>
@@ -105,21 +113,21 @@
 
 <div id="settingsModal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0">⚙️ الإعدادات السحابية</h3>
-        <p style="font-size:12px; font-weight:bold; text-align:right;">1. ملف الجدول (XML)</p>
+        <h3 style="margin-top:0; color: var(--primary);">⚙️ إعدادات المنصة</h3>
+        <p style="font-size:12px; font-weight:bold; text-align:right; margin: 15px 0 5px 0;">1. ملف الجدول (XML)</p>
         <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
-        <p style="font-size:12px; font-weight:bold; text-align:right;">2. المعلمين (Excel)</p>
+        <p style="font-size:12px; font-weight:bold; text-align:right; margin-bottom: 5px;">2. بيانات المعلمين (Excel)</p>
         <div class="grid-2">
             <button onclick="exportToExcel()" style="padding:10px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:bold;">📥 تصدير</button>
             <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white; border:none; border-radius:10px; font-weight:bold;">📤 استيراد</button>
             <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
         </div>
-        <p style="font-size:12px; font-weight:bold; text-align:right; margin-top:15px;">3. التحكم</p>
+        <p style="font-size:12px; font-weight:bold; text-align:right; margin: 15px 0 5px 0;">3. التحكم بالوقت</p>
         <div class="grid-2">
             <button onclick="doSim()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold;">🎲 محاكاة</button>
             <button onclick="resetTime()" style="padding:10px; background:#64748b; color:white; border:none; border-radius:10px; font-weight:bold;">🕒 الآن</button>
         </div>
-        <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:10px; border:none; background:#f1f5f9; border-radius:10px; font-weight:bold;">إغلاق</button>
+        <button onclick="closeModal()" style="width:100%; margin-top:25px; padding:12px; border:none; background:#f1f5f9; border-radius:12px; font-weight:bold; color: var(--primary);">إغلاق النافذة</button>
     </div>
 </div>
 
@@ -149,7 +157,7 @@ auth.onAuthStateChanged(user => {
         currentUser = user;
         document.body.style.display = "block";
         document.getElementById('login-screen').style.display = "none";
-        document.getElementById('welcomeMsg').innerText = "نرحب بالقائد " + user.displayName;
+        document.getElementById('welcomeMsg').innerText = "👤 نرحب بالقائد " + user.displayName;
         loadUserData();
     } else {
         document.body.style.display = "block";
@@ -182,12 +190,10 @@ async function syncToCloud() {
     }
 }
 
-// ترتيب الصفوف من الأصغر للأكبر
 function getSortedLessons(currentLessons) {
     return currentLessons.sort((a, b) => {
         const nameA = data.classes[a.c] || "";
         const nameB = data.classes[b.c] || "";
-        // استخراج الأرقام من اسم الصف (مثل 5/1 تصبح 5)
         const numA = parseInt(nameA.match(/\d+/)) || 0;
         const numB = parseInt(nameB.match(/\d+/)) || 0;
         return numA - numB;
@@ -209,7 +215,7 @@ function refresh() {
 
     const list = document.getElementById('lessons-list');
     if (p && data.lessons && data.lessons.length > 0) {
-        document.getElementById('infoPeriod').innerText = "الحصة: " + p.id;
+        document.getElementById('infoPeriod').innerText = "الحصة النشطة: " + p.id;
         const current = data.lessons.filter(l => l.d == d && l.p == p.id);
         const sorted = getSortedLessons(current);
         
@@ -218,20 +224,20 @@ function refresh() {
             return `<div class="lesson-card">
                 <div class="class-badge">${data.classes[l.c] || '..'}</div>
                 <div style="flex-grow:1; padding-right:15px;"><span style="font-weight:700;">${n}</span><br><span style="font-size:11px; color:#64748b;">${data.subjects[l.s] || ''}</span></div>
-                <a href="https://wa.me/${ph}" target="_blank" style="background:#10b981; color:white; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none;">💬</a>
+                <a href="https://wa.me/${ph}" target="_blank" style="background:#10b981; color:white; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow: 0 4px 10px rgba(16,185,129,0.3);">💬</a>
             </div>`;
         }).join('');
     } else {
-        document.getElementById('infoPeriod').innerText = "لا توجد حصص حالياً";
-        list.innerHTML = "";
+        document.getElementById('infoPeriod').innerText = "خارج أوقات الدوام";
+        list.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; font-size:14px;">لا توجد حصص في هذا الوقت</div>`;
     }
 }
 
 // وظائف الأجندة
 function addTask() {
     const input = document.getElementById('taskInput');
-    if(!input.value) return;
-    tasks.push({ id: Date.now(), text: input.value, done: false });
+    if(!input.value.trim()) return;
+    tasks.push({ id: Date.now(), text: input.value.trim(), done: false });
     input.value = "";
     renderTasks();
     syncToCloud();
@@ -239,15 +245,15 @@ function addTask() {
 
 function renderTasks() {
     const list = document.getElementById('tasks-list');
-    list.innerHTML = tasks.map(t => `
+    list.innerHTML = tasks.length ? tasks.map(t => `
         <div class="task-item">
-            <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="toggleTask(${t.id})">
-                <input type="checkbox" ${t.done ? 'checked' : ''}>
+            <div style="display:flex; align-items:center; gap:12px; cursor:pointer; flex-grow: 1;" onclick="toggleTask(${t.id})">
+                <input type="checkbox" ${t.done ? 'checked' : ''} style="width:18px; height:18px;">
                 <span class="task-text ${t.done ? 'done' : ''}">${t.text}</span>
             </div>
             <button class="del-btn" onclick="deleteTask(${t.id})">🗑️</button>
         </div>
-    `).join('');
+    `).join('') : `<div style="text-align:center; color:#94a3b8; margin-top:20px;">لا توجد مهام حالياً</div>`;
 }
 
 function toggleTask(id) {
@@ -299,7 +305,7 @@ function exportToExcel() {
     const ws = XLSX.utils.json_to_sheet(list);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "المعلمين");
-    XLSX.writeFile(wb, "المعلمين.xlsx");
+    XLSX.writeFile(wb, "قائمة_أرقام_المعلمين.xlsx");
 }
 
 function switchTab(t, b) {
@@ -320,33 +326,39 @@ function resetTime() { isSim = false; closeModal(); refresh(); }
 function renderStaff() {
     const list = document.getElementById('staff-list');
     const sorted = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    list.innerHTML = sorted.map((name, i) => {
+    list.innerHTML = sorted.length ? sorted.map((name, i) => {
         const ph = phones[name] || "";
         return `<div class="staff-card filter-item">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:bold;">${name}</span>
-                <span style="font-size:12px; color:#64748b;">${ph}</span>
+                <span style="font-weight:bold; color: var(--primary);">${name}</span>
+                <span style="font-size:12px; color:#64748b;">${ph || 'بدون رقم'}</span>
             </div>
             <select class="msg-select" id="sel_${i}">
-                <option value="" disabled selected>توجيه سريع...</option>
+                <option value="" disabled selected>🔽 اختر توجيهاً سريعاً...</option>
                 <option value="الرجاء التوجه إلى مكتب الإدارة للأهمية.">الرجاء التوجه إلى مكتب الإدارة للأهمية.</option>
                 <option value="الرجاء التواجد في مكان المناوبة.">الرجاء التواجد في مكان المناوبة.</option>
                 <option value="الرجاء متابعة حصة الاحتياط لديك.">الرجاء متابعة حصة الاحتياط لديك.</option>
                 <option value="الرجاء التواجد في ساحة الطابور.">الرجاء التواجد في ساحة الطابور.</option>
             </select>
             <div class="grid-2" style="margin-top:10px;">
-                <button onclick="sendMsg('${name}', 'sel_${i}')" class="action-btn" style="background:var(--success)">واتساب</button>
-                <a href="tel:${ph}" class="action-btn" style="background:#3b82f6; text-decoration:none;">اتصال</a>
+                <button onclick="sendMsg('${name}', 'sel_${i}')" class="action-btn" style="background:var(--success)">✉️ واتساب</button>
+                <a href="tel:${ph}" class="action-btn" style="background:#3b82f6; text-decoration:none;">📞 اتصال</a>
             </div>
         </div>`;
-    }).join('');
+    }).join('') : `<div style="text-align:center; padding:50px; color:#94a3b8;">يرجى رفع ملف الجدول أولاً</div>`;
 }
 
 function sendMsg(name, selectId) {
     const ph = (phones[name] || "").replace(/\s+/g, '');
     const msg = document.getElementById(selectId).value;
-    if(!ph || !msg) return alert("تأكد من الرقم واختيار الرسالة");
+    if(!ph) return alert("يرجى إضافة رقم الهاتف في قسم الإعدادات");
+    if(!msg) return alert("يرجى اختيار الرسالة المراد إرسالها");
     window.open(`https://wa.me/${ph}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function filterStaff() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.filter-item').forEach(el => el.style.display = el.innerText.toLowerCase().includes(q) ? 'block' : 'none');
 }
 
 setInterval(() => { if(currentUser && !isSim) refresh(); }, 30000);
