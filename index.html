@@ -114,20 +114,15 @@
 <div id="settingsModal" class="modal">
     <div class="modal-content">
         <h3 style="margin-top:0; color: var(--primary);">⚙️ إعدادات المنصة</h3>
-        <p style="font-size:12px; font-weight:bold; text-align:right; margin: 15px 0 5px 0;">1. ملف الجدول (XML)</p>
+        <p style="font-size:12px; font-weight:bold; text-align:right;">1. ملف الجدول (XML)</p>
         <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
-        <p style="font-size:12px; font-weight:bold; text-align:right; margin-bottom: 5px;">2. بيانات المعلمين (Excel)</p>
+        <p style="font-size:12px; font-weight:bold; text-align:right;">2. المعلمين (Excel)</p>
         <div class="grid-2">
-            <button onclick="exportToExcel()" style="padding:10px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:bold;">📥 تصدير</button>
-            <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white; border:none; border-radius:10px; font-weight:bold;">📤 استيراد</button>
+            <button onclick="exportToExcel()" style="padding:10px; background:#10b981; color:white;">📥 تصدير</button>
+            <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white;">📤 استيراد</button>
             <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
         </div>
-        <p style="font-size:12px; font-weight:bold; text-align:right; margin: 15px 0 5px 0;">3. التحكم بالوقت</p>
-        <div class="grid-2">
-            <button onclick="doSim()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold;">🎲 محاكاة</button>
-            <button onclick="resetTime()" style="padding:10px; background:#64748b; color:white; border:none; border-radius:10px; font-weight:bold;">🕒 الآن</button>
-        </div>
-        <button onclick="closeModal()" style="width:100%; margin-top:25px; padding:12px; border:none; background:#f1f5f9; border-radius:12px; font-weight:bold; color: var(--primary);">إغلاق النافذة</button>
+        <button onclick="closeModal()" style="width:100%; margin-top:25px; padding:12px; background:#f1f5f9; border-radius:12px;">إغلاق</button>
     </div>
 </div>
 
@@ -164,10 +159,6 @@ auth.onAuthStateChanged(user => {
         document.getElementById('login-screen').style.display = "flex";
     }
 });
-
-async function handleGoogleLogin() {
-    try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); } catch(e) { console.error(e); }
-}
 
 async function loadUserData() {
     const doc = await db.collection("users").doc(currentUser.uid).get();
@@ -221,10 +212,15 @@ function refresh() {
         
         list.innerHTML = sorted.map(l => {
             let n = data.teachers[l.t], ph = (phones[n] || "").replace(/\s+/g, '');
+            let className = data.classes[l.c] || '..';
+            let subjectName = data.subjects[l.s] || '';
+            // صياغة الرسالة المهذبة التلقائية
+            let autoMsg = `السلام عليكم ورحمة الله وبركاته، أستاذ ${n}. نلاحظ تأخركم قليلاً عن الحصة ${p.id} في صف ${className} (${subjectName}). نرجو التواجد للأهمية، مع خالص الشكر.`;
+            
             return `<div class="lesson-card">
-                <div class="class-badge">${data.classes[l.c] || '..'}</div>
-                <div style="flex-grow:1; padding-right:15px;"><span style="font-weight:700;">${n}</span><br><span style="font-size:11px; color:#64748b;">${data.subjects[l.s] || ''}</span></div>
-                <a href="https://wa.me/${ph}" target="_blank" style="background:#10b981; color:white; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow: 0 4px 10px rgba(16,185,129,0.3);">💬</a>
+                <div class="class-badge">${className}</div>
+                <div style="flex-grow:1; padding-right:15px;"><span style="font-weight:700;">${n}</span><br><span style="font-size:11px; color:#64748b;">${subjectName}</span></div>
+                <button onclick="sendQuickMsg('${ph}', '${encodeURIComponent(autoMsg)}')" style="border:none; background:#10b981; color:white; width:35px; height:35px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(16,185,129,0.3);">💬</button>
             </div>`;
         }).join('');
     } else {
@@ -233,7 +229,12 @@ function refresh() {
     }
 }
 
-// وظائف الأجندة
+function sendQuickMsg(ph, msg) {
+    if(!ph || ph === "") return alert("يرجى إضافة رقم المعلم أولاً من قسم الإعدادات.");
+    window.open(`https://wa.me/${ph}?text=${msg}`, '_blank');
+}
+
+// بقية وظائف الأجندة والمزامنة...
 function addTask() {
     const input = document.getElementById('taskInput');
     if(!input.value.trim()) return;
@@ -242,33 +243,19 @@ function addTask() {
     renderTasks();
     syncToCloud();
 }
-
 function renderTasks() {
     const list = document.getElementById('tasks-list');
     list.innerHTML = tasks.length ? tasks.map(t => `
         <div class="task-item">
             <div style="display:flex; align-items:center; gap:12px; cursor:pointer; flex-grow: 1;" onclick="toggleTask(${t.id})">
-                <input type="checkbox" ${t.done ? 'checked' : ''} style="width:18px; height:18px;">
+                <input type="checkbox" ${t.done ? 'checked' : ''}>
                 <span class="task-text ${t.done ? 'done' : ''}">${t.text}</span>
             </div>
             <button class="del-btn" onclick="deleteTask(${t.id})">🗑️</button>
-        </div>
-    `).join('') : `<div style="text-align:center; color:#94a3b8; margin-top:20px;">لا توجد مهام حالياً</div>`;
+        </div>`).join('') : `<div style="text-align:center; color:#94a3b8; margin-top:20px;">لا توجد مهام حالياً</div>`;
 }
-
-function toggleTask(id) {
-    tasks = tasks.map(t => t.id === id ? {...t, done: !t.done} : t);
-    renderTasks();
-    syncToCloud();
-}
-
-function deleteTask(id) {
-    tasks = tasks.filter(t => t.id !== id);
-    renderTasks();
-    syncToCloud();
-}
-
-// وظائف أخرى
+function toggleTask(id) { tasks = tasks.map(t => t.id === id ? {...t, done: !t.done} : t); renderTasks(); syncToCloud(); }
+function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); renderTasks(); syncToCloud(); }
 function handleXML(input) {
     const reader = new FileReader();
     reader.readAsText(input.files[0], "windows-1256");
@@ -279,35 +266,20 @@ function handleXML(input) {
         Array.from(xml.getElementsByTagName('class')).forEach(c => newData.classes[c.getAttribute('id')] = c.getAttribute('short'));
         Array.from(xml.getElementsByTagName('subject')).forEach(s => newData.subjects[s.getAttribute('id')] = s.getAttribute('name'));
         Array.from(xml.getElementsByTagName('period')).forEach(p => newData.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
-        newData.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({
-            d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
-        }));
-        data = newData;
-        await syncToCloud();
-        closeModal(); refresh();
+        newData.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({ d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID') }));
+        data = newData; await syncToCloud(); closeModal(); refresh();
     };
 }
-
 function importFromExcel(input) {
     const reader = new FileReader();
     reader.onload = async (e) => {
         const wb = XLSX.read(e.target.result, { type: 'binary' });
         const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
         sheet.forEach(row => { if(row["اسم المعلم"]) phones[row["اسم المعلم"]] = String(row["رقم الهاتف"] || ""); });
-        await syncToCloud();
-        renderStaff();
+        await syncToCloud(); renderStaff();
     };
     reader.readAsBinaryString(input.files[0]);
 }
-
-function exportToExcel() {
-    const list = Object.values(data.teachers).map(name => ({ "اسم المعلم": name, "رقم الهاتف": phones[name] || "" }));
-    const ws = XLSX.utils.json_to_sheet(list);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "المعلمين");
-    XLSX.writeFile(wb, "قائمة_أرقام_المعلمين.xlsx");
-}
-
 function switchTab(t, b) {
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     document.getElementById(t).classList.add('active');
@@ -316,17 +288,18 @@ function switchTab(t, b) {
     if(t === 'view-staff') renderStaff();
     if(t === 'view-agenda') renderTasks();
 }
-
 function toM(t) { if(!t) return 0; const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
 function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
 function closeModal() { document.getElementById('settingsModal').style.display = 'none'; }
-function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; closeModal(); refresh(); }
-function resetTime() { isSim = false; closeModal(); refresh(); }
-
+function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+function filterStaff() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.filter-item').forEach(el => el.style.display = el.innerText.toLowerCase().includes(q) ? 'block' : 'none');
+}
 function renderStaff() {
     const list = document.getElementById('staff-list');
     const sorted = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    list.innerHTML = sorted.length ? sorted.map((name, i) => {
+    list.innerHTML = sorted.map((name, i) => {
         const ph = phones[name] || "";
         return `<div class="staff-card filter-item">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -341,26 +314,18 @@ function renderStaff() {
                 <option value="الرجاء التواجد في ساحة الطابور.">الرجاء التواجد في ساحة الطابور.</option>
             </select>
             <div class="grid-2" style="margin-top:10px;">
-                <button onclick="sendMsg('${name}', 'sel_${i}')" class="action-btn" style="background:var(--success)">✉️ واتساب</button>
+                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" class="action-btn" style="background:var(--success)">✉️ واتساب</button>
                 <a href="tel:${ph}" class="action-btn" style="background:#3b82f6; text-decoration:none;">📞 اتصال</a>
             </div>
         </div>`;
-    }).join('') : `<div style="text-align:center; padding:50px; color:#94a3b8;">يرجى رفع ملف الجدول أولاً</div>`;
+    }).join('');
 }
-
-function sendMsg(name, selectId) {
+function sendStaffMsg(name, selectId) {
     const ph = (phones[name] || "").replace(/\s+/g, '');
     const msg = document.getElementById(selectId).value;
-    if(!ph) return alert("يرجى إضافة رقم الهاتف في قسم الإعدادات");
-    if(!msg) return alert("يرجى اختيار الرسالة المراد إرسالها");
+    if(!ph || !msg) return alert("تأكد من الرقم واختيار الرسالة");
     window.open(`https://wa.me/${ph}?text=${encodeURIComponent(msg)}`, '_blank');
 }
-
-function filterStaff() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.filter-item').forEach(el => el.style.display = el.innerText.toLowerCase().includes(q) ? 'block' : 'none');
-}
-
 setInterval(() => { if(currentUser && !isSim) refresh(); }, 30000);
 </script>
 </body>
