@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - غرفة العمليات</title>
+    <title>منصة القائد - نظام الإدارة المتكامل</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { 
             --primary: #0f172a; --accent: #f59e0b; --success: #10b981; 
@@ -15,82 +16,49 @@
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; display: none; }
         
-        #login-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 1000;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
-        }
-        .login-card {
-            background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align: center;
-        }
-
+        /* الهيدر */
         .header { 
             background: var(--blue-grad); color: white; padding: 20px; 
             border-radius: 0 0 25px 25px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
             position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center;
         }
         .header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
-        .header-btn { background: rgba(255,255,255,0.15); border: none; color: white; width: 40px; height: 40px; border-radius: 12px; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); }
+        .header-btn { background: rgba(255,255,255,0.15); border: none; color: white; width: 40px; height: 40px; border-radius: 12px; font-size: 20px; cursor: pointer; }
 
         .container { padding: 20px; display: none; animation: fadeIn 0.3s ease; }
         .container.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .status-card { 
-            background: var(--card); padding: 20px; border-radius: 20px; 
-            box-shadow: var(--shadow); margin-bottom: 20px; border-right: 6px solid var(--accent);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .status-info div:first-child { font-size: 13px; color: #64748b; font-weight: 600; }
-        .status-info div:last-child { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-top: 5px; }
-
-        .lesson-card { 
-            background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px;
-            box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between;
-        }
+        /* البطاقات */
+        .status-card { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 20px; border-right: 6px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+        .lesson-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; }
         .class-badge { background: var(--primary); color: white; padding: 12px 10px; border-radius: 12px; font-weight: 800; min-width: 65px; text-align: center; }
-        .teacher-details { flex-grow: 1; padding-right: 15px; }
-        .teacher-name { font-weight: 700; font-size: 15px; color: var(--primary); display: block; }
-        .subject-name { font-size: 12px; color: #64748b; }
-
-        .staff-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid #e2e8f0; }
-        .staff-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
-        .actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         
-        .action-btn { border: none; padding: 10px; border-radius: 10px; color: white; font-weight: 700; font-size: 12px; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; }
-        .btn-office { background: #3b82f6; }
-        .btn-call { background: #10b981; }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); border-top: 1px solid #f1f5f9; z-index: 100; }
-        .nav-item { text-align: center; color: #94a3b8; font-size: 11px; font-weight: 600; background: none; border: none; cursor: pointer; }
-        .nav-item span { display: block; font-size: 22px; margin-bottom: 4px; }
-        .nav-item.active { color: var(--primary); transform: translateY(-2px); }
-
-        .search-bar { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #e2e8f0; margin-bottom: 15px; font-size: 15px; outline: none; }
+        /* واجهة المعلمين المتطورة */
+        .staff-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); }
+        .msg-select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px; font-size: 13px; background: #f8fafc; color: var(--primary); font-weight: 600; }
         
-        /* Modal Style */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; backdrop-filter: blur(5px); }
-        .modal-content { background: white; margin: 15% auto; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; text-align: center; }
+        .action-btn { border: none; padding: 10px; border-radius: 10px; color: white; font-weight: 700; font-size: 12px; text-decoration: none; text-align: center; cursor: pointer; display: block; margin-top: 5px; }
 
-        .google-btn {
-            width: 100%; padding: 14px; background: white; color: #334155; 
-            border: 1px solid #e2e8f0; border-radius: 12px; font-weight: 700; 
-            cursor: pointer; margin-top: 10px; display: flex; align-items: center; 
-            justify-content: center; gap: 10px; transition: all 0.2s;
-        }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100; }
+        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; font-size: 11px; }
+        .nav-item.active { color: var(--primary); }
+
+        .search-bar { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #e2e8f0; margin-bottom: 15px; outline: none; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; backdrop-filter: blur(5px); overflow-y: auto; }
+        .modal-content { background: white; margin: 10% auto; width: 90%; max-width: 450px; padding: 25px; border-radius: 25px; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="login-card">
-        <h1 style="color:var(--primary); margin-bottom:10px;">منصة القائد ⚡</h1>
-        <p style="color:#64748b; margin-bottom:25px; font-size:14px;">يرجى تسجيل الدخول للمتابعة</p>
-        <button onclick="handleGoogleLogin()" class="google-btn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="G">
-            دخول عبر حساب جوجل
+<div id="login-screen" style="position:fixed; inset:0; background:var(--bg); z-index:1000; display:flex; align-items:center; justify-content:center;">
+    <div style="background:white; padding:40px; border-radius:30px; text-align:center; box-shadow:var(--shadow);">
+        <h1>منصة القائد ⚡</h1>
+        <button onclick="handleGoogleLogin()" style="width:100%; padding:15px; background:white; border:1px solid #ddd; border-radius:15px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px;">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> دخول عبر جوجل
         </button>
-        <p id="loginError" style="color:#ef4444; font-size:12px; margin-top:15px;"></p>
     </div>
 </div>
 
@@ -98,50 +66,49 @@
     <h1>منصة القائد ⚡</h1>
     <div>
         <button class="header-btn" onclick="openModal()">⚙️</button>
-        <button class="header-btn" onclick="handleLogout()" style="margin-right:5px;">🚪</button>
+        <button class="header-btn" onclick="auth.signOut().then(()=>location.reload())">🚪</button>
     </div>
 </div>
 
 <div id="view-schedule" class="container active">
     <div class="status-card">
-        <div class="status-info"><div id="infoDate">--</div><div id="infoPeriod">جاري التحميل..</div></div>
-        <div style="background:#e0f2fe; color:#0369a1; padding:8px 12px; border-radius:12px; font-weight:bold; font-size:12px;">مباشر</div>
+        <div><div id="infoDate">--</div><div id="infoPeriod" style="font-weight:800; font-size:1.2rem;">جاري التحميل..</div></div>
+        <div id="simBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold; font-size:12px;">وضع المحاكاة</div>
     </div>
-    <div id="lessons-list">
-        <div style="text-align:center; padding:40px; color:#94a3b8;">يرجى رفع ملف الجدول من الإعدادات ⚙️</div>
-    </div>
+    <div id="lessons-list"></div>
 </div>
 
 <div id="view-staff" class="container">
-    <input type="text" id="searchInput" class="search-bar" placeholder="🔍 ابحث عن اسم المعلم..." onkeyup="filterStaff()">
+    <input type="text" id="searchInput" class="search-bar" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()">
     <div id="staff-list"></div>
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('view-schedule', this)"><span>📅</span> جدول الحصص</button>
+    <button class="nav-item active" onclick="switchTab('view-schedule', this)"><span>📅</span> الحصص</button>
     <button class="nav-item" onclick="switchTab('view-staff', this)"><span>👥</span> المعلمين</button>
 </div>
 
 <div id="settingsModal" class="modal">
     <div class="modal-content">
-        <h3 style="color:var(--primary); margin-bottom:20px;">إعدادات المنصة</h3>
-        <div style="background:#f8fafc; padding:15px; border-radius:12px; border:2px dashed #cbd5e1; margin-bottom:15px;">
-            <p style="font-size:12px; font-weight:bold; margin-bottom:8px;">رفع ملف الجدول (XML)</p>
-            <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%">
+        <h3 style="margin-top:0">⚙️ إعدادات المنصة</h3>
+        
+        <p style="font-size:12px; font-weight:bold; text-align:right;">1. ملف الجدول (XML)</p>
+        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
+        
+        <p style="font-size:12px; font-weight:bold; text-align:right;">2. إدارة أرقام الهواتف (Excel)</p>
+        <div class="grid-2">
+            <button onclick="exportToExcel()" style="padding:10px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">📥 تصدير للأكسل</button>
+            <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">📤 استيراد أكسل</button>
+            <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
         </div>
-        <button onclick="doSim()" style="width:100%; padding:14px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold; margin-bottom:8px; cursor:pointer;">🎲 محاكاة حصة</button>
-        <button onclick="doReset()" style="width:100%; padding:14px; background:#fee2e2; color:#ef4444; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">🗑️ مسح جميع البيانات</button>
-        <button onclick="closeModal()" style="margin-top:20px; background:none; border:none; color:#64748b; font-weight:bold; cursor:pointer;">إغلاق النافذة</button>
-    </div>
-</div>
 
-<div id="phoneModal" class="modal">
-    <div class="modal-content">
-        <h3>تعديل رقم المعلم</h3>
-        <p id="editNameDisplay" style="color:var(--accent); font-weight:bold;"></p>
-        <input type="tel" id="newPhoneInput" class="search-bar" style="text-align:center;" placeholder="968XXXXXXXX">
-        <button onclick="saveNewPhone()" style="width:100%; padding:14px; background:var(--success); color:white; border:none; border-radius:12px; font-weight:bold;">حفظ</button>
-        <button onclick="document.getElementById('phoneModal').style.display='none'" style="margin-top:10px; background:none; border:none;">إلغاء</button>
+        <p style="font-size:12px; font-weight:bold; text-align:right;">3. التحكم في الوقت</p>
+        <div class="grid-2">
+            <button onclick="doSim()" style="padding:12px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold;">🎲 محاكاة حصة</button>
+            <button onclick="resetTime()" style="padding:12px; background:#64748b; color:white; border:none; border-radius:10px; font-weight:bold;">🕒 الوقت الحالي</button>
+        </div>
+
+        <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:10px; border:none; background:#f1f5f9; border-radius:10px; font-weight:bold;">إغلاق</button>
     </div>
 </div>
 
@@ -150,7 +117,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
 <script>
-// الإعدادات الخاصة بك
 const firebaseConfig = {
   apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
   authDomain: "school-9416e.firebaseapp.com",
@@ -165,7 +131,17 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
-let currentUser = null, isSim = false, sDay, sTime, editingTeacher = "";
+let currentUser = null, isSim = false, sDay, sTime;
+
+// القوالب الجاهزة للرسائل
+const quickMsgs = [
+    "الرجاء التوجه إلى مكتب الإدارة للأهمية.",
+    "الرجاء التواجد في مكان المناوبة.",
+    "الرجاء متابعة حصة الاحتياط لديك.",
+    "الرجاء التواجد في ساحة الطابور.",
+    "يرجى تسليم كشوف الدرجات اليوم.",
+    "لديك اجتماع طارئ في غرفة المصادر."
+];
 
 auth.onAuthStateChanged(user => {
     if (user) {
@@ -180,37 +156,74 @@ auth.onAuthStateChanged(user => {
 });
 
 async function handleGoogleLogin() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    try {
-        await auth.signInWithPopup(provider);
-    } catch (e) {
-        document.getElementById('loginError').innerText = "فشل الدخول. تأكد من تفعيل Google في Firebase";
-    }
-}
-
-function handleLogout() { auth.signOut().then(() => location.reload()); }
-
-async function saveUserData() {
-    if(!currentUser) return;
-    await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data });
+    try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); } catch(e) { alert(e.message); }
 }
 
 async function loadUserData() {
     const doc = await db.collection("users").doc(currentUser.uid).get();
     if(doc.exists) {
-        const cloud = doc.data();
-        phones = cloud.phones || {};
-        data = cloud.schoolData || data;
+        phones = doc.data().phones || {};
+        data = doc.data().schoolData || data;
         refresh();
     }
 }
 
-function switchTab(tabId, btn) {
-    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    btn.classList.add('active');
-    if(tabId === 'view-staff') renderStaff();
+async function saveAll() {
+    if(currentUser) await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data });
+}
+
+// تصدير إلى اكسل
+function exportToExcel() {
+    const list = Object.values(data.teachers).map(name => ({ "اسم المعلم": name, "رقم الهاتف": phones[name] || "" }));
+    const ws = XLSX.utils.json_to_sheet(list);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "المعلمين");
+    XLSX.writeFile(wb, "قائمة_المعلمين_منصة_القائد.xlsx");
+}
+
+// استيراد من اكسل
+function importFromExcel(input) {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const wb = XLSX.read(e.target.result, { type: 'binary' });
+        const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        sheet.forEach(row => {
+            if(row["اسم المعلم"]) phones[row["اسم المعلم"]] = row["رقم الهاتف"] || "";
+        });
+        await saveAll();
+        alert("تم تحديث الأرقام بنجاح");
+        renderStaff();
+    };
+    reader.readAsBinaryString(input.files[0]);
+}
+
+function sendMsg(name, selectId) {
+    const ph = phones[name];
+    const msg = document.getElementById(selectId).value;
+    if(!ph) return alert("لا يوجد رقم هاتف مسجل لهذا المعلم");
+    window.open(`https://wa.me/${ph}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function renderStaff() {
+    const list = document.getElementById('staff-list');
+    const sorted = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
+    list.innerHTML = sorted.map((name, i) => {
+        const ph = phones[name] || "";
+        return `<div class="staff-card filter-item">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:bold;">${name}</span>
+                <span style="font-size:12px; color:#64748b;">${ph || 'بدون رقم'}</span>
+            </div>
+            <select class="msg-select" id="sel_${i}">
+                <option value="" disabled selected>اختر توجيهاً سريعاً...</option>
+                ${quickMsgs.map(m => `<option value="${m}">${m}</option>`).join('')}
+            </select>
+            <div class="grid-2" style="margin-top:10px;">
+                <button onclick="sendMsg('${name}', 'sel_${i}')" class="action-btn" style="background:var(--success)">✉️ إرسال واتساب</button>
+                <a href="tel:${ph}" class="action-btn" style="background:#3b82f6; text-decoration:none;">📞 اتصال مباشر</a>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 function handleXML(input) {
@@ -226,20 +239,23 @@ function handleXML(input) {
         data.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({
             d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
         }));
-        await saveUserData();
+        await saveAll();
         closeModal(); refresh();
     };
 }
 
-function toM(t) { if(!t) return 0; const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
-
 function refresh() {
-    const now = new Date(), days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-    let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
-    let t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+    const now = new Date();
+    const d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
+    const t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
     
-    document.getElementById('infoDate').innerText = (days[isSim ? (sDay==1?0:sDay-1) : now.getDay()] || "") + " | " + t;
-    const p = data.periods.find(p => { const cur = toM(t), s = toM(p.s), e = toM(p.e); return cur >= s && cur <= e; });
+    document.getElementById('infoDate').innerText = t;
+    document.getElementById('simBadge').style.display = isSim ? "block" : "none";
+    
+    const p = data.periods.find(p => { 
+        const cur = toM(t), s = toM(p.s), e = toM(p.e); 
+        return cur >= s && cur <= e; 
+    });
 
     const list = document.getElementById('lessons-list');
     if (p && data.lessons.length > 0) {
@@ -249,56 +265,33 @@ function refresh() {
             let n = data.teachers[l.t], ph = phones[n] || "";
             return `<div class="lesson-card">
                 <div class="class-badge">${data.classes[l.c]}</div>
-                <div class="teacher-details"><span class="teacher-name">${n}</span><span class="subject-name">${data.subjects[l.s]}</span></div>
-                <a href="https://wa.me/${ph}" target="_blank" style="background:${ph?'#10b981':'#cbd5e1'}; color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none;">💬</a>
+                <div style="flex-grow:1; padding-right:15px;"><span style="display:block; font-weight:700;">${n}</span><span style="font-size:11px; color:#64748b;">${data.subjects[l.s]}</span></div>
+                <a href="https://wa.me/${ph}" target="_blank" style="background:#10b981; color:white; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none;">💬</a>
             </div>`;
         }).join('');
     } else {
-        document.getElementById('infoPeriod').innerText = "خارج الدوام";
-        list.innerHTML = "<div style='text-align:center; padding:40px; color:#94a3b8;'>لا توجد حصص نشطة</div>";
+        document.getElementById('infoPeriod').innerText = "لا توجد حصص حالياً";
+        list.innerHTML = "";
     }
 }
 
-function renderStaff() {
-    const list = document.getElementById('staff-list');
-    const sorted = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    list.innerHTML = sorted.map(name => {
-        const ph = phones[name] || "";
-        return `<div class="staff-card filter-item">
-            <div class="staff-header"><span>${name}</span><button onclick="editPhone('${name}')" style="background:none; border:none; color:var(--accent); cursor:pointer;">${ph || 'إضافة رقم'} ✏️</button></div>
-            <div class="actions-grid">
-                <a href="https://wa.me/${ph}" class="action-btn btn-office">🏢 واتساب</a>
-                <a href="tel:${ph}" class="action-btn btn-call">📞 اتصال</a>
-            </div>
-        </div>`;
-    }).join('');
-}
-
-function editPhone(name) {
-    editingTeacher = name;
-    document.getElementById('editNameDisplay').innerText = name;
-    document.getElementById('newPhoneInput').value = phones[name] || "";
-    document.getElementById('phoneModal').style.display = 'block';
-}
-
-async function saveNewPhone() {
-    phones[editingTeacher] = document.getElementById('newPhoneInput').value;
-    await saveUserData();
-    document.getElementById('phoneModal').style.display = 'none';
-    renderStaff();
-}
-
-// وظائف التحكم في النوافذ (Modal)
+function toM(t) { const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
 function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
 function closeModal() { document.getElementById('settingsModal').style.display = 'none'; }
 function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; closeModal(); refresh(); }
-function doReset() { if(confirm("حذف جميع البيانات؟")) { db.collection("users").doc(currentUser.uid).delete().then(() => location.reload()); } }
+function resetTime() { isSim = false; closeModal(); refresh(); }
+function switchTab(t, b) {
+    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+    document.getElementById(t).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    b.classList.add('active');
+    if(t === 'view-staff') renderStaff();
+}
 function filterStaff() {
     const q = document.getElementById('searchInput').value.toLowerCase();
     document.querySelectorAll('.filter-item').forEach(el => el.style.display = el.innerText.toLowerCase().includes(q) ? 'block' : 'none');
 }
-
-setInterval(() => { if(currentUser) refresh(); }, 30000);
+setInterval(() => { if(currentUser && !isSim) refresh(); }, 30000);
 </script>
 </body>
 </html>
