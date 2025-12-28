@@ -92,6 +92,15 @@
         .search-bar:focus { border-color: var(--primary); }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; backdrop-filter: blur(5px); }
         .modal-content { background: white; margin: 20% auto; width: 90%; max-width: 400px; padding: 25px; border-radius: 20px; text-align: center; }
+        
+        /* نمط زر جوجل المخصص */
+        .google-btn {
+            width: 100%; padding: 15px; background: white; color: #444; 
+            border: 1px solid #ddd; border-radius: 12px; font-weight: 800; 
+            cursor: pointer; margin-top: 10px; display: flex; align-items: center; 
+            justify-content: center; gap: 10px; transition: 0.2s;
+        }
+        .google-btn:active { background: #f8fafc; transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -103,6 +112,12 @@
         <input type="email" id="email" class="search-bar" placeholder="البريد الإلكتروني">
         <input type="password" id="password" class="search-bar" placeholder="كلمة المرور">
         <button id="loginBtn" onclick="handleLogin()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:800; cursor:pointer;">دخول للمنصة</button>
+        
+        <button onclick="handleGoogleLogin()" class="google-btn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
+            دخول عبر جوجل
+        </button>
+
         <p id="loginError" style="color:#ef4444; font-size:12px; margin-top:15px;"></p>
     </div>
 </div>
@@ -171,9 +186,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
 <script>
-// --- إعدادات FIREBASE (استبدل هذه بالبيانات من لوحة تحكم Firebase الخاصة بك) ---
+// --- إعدادات FIREBASE ---
 const firebaseConfig = {
-  apiKey: "AIzaSy...",
+  apiKey: "AIzaSy...", // ضع مفتاحك هنا
   authDomain: "your-app.firebaseapp.com",
   projectId: "your-app",
   storageBucket: "your-app.appspot.com",
@@ -188,7 +203,7 @@ const db = firebase.firestore();
 let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
 let currentUser = null, isSim = false, sDay, sTime, editingTeacher = "";
 
-// إدارة الدخول
+// إدارة حالة الدخول
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
@@ -201,10 +216,12 @@ auth.onAuthStateChanged(user => {
     }
 });
 
+// الدخول التقليدي
 async function handleLogin() {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('password').value;
     const btn = document.getElementById('loginBtn');
+    if(!email || !pass) return;
     btn.innerText = "جاري الدخول...";
     try {
         await auth.signInWithEmailAndPassword(email, pass);
@@ -214,9 +231,20 @@ async function handleLogin() {
     }
 }
 
-function handleLogout() { auth.signOut(); location.reload(); }
+// الدخول عبر جوجل (الميزة الجديدة)
+async function handleGoogleLogin() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+        await auth.signInWithPopup(provider);
+    } catch (e) {
+        console.error(e);
+        document.getElementById('loginError').innerText = "فشل الدخول عبر جوجل";
+    }
+}
 
-// حفظ وجلب البيانات
+function handleLogout() { auth.signOut().then(() => location.reload()); }
+
+// مزامنة البيانات
 async function saveUserData() {
     if(!currentUser) return;
     await db.collection("users").doc(currentUser.uid).set({
@@ -235,7 +263,7 @@ async function loadUserData() {
     }
 }
 
-// الوظائف الأساسية
+// تبديل التبويبات
 function switchTab(tabId, btn) {
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
@@ -244,6 +272,7 @@ function switchTab(tabId, btn) {
     if(tabId === 'view-staff') renderStaff();
 }
 
+// معالجة ملف الجدول
 function handleXML(input) {
     const reader = new FileReader();
     reader.readAsText(input.files[0], "windows-1256");
@@ -267,24 +296,24 @@ function refresh() {
     let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
     let t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
     
-    document.getElementById('infoDate').innerText = days[isSim ? (sDay==1?0:sDay-1) : now.getDay()] + " | " + t;
+    document.getElementById('infoDate').innerText = (days[isSim ? (sDay==1?0:sDay-1) : now.getDay()] || "يوم غير محدد") + " | " + t;
     const p = data.periods.find(p => { const cur = toM(t), s = toM(p.s), e = toM(p.e); return cur >= s && cur <= e; });
 
     const list = document.getElementById('lessons-list');
     if (p && data.lessons.length > 0) {
         document.getElementById('infoPeriod').innerText = "الحصة: " + p.id;
         const current = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a, b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", 'ar', {numeric: true}));
-        list.innerHTML = current.map(l => {
+        list.innerHTML = current.length ? current.map(l => {
             let n = data.teachers[l.t], ph = phones[n] || "";
             return `<div class="lesson-card">
                 <div class="class-badge">${data.classes[l.c]}</div>
                 <div class="teacher-details"><span class="teacher-name">${n}</span><span class="subject-name">${data.subjects[l.s]}</span></div>
                 <a href="https://wa.me/${ph}" target="_blank" style="background:${ph?'#10b981':'#cbd5e1'}; color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none;">💬</a>
             </div>`;
-        }).join('');
+        }).join('') : "<div style='text-align:center; padding:40px; color:#94a3b8;'>لا توجد حصص في هذا الوقت</div>";
     } else {
         document.getElementById('infoPeriod').innerText = "خارج الدوام";
-        list.innerHTML = "<div style='text-align:center; padding:40px; color:#94a3b8;'>لا توجد حصص نشطة</div>";
+        list.innerHTML = "<div style='text-align:center; padding:40px; color:#94a3b8;'>لا توجد حصص نشطة حالياً</div>";
     }
 }
 
@@ -295,7 +324,7 @@ function renderStaff() {
     list.innerHTML = sorted.map(name => {
         const ph = phones[name] || "";
         return `<div class="staff-card filter-item">
-            <div class="staff-header"><span>${name}</span><button onclick="editPhone('${name}')">${ph || '➕ إضافة رقم'} ✏️</button></div>
+            <div class="staff-header"><span>${name}</span><button onclick="editPhone('${name}')" style="background:none; border:none; color:var(--accent); cursor:pointer;">${ph || '➕ إضافة رقم'} ✏️</button></div>
             <div class="actions-grid">
                 <a href="https://wa.me/${ph}" class="action-btn btn-office">🏢 للمكتب</a>
                 <a href="tel:${ph}" class="action-btn btn-call">📞 اتصال</a>
@@ -318,11 +347,11 @@ async function saveNewPhone() {
     renderStaff();
 }
 
-function toM(t) { const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
+function toM(t) { if(!t) return 0; const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
 function openModal() { document.getElementById('modal').style.display = 'block'; }
 function closeModal() { document.getElementById('modal').style.display = 'none'; }
 function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; closeModal(); refresh(); }
-function doReset() { if(confirm("حذف؟")) { db.collection("users").doc(currentUser.uid).delete(); location.reload(); } }
+function doReset() { if(confirm("هل أنت متأكد من مسح جميع البيانات؟")) { db.collection("users").doc(currentUser.uid).delete().then(() => location.reload()); } }
 function filterStaff() {
     const q = document.getElementById('searchInput').value.toLowerCase();
     document.querySelectorAll('.filter-item').forEach(el => el.style.display = el.innerText.toLowerCase().includes(q) ? 'block' : 'none');
