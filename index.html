@@ -17,7 +17,6 @@
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; display: none; }
         
-        /* الهيدر */
         .header { background: var(--blue-grad); color: white; padding: 20px; border-radius: 0 0 25px 25px; position: sticky; top: 0; z-index: 50; }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 8px 12px; border-radius: 12px; cursor: pointer; font-weight: 600; }
@@ -25,12 +24,11 @@
         .container { padding: 20px; display: none; }
         .container.active { display: block; }
 
-        /* البطاقات */
         .status-card { background: var(--card); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 20px; border-right: 6px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
         .lesson-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; }
         .class-badge { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 800; min-width: 60px; text-align: center; }
 
-        /* قائمة المعلمين - حل مشكلة القائمة المنسدلة */
+        /* تعديل القائمة المنسدلة للوسط */
         .staff-card { background: white; padding: 20px; border-radius: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid #e2e8f0; }
         .msg-select { 
             width: 100%; 
@@ -41,15 +39,12 @@
             border: 2px solid #cbd5e1;
             background-color: #f8fafc;
             color: #1e293b;
-            appearance: none; /* إزالة شكل السهم الافتراضي لضمان التنسيق */
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: left 15px center; /* وضع السهم لليسار لأننا بالعربية */
-            text-align: right;
+            text-align: center; /* محاذاة النص للوسط */
+            text-align-last: center; /* لضمان التوسط في بعض المتصفحات */
             direction: rtl;
+            font-weight: 600;
         }
 
-        /* صفحة التقارير - خطوط كبيرة */
         .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .report-table th { background: var(--report-primary); color: white; padding: 15px; font-size: 1.2rem; }
         .report-table td { padding: 15px; border-bottom: 1px solid #eee; font-size: 1.1rem; }
