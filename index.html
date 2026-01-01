@@ -41,11 +41,10 @@
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--primary); font-size: 0.9rem; }
         .styled-input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 12px; font-size: 1rem; outline: none; transition: 0.3s; }
-        .styled-input:focus { border-color: var(--accent); }
 
         .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .report-table td { padding: 12px; border-bottom: 1px solid #eee; }
-        .score-input { width: 65px; padding: 8px; border-radius: 8px; border: 2px solid var(--report-primary); text-align: center; font-weight: bold; }
+        .score-select { width: 65px; padding: 8px; border-radius: 8px; border: 2px solid var(--report-primary); text-align: center; font-weight: bold; background: #fff; cursor: pointer; }
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: 800; cursor: pointer; }
 
         @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; width: 100%; padding: 0; } body { background: white; } }
@@ -91,7 +90,7 @@
 
             <div class="input-group">
                 <label>عنوان الدرس:</label>
-                <input type="text" id="lessonTitle" placeholder="مثال: خصائص النباتات" class="styled-input">
+                <input type="text" id="lessonTitle" placeholder="مثال: التجوية والتعرية" class="styled-input">
             </div>
 
             <table class="report-table"><tbody id="tableBody"></tbody></table>
@@ -119,25 +118,19 @@
     <div class="modal-content">
         <h3 style="margin-top:0; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">⚙️ الإعدادات</h3>
         
-        <div style="background:#f8fafc; padding:15px; border-radius:20px; margin-bottom:15px;">
-            <p style="margin-top:0; font-weight: bold;">🎲 المحاكاة:</p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button onclick="doSim()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:10px; cursor:pointer;">تشغيل</button>
-                <button onclick="resetTime()" style="padding:10px; background:#64748b; color:white; border:none; border-radius:10px; cursor:pointer;">الآن</button>
-            </div>
-        </div>
-
-        <div style="background:#f0fdf4; padding:15px; border-radius:20px;">
-            <p style="margin-top:0; font-weight: bold; color:#166534;">📤 رفع الملفات (صيغ محددة):</p>
-            
+        <div style="background:#f0fdf4; padding:15px; border-radius:20px; margin-bottom:15px;">
+            <p style="margin-top:0; font-weight: bold; color:#166534;">📤 رفع الملفات (مقيد):</p>
             <label style="font-size:0.8rem;">جدول الحصص (.XML):</label>
             <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:10px;">
-            
             <label style="font-size:0.8rem;">قاعدة الزيارات (.JSON):</label>
             <input type="file" id="jsonFile" accept=".json" onchange="handleJSON(this)" style="width:100%; margin-bottom:10px;">
-            
             <label style="font-size:0.8rem;">أرقام المعلمين (.XLSX):</label>
             <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importFromExcel(this)" style="width:100%;">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+            <button onclick="doSim()" style="padding:12px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer;">المحاكاة</button>
+            <button onclick="resetTime()" style="padding:12px; background:#64748b; color:white; border:none; border-radius:12px; cursor:pointer;">الوقت الفعلي</button>
         </div>
 
         <button onclick="closeModal()" style="width:100%; padding:15px; background:#f1f5f9; border:none; border-radius:15px; margin-top:15px; font-weight: bold; cursor:pointer;">إغلاق</button>
@@ -149,7 +142,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
 <script>
-// --- التكوين السحابي ---
+// --- تكوين Firebase ---
 const firebaseConfig = {
     apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
     authDomain: "school-9416e.firebaseapp.com",
@@ -194,16 +187,8 @@ async function syncToCloud() {
     }
 }
 
-// --- معالجة الملفات القيود ---
-function validateFile(file, ext) {
-    if (!file.name.toLowerCase().endsWith(ext)) {
-        alert(`خطأ: مطلوب ملف بصيغة ${ext}`); return false;
-    }
-    return true;
-}
-
+// --- التعامل مع الملفات ---
 function handleXML(input) {
-    if (!validateFile(input.files[0], '.xml')) return;
     const reader = new FileReader();
     reader.readAsText(input.files[0], "windows-1256");
     reader.onload = async (e) => {
@@ -222,7 +207,6 @@ function handleXML(input) {
 }
 
 function handleJSON(input) {
-    if (!validateFile(input.files[0], '.json')) return;
     const reader = new FileReader();
     reader.onload = async (e) => {
         phrasesDB = JSON.parse(e.target.result);
@@ -234,10 +218,6 @@ function handleJSON(input) {
 }
 
 function importFromExcel(input) {
-    const file = input.files[0];
-    if (!file || (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls'))) {
-        alert("يرجى رفع ملف Excel فقط."); return;
-    }
     const reader = new FileReader();
     reader.onload = async (e) => {
         const wb = XLSX.read(e.target.result, {type: 'binary'});
@@ -245,10 +225,10 @@ function importFromExcel(input) {
         sheet.forEach(row => { if(row["اسم المعلم"]) phones[row["اسم المعلم"]] = String(row["رقم الهاتف"] || ""); });
         await syncToCloud(); renderStaff(); closeModal();
     };
-    reader.readAsBinaryString(file);
+    reader.readAsBinaryString(input.files[0]);
 }
 
-// --- معالجة الزيارات والتقارير ---
+// --- معالجة الزيارات ---
 function processPhrases() {
     let curM = "", curD = "";
     phrasesDB = phrasesDB.map(i => {
@@ -261,9 +241,21 @@ function processPhrases() {
         const key = i.parentCrit + i.parentDesc;
         if (!seen.has(key) && i.parentCrit) { seen.add(key); criteriaList.push({ m: i.parentCrit, d: i.parentDesc }); }
     });
+    
+    // العودة لنظام القائمة المنسدلة (Dropdown)
     document.getElementById('tableBody').innerHTML = criteriaList.map(c => `
-        <tr><td><b>${c.m}</b><br><small style="color:#64748b;">${c.d}</small></td>
-        <td><input type="number" class="score-input" data-m="${c.m}" data-d="${c.d}" value="2" min="1" max="5"></td></tr>`).join('');
+        <tr>
+            <td><b>${c.m}</b><br><small style="color:#64748b;">${c.d}</small></td>
+            <td>
+                <select class="score-select" data-m="${c.m}" data-d="${c.d}">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </td>
+        </tr>`).join('');
     document.getElementById('reportForm').style.display = 'block';
     document.getElementById('no-db-msg').style.display = 'none';
 }
@@ -272,7 +264,7 @@ function generateFinalReport() {
     const name = document.getElementById('tName').value || "المعلم";
     const title = document.getElementById('lessonTitle').value || "غير محدد";
     const selections = [];
-    document.querySelectorAll('.score-input').forEach(sel => {
+    document.querySelectorAll('.score-select').forEach(sel => {
         const val = parseInt(sel.value);
         const match = phrasesDB.find(p => p.parentCrit === sel.dataset.m && p.parentDesc === sel.dataset.d && p["الحكم"].includes(`(${val})`));
         if (match) selections.push({ ...match, score: val });
@@ -297,9 +289,8 @@ function generateFinalReport() {
         <ul style="line-height:1.8;">${improvements.map(i => `<li>${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
         
         <div style="margin-top:30px; border:1px solid #ddd; padding:20px; border-radius:15px; background:#f9fafb;">
-            <p style="font-weight:bold; margin-top:0;">الخلاصة والتوصيات:</p>
-            <p>أشكر المعلم على أداء الحصة وأوصيه بالتالي:</p>
-            <ol>${improvements.length > 0 ? improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('') : "<li>الاستمرار في العطاء المتميز ومشاركة الممارسات الجيدة مع الزملاء.</li>"}</ol>
+            <p style="font-weight:bold; margin-top:0;">أشكر المعلم على أداء الحصة وأوصيه بالتالي:</p>
+            <ol>${improvements.length > 0 ? improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('') : "<li>الاستمرار في العطاء المتميز.</li>"}</ol>
         </div>`;
     
     document.getElementById('printArea').innerHTML = html;
