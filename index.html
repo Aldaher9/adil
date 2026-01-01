@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - الإصدار الاحترافي</title>
+    <title>منصة القائد - النظام المتكامل</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -15,9 +15,8 @@
             --report-primary: #1a5f7a; --danger: #e11d48;
         }
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
-        body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; display: none; }
+        body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 90px; display: none; }
         
-        /* الهيدر */
         .header { background: var(--blue-grad); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 18px; border-radius: 14px; cursor: pointer; font-weight: bold; }
@@ -25,33 +24,25 @@
         .container { padding: 20px; display: none; }
         .container.active { display: block; }
 
-        /* البطاقات */
-        .lesson-card { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); display: block; }
-        .lesson-main { display: flex; align-items: center; margin-bottom: 12px; }
-        .class-badge { background: var(--primary); color: white; padding: 12px; border-radius: 15px; font-weight: 800; min-width: 75px; text-align: center; margin-left: 15px; font-size: 1.1rem; }
-        .lesson-actions { display: flex; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
-        .action-btn { flex: 1; padding: 10px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .lesson-card, .staff-card, .visit-log-card { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); }
+        .class-badge { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 800; min-width: 65px; text-align: center; margin-left: 12px; }
 
-        /* نافذة الإعدادات (التصميم المطلوب) */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 200; overflow-y: auto; backdrop-filter: blur(8px); padding: 20px; }
-        .modal-content { background: white; margin: 5% auto; width: 100%; max-width: 500px; padding: 30px; border-radius: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .settings-section { background: #f8fafc; padding: 20px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        .section-title { font-weight: 800; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
-        .file-input-wrapper { margin-bottom: 15px; }
-        .file-input-wrapper label { display: block; font-size: 0.85rem; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+        .visit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; font-size: 1rem; margin-bottom: 10px; }
+        .score-select { width: 65px; padding: 8px; border-radius: 10px; border: 2px solid var(--report-primary); font-weight: bold; }
+        
+        .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 18px; font-size: 1.2rem; font-weight: 800; cursor: pointer; }
 
-        /* صفحة الزيارات */
-        .visit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; font-size: 1rem; margin-bottom: 10px; transition: 0.3s; }
-        .score-select { width: 70px; padding: 8px; border-radius: 12px; border: 2px solid var(--report-primary); font-weight: bold; }
-        .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #e2e8f0; z-index: 100; }
-        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; cursor: pointer; flex: 1; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 100; }
+        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; cursor: pointer; flex: 1; font-size: 0.8rem; }
         .nav-item.active { color: var(--primary); font-weight: 800; }
-        .nav-item span { display: block; font-size: 26px; }
+        .nav-item span { display: block; font-size: 24px; margin-bottom: 3px; }
 
-        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; } }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 200; overflow-y: auto; backdrop-filter: blur(8px); padding: 20px; }
+        .modal-content { background: white; margin: 5% auto; width: 100%; max-width: 500px; padding: 30px; border-radius: 35px; }
+        .settings-section { background: #f8fafc; padding: 20px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+
+        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; position: absolute; top:0; right:0; width:100%; } }
     </style>
 </head>
 <body>
@@ -65,14 +56,40 @@
 
 <div class="header no-print">
     <div class="header-top">
-        <h1 style="margin:0; font-size:1.6rem; font-weight: 800;">منصة القائد</h1>
+        <h1 style="margin:0; font-size:1.4rem; font-weight: 800;">منصة القائد</h1>
         <button class="header-btn" onclick="openModal()">⚙️ الإعدادات</button>
     </div>
 </div>
 
 <div id="view-schedule" class="container active no-print">
-    <div id="sim-status" style="background:var(--accent); color:white; padding:10px; text-align:center; border-radius:15px; margin-bottom:20px; display:none; font-weight:bold;">وضع المحاكاة نشط 🎲</div>
+    <div id="sim-status" style="background:var(--accent); color:white; padding:10px; text-align:center; border-radius:15px; margin-bottom:15px; display:none; font-weight:bold;">وضع المحاكاة نشط 🎲</div>
     <div id="lessons-list"></div>
+</div>
+
+<div id="view-visits" class="container no-print">
+    <div id="reportForm" style="display:none; background:white; padding:25px; border-radius:30px; box-shadow: var(--shadow);">
+        <h3 style="text-align:center; margin-top:0;">📝 تفاصيل الزيارة</h3>
+        <input type="text" id="v_teacher" placeholder="اسم المعلم" class="styled-input">
+        <div class="visit-grid">
+            <input type="text" id="v_class" placeholder="الصف" class="styled-input">
+            <input type="text" id="v_period" placeholder="الحصة" class="styled-input">
+        </div>
+        <input type="text" id="v_lesson" placeholder="عنوان الدرس" class="styled-input">
+        <table style="width:100%; margin-top:10px;"><tbody id="tableBody"></tbody></table>
+        <button class="btn-gen" onclick="generateAndSaveReport()" style="margin-top:20px;">حفظ وتوليد التقرير</button>
+    </div>
+    <div id="no-db-msg" style="text-align:center; padding:60px;">📂 يرجى رفع ملف JSON من الإعدادات</div>
+    
+    <div id="reportOutput" style="display:none; background:white; padding:30px; border:1px solid #000; margin-top:20px; border-radius:15px;">
+        <div id="printArea"></div>
+        <button onclick="window.print()" class="no-print btn-gen" style="background:#475569; margin-top:15px;">طباعة / حفظ PDF</button>
+        <button onclick="closeReport()" class="no-print btn-gen" style="background:#cbd5e1; color:#1e293b; margin-top:10px;">إغلاق المعاينة</button>
+    </div>
+</div>
+
+<div id="view-history" class="container no-print">
+    <h3 style="margin-top:0;">📜 سجل الزيارات المحفوظة</h3>
+    <div id="history-list"></div>
 </div>
 
 <div id="view-staff" class="container no-print">
@@ -80,72 +97,27 @@
     <div id="staff-list"></div>
 </div>
 
-<div id="view-visits" class="container no-print">
-    <div id="visit-content">
-        <div id="reportForm" style="display:none; background:white; padding:25px; border-radius:30px; box-shadow: var(--shadow);">
-            <h3 style="text-align:center; margin-top:0; color:var(--primary);">📋 بيانات الزيارة الصفية</h3>
-            
-            <input type="text" id="v_teacher" placeholder="اسم المعلم" class="styled-input">
-            
-            <div class="visit-grid">
-                <input type="text" id="v_class" placeholder="الصف" class="styled-input">
-                <input type="text" id="v_period" placeholder="الحصة" class="styled-input">
-            </div>
-            
-            <input type="text" id="v_lesson" placeholder="عنوان الدرس" class="styled-input">
-
-            <table style="width:100%; border-collapse: collapse; margin-top:10px;"><tbody id="tableBody"></tbody></table>
-            <button class="btn-gen" onclick="generateFinalReport()" style="margin-top:25px;">توليد التقرير النهائي</button>
-        </div>
-        <div id="no-db-msg" style="text-align:center; padding:80px; color:#94a3b8; background:white; border-radius:30px;">📂 يرجى رفع ملف الزيارات (JSON) من الإعدادات.</div>
-    </div>
-    
-    <div id="reportOutput" style="display:none; background:white; padding:40px; border:1px solid #000; margin-top:20px; border-radius:15px;">
-        <div id="printArea"></div>
-        <button onclick="window.print()" class="no-print btn-gen" style="background:#334155; margin-top:20px;">حفظ التقرير PDF</button>
-    </div>
-</div>
-
 <div class="bottom-nav no-print">
-    <button class="nav-item active" id="nav-sch" onclick="switchTab('view-schedule', this)"><span>📅</span> الجدول</button>
-    <button class="nav-item" id="nav-staff" onclick="switchTab('view-staff', this)"><span>👥</span> المعلمين</button>
-    <button class="nav-item" id="nav-vis" onclick="switchTab('view-visits', this)"><span>📝</span> الزيارات</button>
+    <button class="nav-item active" onclick="switchTab('view-schedule', this)"><span>📅</span> الجدول</button>
+    <button class="nav-item" id="nav-vis" onclick="switchTab('view-visits', this)"><span>📝</span> زيارة</button>
+    <button class="nav-item" onclick="switchTab('view-history', this)"><span>📜</span> السجل</button>
+    <button class="nav-item" onclick="switchTab('view-staff', this)"><span>👥</span> المعلمين</button>
 </div>
 
 <div id="settingsModal" class="modal no-print">
     <div class="modal-content">
-        <h2 style="margin-top:0; border-bottom: 3px solid #f1f5f9; padding-bottom: 15px; text-align: center; color: var(--primary);">⚙️ لوحة التحكم</h2>
-        
-        <div class="settings-section" style="background: #fff7ed; border-color: #ffedd5;">
-            <div class="section-title">🎲 أدوات الوقت والمحاكاة</div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <button onclick="doSim()" style="padding:15px; background:var(--primary); color:white; border:none; border-radius:15px; cursor:pointer; font-weight:800;">تشغيل المحاكاة</button>
-                <button onclick="resetTime()" style="padding:15px; background:#64748b; color:white; border:none; border-radius:15px; cursor:pointer; font-weight:800;">الوقت الفعلي</button>
+        <h2 style="text-align: center;">⚙️ الإعدادات</h2>
+        <div class="settings-section" style="background: #fff7ed;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button onclick="doSim()" style="padding:15px; background:var(--primary); color:white; border:none; border-radius:15px;">محاكاة</button>
+                <button onclick="resetTime()" style="padding:15px; background:#64748b; color:white; border:none; border-radius:15px;">الآن</button>
             </div>
         </div>
-
-        <div class="settings-section" style="background: #f0fdf4; border-color: #dcfce7;">
-            <div class="section-title">📤 رفع وربط البيانات (سحابي)</div>
-            <div class="file-input-wrapper">
-                <label>1. ملف جدول الحصص (XML):</label>
-                <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)">
-            </div>
-            <div class="file-input-wrapper">
-                <label>2. ملف بنود الزيارات (JSON):</label>
-                <input type="file" id="jsonFile" accept=".json" onchange="handleJSON(this)">
-            </div>
+        <div class="settings-section" style="background: #f0fdf4;">
+            <label>جدول (XML):</label><input type="file" accept=".xml" onchange="handleXML(this)">
+            <label>بنود (JSON):</label><input type="file" accept=".json" onchange="handleJSON(this)">
         </div>
-
-        <div class="settings-section" style="background: #eff6ff; border-color: #dbeafe;">
-            <div class="section-title">📞 إدارة أرقام التواصل</div>
-            <button onclick="downloadStaffTemplate()" style="width:100%; padding:15px; border:2px solid #3b82f6; background:white; color:#3b82f6; border-radius:15px; margin-bottom:12px; cursor:pointer; font-weight:bold;">تنزيل قائمة المعلمين (Excel)</button>
-            <div class="file-input-wrapper">
-                <label>رفع ملف الأرقام المحدث (Excel):</label>
-                <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importFromExcel(this)">
-            </div>
-        </div>
-
-        <button onclick="closeModal()" style="width:100%; padding:20px; background:#f1f5f9; border:none; border-radius:20px; font-weight: 800; cursor:pointer; color: #475569;">إغلاق النافذة</button>
+        <button onclick="closeModal()" style="width:100%; padding:15px; background:#f1f5f9; border:none; border-radius:15px;">إغلاق</button>
     </div>
 </div>
 
@@ -166,7 +138,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth(), db = firebase.firestore();
 let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
-let phrasesDB = [], criteriaList = [];
+let phrasesDB = [], criteriaList = [], visitHistory = [];
 let currentUser = null, isSim = false, sDay, sTime;
 
 auth.onAuthStateChanged(user => {
@@ -185,26 +157,111 @@ async function loadUserData() {
         phones = cloud.phones || {};
         data = cloud.schoolData || data;
         phrasesDB = cloud.phrasesDB || [];
+        visitHistory = cloud.visitHistory || [];
         if(phrasesDB.length > 0) processPhrases();
         refresh();
+        renderHistory();
     }
 }
 
 async function syncToCloud() {
     if(currentUser) {
         await db.collection("users").doc(currentUser.uid).set({ 
-            phones, schoolData: data, phrasesDB, updatedAt: new Date() 
+            phones, schoolData: data, phrasesDB, visitHistory, updatedAt: new Date() 
         });
     }
 }
 
-// دالة بدء الزيارة مع توزيع البيانات
 function startVisit(teacherName, className, periodID) {
     switchTab('view-visits', document.getElementById('nav-vis'));
     document.getElementById('v_teacher').value = teacherName;
     document.getElementById('v_class').value = className;
     document.getElementById('v_period').value = "الحصة " + periodID;
     document.getElementById('v_lesson').focus();
+}
+
+function generateAndSaveReport() {
+    const visitData = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('ar-EG'),
+        teacher: document.getElementById('v_teacher').value,
+        class: document.getElementById('v_class').value,
+        period: document.getElementById('v_period').value,
+        lesson: document.getElementById('v_lesson').value,
+        scores: Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, d: s.dataset.d, v: s.value }))
+    };
+
+    // إضافة للسجل السحابي
+    const existingIdx = visitHistory.findIndex(v => v.id === visitData.id);
+    if(existingIdx > -1) visitHistory[existingIdx] = visitData; else visitHistory.unshift(visitData);
+    
+    syncToCloud();
+    renderHistory();
+    showReport(visitData);
+}
+
+function showReport(v) {
+    const selections = v.scores.map(s => phrasesDB.find(p => p.parentCrit === s.m && p.parentDesc === s.d && p["الحكم"].includes(`(${s.v})`))).filter(x => x);
+    const strengths = selections.filter((s,i) => v.scores[i].v <= 2);
+    const improvements = selections.filter((s,i) => v.scores[i].v >= 3);
+
+    let html = `
+        <div style="text-align:center; border-bottom:4px double #000; padding-bottom:15px; margin-bottom:20px;">
+            <h2 style="margin:0;">تقرير زيارة فنية صفية</h2>
+            <p>المعلم: <b>${v.teacher}</b> | الصف: <b>${v.class}</b> | الحصة: <b>${v.period}</b></p>
+            <p>عنوان الدرس: <b>${v.lesson}</b> | التاريخ: ${v.date}</p>
+        </div>
+        <h4 style="color:var(--success);">✅ جوانب الإجادة:</h4>
+        <ul>${strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
+        <h4 style="color:var(--danger);">⚠️ جوانب التطوير:</h4>
+        <ul>${improvements.map(i => `<li>${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
+        <div style="margin-top:20px; border:1px solid #000; padding:10px;"><b>التوصيات:</b><br>${improvements.map(i => i["التوصيات"]).join(' - ') || "الاستمرار في التميز"}</div>`;
+    
+    document.getElementById('printArea').innerHTML = html;
+    document.getElementById('reportOutput').style.display = 'block';
+    document.getElementById('reportForm').style.display = 'none';
+}
+
+function renderHistory() {
+    const list = document.getElementById('history-list');
+    list.innerHTML = visitHistory.map(v => `
+        <div class="visit-log-card">
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+                <div>
+                    <b style="font-size:1.1rem;">${v.teacher}</b><br>
+                    <small>${v.date} - ${v.class} - ${v.lesson}</small>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button onclick='loadVisitForEdit(${JSON.stringify(v)})' style="padding:8px; background:#f1f5f9; border:none; border-radius:10px; cursor:pointer;">✏️</button>
+                    <button onclick='shareVisit("${v.teacher}", "${v.lesson}")' style="padding:8px; background:#dcfce7; border:none; border-radius:10px; cursor:pointer;">💬</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+function loadVisitForEdit(v) {
+    switchTab('view-visits', document.getElementById('nav-vis'));
+    document.getElementById('v_teacher').value = v.teacher;
+    document.getElementById('v_class').value = v.class;
+    document.getElementById('v_period').value = v.period;
+    document.getElementById('v_lesson').value = v.lesson;
+    
+    // تعبئة الدرجات المخزنة
+    v.scores.forEach(s => {
+        const el = document.querySelector(`.score-select[data-m="${s.m}"][data-d="${s.d}"]`);
+        if(el) el.value = s.v;
+    });
+}
+
+function shareVisit(name, lesson) {
+    const ph = (phones[name] || "").replace(/\s+/g, '');
+    const text = `تحية طيبة أ/ ${name}، تم تسجيل زيارة صفية لدرس (${lesson})، يمكنك الاطلاع على التوصيات في نظام الإدارة. شكراً لجهودكم.`;
+    window.open(`https://wa.me/${ph}?text=${encodeURIComponent(text)}`);
+}
+
+function closeReport() {
+    document.getElementById('reportOutput').style.display = 'none';
+    document.getElementById('reportForm').style.display = 'block';
 }
 
 function refresh() {
@@ -218,61 +275,15 @@ function refresh() {
         let current = data.lessons.filter(l => l.d == d && l.p == p.id);
         current.sort((a, b) => (data.classes[a.c]||"").localeCompare(data.classes[b.c]||"", 'ar', {numeric:true}));
         list.innerHTML = current.map(l => {
-            let n = data.teachers[l.t], cl = data.classes[l.c]||'..', ph = (phones[n] || "").replace(/\s+/g, '');
-            return `
-            <div class="lesson-card">
-                <div class="lesson-main">
-                    <div class="class-badge">${cl}</div>
-                    <div style="flex:1;"><b>${n}</b><br><small style="color:#64748b;">${data.subjects[l.s]||''}</small></div>
-                </div>
-                <div class="lesson-actions">
-                    <button class="action-btn" style="background:#fef3c7; color:#92400e;" onclick="startVisit('${n}', '${cl}', '${l.p}')">📝 تسجيل زيارة</button>
-                    <button class="action-btn" style="background:var(--success); color:white;" onclick="window.open('https://wa.me/${ph}?text=تحية طيبة')">💬 واتساب</button>
-                </div>
-            </div>`;
+            let n = data.teachers[l.t], cl = data.classes[l.c]||'..';
+            return `<div class="lesson-card"><div style="display:flex; align-items:center;">
+            <div class="class-badge">${cl}</div><div style="flex:1;"><b>${n}</b><br><small>${data.subjects[l.s]||''}</small></div>
+            <button class="header-btn" style="background:var(--accent); font-size:0.8rem;" onclick="startVisit('${n}', '${cl}', '${l.p}')">تسجيل زيارة</button>
+            </div></div>`;
         }).join('');
     } else {
-        list.innerHTML = `<div style="text-align:center; padding:60px; color:#94a3b8; background:white; border-radius:25px;">لا توجد حصص الآن ☕</div>`;
+        list.innerHTML = `<div style="text-align:center; padding:60px; color:#94a3b8;">لا توجد حصص حالياً</div>`;
     }
-}
-
-// معالجة الملفات والبيانات
-function handleXML(input) {
-    const reader = new FileReader();
-    reader.readAsText(input.files[0], "windows-1256");
-    reader.onload = async (e) => {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(e.target.result, "text/xml");
-        const newData = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
-        Array.from(xml.getElementsByTagName('teacher')).forEach(t => newData.teachers[t.getAttribute('id')] = t.getAttribute('name'));
-        Array.from(xml.getElementsByTagName('class')).forEach(c => newData.classes[c.getAttribute('id')] = c.getAttribute('short'));
-        Array.from(xml.getElementsByTagName('subject')).forEach(s => newData.subjects[s.getAttribute('id')] = s.getAttribute('name'));
-        Array.from(xml.getElementsByTagName('period')).forEach(p => newData.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
-        newData.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({
-            d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
-        }));
-        data = newData; await syncToCloud(); refresh(); closeModal();
-    };
-}
-
-function handleJSON(input) {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        phrasesDB = JSON.parse(e.target.result);
-        await syncToCloud(); processPhrases(); closeModal();
-    };
-    reader.readAsText(input.files[0]);
-}
-
-function importFromExcel(input) {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const wb = XLSX.read(e.target.result, {type: 'binary'});
-        const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        sheet.forEach(row => { if(row["اسم المعلم"]) phones[row["اسم المعلم"]] = String(row["رقم الهاتف"] || ""); });
-        await syncToCloud(); renderStaff(); closeModal();
-    };
-    reader.readAsBinaryString(input.files[0]);
 }
 
 function processPhrases() {
@@ -288,84 +299,45 @@ function processPhrases() {
         if (!seen.has(key) && i.parentCrit) { seen.add(key); criteriaList.push({ m: i.parentCrit, d: i.parentDesc }); }
     });
     document.getElementById('tableBody').innerHTML = criteriaList.map(c => `
-        <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding:12px 0;"><b>${c.m}</b><br><small style="color:#64748b;">${c.d}</small></td>
-            <td style="text-align:left;"><select class="score-select" data-m="${c.m}" data-d="${c.d}"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td>
-        </tr>`).join('');
+        <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding:10px 0;"><b>${c.m}</b></td>
+        <td style="text-align:left;"><select class="score-select" data-m="${c.m}" data-d="${c.d}">
+        <option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td></tr>`).join('');
     document.getElementById('reportForm').style.display = 'block';
     document.getElementById('no-db-msg').style.display = 'none';
 }
 
-function generateFinalReport() {
-    const name = document.getElementById('v_teacher').value;
-    const cls = document.getElementById('v_class').value;
-    const prd = document.getElementById('v_period').value;
-    const lesson = document.getElementById('v_lesson').value;
-    
-    const selections = [];
-    document.querySelectorAll('.score-select').forEach(sel => {
-        const val = parseInt(sel.value);
-        const match = phrasesDB.find(p => p.parentCrit === sel.dataset.m && p.parentDesc === sel.dataset.d && p["الحكم"].includes(`(${val})`));
-        if (match) selections.push({ ...match, score: val });
-    });
-
-    const strengths = selections.filter(s => s.score <= 2);
-    const improvements = selections.filter(s => s.score >= 3);
-
-    let html = `
-        <div style="text-align:center; border-bottom:4px double #000; padding-bottom:15px; margin-bottom:20px;">
-            <h2 style="margin:0;">تقرير الزيارة الفنية الصفية</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:15px; text-align:right; gap:10px;">
-                <span>المعلم: <b>${name}</b></span>
-                <span>التاريخ: <b>${new Date().toLocaleDateString('ar-EG')}</b></span>
-                <span>الصف: <b>${cls}</b></span>
-                <span>الحصة: <b>${prd}</b></span>
-            </div>
-            <div style="margin-top:10px; text-align:right;">عنوان الدرس: <b>${lesson}</b></div>
-        </div>
-        <h3 style="color:var(--success);">✅ جوانب الإجادة:</h3><ul>${strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
-        <h3 style="color:var(--danger);">⚠️ جوانب التطوير:</h3><ul>${improvements.map(i => `<li>${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
-        <div style="margin-top:20px; border:1px solid #000; padding:15px;"><b>التوصيات الفنية:</b><ol>${improvements.length > 0 ? improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('') : "<li>الاستمرار في العطاء المتميز.</li>"}</ol></div>`;
-    
-    document.getElementById('printArea').innerHTML = html;
-    document.getElementById('reportOutput').style.display = 'block';
+function handleXML(input) {
+    const reader = new FileReader(); reader.readAsText(input.files[0], "windows-1256");
+    reader.onload = async (e) => {
+        const parser = new DOMParser(); const xml = parser.parseFromString(e.target.result, "text/xml");
+        const newData = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
+        Array.from(xml.getElementsByTagName('teacher')).forEach(t => newData.teachers[t.getAttribute('id')] = t.getAttribute('name'));
+        Array.from(xml.getElementsByTagName('class')).forEach(c => newData.classes[c.getAttribute('id')] = c.getAttribute('short'));
+        Array.from(xml.getElementsByTagName('subject')).forEach(s => newData.subjects[s.getAttribute('id')] = s.getAttribute('name'));
+        Array.from(xml.getElementsByTagName('period')).forEach(p => newData.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
+        newData.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({ d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID') }));
+        data = newData; await syncToCloud(); refresh(); closeModal();
+    };
 }
 
-// الوظائف المساعدة
-function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; document.getElementById('sim-status').style.display='block'; closeModal(); refresh(); }
-function resetTime() { isSim = false; document.getElementById('sim-status').style.display='none'; closeModal(); refresh(); }
-function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
-function closeModal() { document.getElementById('settingsModal').style.display = 'none'; }
+function handleJSON(input) {
+    const reader = new FileReader(); reader.onload = async (e) => { phrasesDB = JSON.parse(e.target.result); await syncToCloud(); processPhrases(); closeModal(); };
+    reader.readAsText(input.files[0]);
+}
+
 function switchTab(t, b) {
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     document.getElementById(t).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    b.classList.add('active');
-    if(t === 'view-staff') renderStaff();
+    if(b) b.classList.add('active');
 }
+
+function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
+function closeModal() { document.getElementById('settingsModal').style.display = 'none'; }
+function doSim() { isSim = true; sDay = 1; sTime = "08:00"; refresh(); closeModal(); }
+function resetTime() { isSim = false; refresh(); closeModal(); }
 function toM(t) { if(!t) return 0; const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
 function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-function filterStaff() { const q = document.getElementById('searchInput').value.toLowerCase(); document.querySelectorAll('.filter-item').forEach(el => el.style.display = el.innerText.toLowerCase().includes(q) ? 'block' : 'none'); }
-function sendStaffMsg(n, id) { const ph = (phones[n] || "").replace(/\s+/g, ''); const m = document.getElementById(id).value; if(ph && m) window.open(`https://wa.me/${ph}?text=${encodeURIComponent(m)}`); }
-function renderStaff() {
-    const list = document.getElementById('staff-list');
-    list.innerHTML = Object.values(data.teachers).sort().map((name, i) => `
-        <div class="staff-card filter-item">
-            <div style="display:flex; justify-content:space-between; align-items:center;"><b>${name}</b><span style="color:#64748b;">${phones[name]||'--'}</span></div>
-            <select class="msg-select" id="sel_${i}"><option value="الرجاء التوجه للإدارة.">الرجاء التوجه للإدارة.</option><option value="شكراً لجهودكم.">رسالة شكر.</option></select>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:15px;">
-                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" style="padding:15px; background:var(--success); color:white; border:none; border-radius:15px; cursor:pointer;">واتساب</button>
-                <a href="tel:${phones[name]}" style="padding:15px; background:#3b82f6; color:white; border:none; border-radius:15px; text-align:center; text-decoration:none;">اتصال</a>
-            </div>
-        </div>`).join('');
-}
-function downloadStaffTemplate() {
-    const names = Object.values(data.teachers).sort().map(name => ({ "اسم المعلم": name, "رقم الهاتف": phones[name] || "" }));
-    const ws = XLSX.utils.json_to_sheet(names);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "المعلمين");
-    XLSX.writeFile(wb, "قائمة_المعلمين.xlsx");
-}
 </script>
 </body>
 </html>
