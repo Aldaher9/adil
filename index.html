@@ -13,42 +13,38 @@
             --blue-grad: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
         body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; display: none; }
         
-        .header { background: var(--blue-grad); color: white; padding: 20px; border-radius: 0 0 25px 25px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3); position: sticky; top: 0; z-index: 50; }
-        .user-welcome { font-size: 0.85rem; font-weight: 500; opacity: 0.8; margin-bottom: 8px; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header { background: var(--blue-grad); color: white; padding: 20px; border-radius: 0 0 25px 25px; position: sticky; top: 0; z-index: 50; }
         .header h1 { margin: 0; font-size: 1.1rem; font-weight: 800; }
-        .header-actions { display: flex; gap: 8px; }
-        .header-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 8px 12px; border-radius: 12px; font-size: 14px; cursor: pointer; font-weight: 600; }
-        .logout-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .header-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .header-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 8px 12px; border-radius: 12px; font-size: 14px; cursor: pointer; }
 
         .container { padding: 20px; display: none; }
         .container.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .status-card { background: var(--card); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 20px; border-right: 6px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
-        .lesson-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; }
+        .lesson-card { background: var(--card); border-radius: 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; overflow: hidden; }
         .class-badge { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 800; min-width: 60px; text-align: center; }
         
         .staff-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); }
         .msg-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 10px; font-size: 13px; font-weight: 600; }
         .action-btn { border: none; padding: 12px; border-radius: 10px; color: white; font-weight: 700; font-size: 12px; cursor: pointer; display: block; margin-top: 8px; text-decoration: none; text-align: center; }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100; border-top: 1px solid #eee; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100; }
         .nav-item { text-align: center; color: #94a3b8; background: none; border: none; font-size: 10px; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--primary); font-weight: 800; }
-        .nav-item span { display: block; font-size: 20px; margin-bottom: 2px; }
+        .nav-item span { display: block; font-size: 20px; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; backdrop-filter: blur(5px); }
         .modal-content { background: white; margin: 10% auto; width: 90%; max-width: 450px; padding: 25px; border-radius: 25px; max-height: 80vh; overflow-y: auto; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        /* تنسيق جدول بنود الزيارة */
+        /* تنسيق صفوف التقييم */
         .visit-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-        .visit-label { font-size: 13px; font-weight: 600; color: #334155; flex: 1; padding-left: 10px; }
-        .visit-score { padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; width: 75px; font-weight: bold; text-align: center; }
+        .visit-label { font-size: 12px; font-weight: 600; color: #334155; flex: 1; }
+        .visit-score { padding: 5px; border-radius: 8px; border: 1px solid #cbd5e1; width: 70px; text-align: center; }
     </style>
 </head>
 <body>
@@ -63,60 +59,57 @@
 </div>
 
 <div class="header">
-    <div class="user-welcome" id="welcomeMsg">👤 نرحب بالقائد...</div>
-    <div class="header-top">
+    <div id="welcomeMsg" style="font-size: 0.8rem; opacity: 0.9;">👤 نرحب بالقائد...</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
         <h1>منصة القائد ⚡</h1>
         <div class="header-actions">
-            <button class="header-btn" onclick="openModal()">⚙️ ضبط</button>
-            <button class="header-btn logout-btn" onclick="auth.signOut().then(()=>location.reload())">🚪 خروج</button>
+            <button class="header-btn" onclick="openModal()">⚙️ الضبط</button>
         </div>
     </div>
 </div>
 
 <div id="view-schedule" class="container active">
     <div class="status-card">
-        <div><div id="infoDate">--:--</div><div id="infoPeriod" style="font-weight:800; font-size:1.1rem; color: var(--primary);">جاري المزامنة..</div></div>
-        <div id="simBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold;">وضع المحاكاة</div>
+        <div><div id="infoDate">--:--</div><div id="infoPeriod" style="font-weight:800; color: var(--primary);">جاري المزامنة..</div></div>
+        <div id="simBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-size:12px;">وضع المحاكاة</div>
     </div>
     <div id="lessons-list"></div>
 </div>
 
 <div id="view-staff" class="container">
-    <input type="text" id="searchInput" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:15px; border-radius:12px; border:2px solid #ddd; margin-bottom:15px;">
+    <input type="text" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ddd; margin-bottom:15px;">
     <div id="staff-list"></div>
 </div>
 
 <div id="view-visits" class="container">
     <div class="staff-card">
-        <h3>📋 سجل الزيارة الإشرافية</h3>
-        <select id="vTeacherSelect" class="msg-select" onchange="updateVisitFieldsFromUI()">
+        <h3>📋 تقرير زيارة إشرافية</h3>
+        <select id="vTeacherSelect" class="msg-select" onchange="updateVisitFields()">
             <option value="">-- اختر المعلم --</option>
         </select>
-        <div style="margin: 15px 0; font-size: 13px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 10px;">
+        <div style="margin: 15px 0; font-size: 12px; background: #f8fafc; padding: 12px; border-radius: 10px; border:1px solid #e2e8f0;">
             المادة: <span id="vSub" style="font-weight:bold; color:var(--primary)">-</span> | 
             الصف: <span id="vCls" style="font-weight:bold; color:var(--primary)">-</span>
         </div>
-        <div id="visitItemsContainer">
-            </div>
-        <button onclick="generateSuperReport()" class="action-btn" style="background:var(--success); width:100%; margin-top:20px; font-size:14px;">توليد التقرير المدمج</button>
+        <div id="visitItemsContainer"></div>
+        <button onclick="generateSuperReport()" class="action-btn" style="background:var(--success); width:100%; margin-top:20px;">توليد التقرير النهائي</button>
     </div>
-    <div id="superReportOutput" style="display:none; background:white; padding:20px; border-radius:16px; box-shadow:var(--shadow); margin-top:15px; font-size:13px; line-height:1.7;"></div>
+    <div id="superReportOutput" style="display:none; background:white; padding:20px; border-radius:16px; box-shadow:var(--shadow); margin-top:15px; font-size:13px; line-height:1.6;"></div>
 </div>
 
 <div id="view-agenda" class="container">
-    <h3 style="margin-top:0;">📝 أجندة المهام</h3>
     <div style="display:flex; gap:10px; margin-bottom:20px;">
-        <input type="text" id="taskInput" style="flex:1; padding:12px; border-radius:12px; border:2px solid #ddd;" placeholder="اكتب مهمة جديدة...">
-        <button onclick="addTask()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:12px;">إضافة</button>
+        <input type="text" id="taskInput" style="flex:1; padding:12px; border-radius:12px; border:1px solid #ddd;" placeholder="مهمة جديدة...">
+        <button onclick="addTask()" style="background:var(--primary); color:white; border:none; padding:10px; border-radius:12px;">إضافة</button>
     </div>
     <div id="tasks-list"></div>
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-item active" id="nav-schedule" onclick="switchTab('view-schedule', this)"><span>📅</span> الحصص</button>
-    <button class="nav-item" id="nav-staff" onclick="switchTab('view-staff', this)"><span>👥</span> المعلمين</button>
-    <button class="nav-item" id="nav-visits" onclick="switchTab('view-visits', this)"><span>📋</span> الزيارات</button>
-    <button class="nav-item" id="nav-agenda" onclick="switchTab('view-agenda', this)"><span>📝</span> الأجندة</button>
+    <button class="nav-item active" id="btn-sch" onclick="switchTab('view-schedule', this)"><span>📅</span> الحصص</button>
+    <button class="nav-item" id="btn-stf" onclick="switchTab('view-staff', this)"><span>👥</span> المعلمين</button>
+    <button class="nav-item" id="btn-vst" onclick="switchTab('view-visits', this)"><span>📋</span> الزيارات</button>
+    <button class="nav-item" id="btn-agn" onclick="switchTab('view-agenda', this)"><span>📝</span> الأجندة</button>
 </div>
 
 <div id="settingsModal" class="modal">
@@ -125,22 +118,14 @@
         <p style="font-size:12px; font-weight:bold;">1. ملف الجدول (XML)</p>
         <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
         
-        <p style="font-size:12px; font-weight:bold;">2. ملف العبارات (JSON)</p>
-        <input type="file" id="jsonFile" accept=".json" onchange="handlePhrasesJSON(this)" style="width:100%; margin-bottom:15px;">
+        <p style="font-size:12px; font-weight:bold;">2. ملف عبارات الزيارة (JSON)</p>
+        <input type="file" id="jsonFile" accept=".json" onchange="handleSmartJSON(this)" style="width:100%; margin-bottom:15px;">
 
-        <p style="font-size:12px; font-weight:bold;">3. بيانات المعلمين (Excel)</p>
-        <div class="grid-2" style="margin-bottom:15px;">
-            <button onclick="exportToExcel()" style="padding:10px; background:#10b981; color:white; border:none; border-radius:10px;">📥 تصدير</button>
-            <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white; border:none; border-radius:10px;">📤 استيراد</button>
-            <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
-        </div>
-        
-        <p style="font-size:12px; font-weight:bold;">4. التحكم بالوقت</p>
-        <div class="grid-2">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
             <button onclick="doSim()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:10px;">🎲 محاكاة</button>
             <button onclick="resetTime()" style="padding:10px; background:#64748b; color:white; border:none; border-radius:10px;">🕒 الآن</button>
         </div>
-        <button onclick="closeModal()" style="width:100%; margin-top:25px; padding:12px; background:#f1f5f9; border:none; border-radius:12px;">إغلاق</button>
+        <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; background:#f1f5f9; border:none; border-radius:12px;">إغلاق</button>
     </div>
 </div>
 
@@ -171,26 +156,26 @@ auth.onAuthStateChanged(user => {
         document.body.style.display = "block";
         document.getElementById('login-screen').style.display = "none";
         document.getElementById('welcomeMsg').innerText = "👤 نرحب بالقائد " + user.displayName;
-        loadUserData();
+        loadData();
     } else {
         document.body.style.display = "block";
         document.getElementById('login-screen').style.display = "flex";
     }
 });
 
-async function loadUserData() {
+async function loadData() {
     const doc = await db.collection("users").doc(currentUser.uid).get();
     if(doc.exists) {
-        const cloud = doc.data();
-        phones = cloud.phones || {};
-        data = cloud.schoolData || data;
-        tasks = cloud.tasks || [];
-        phrases = cloud.phrases || [];
-        refresh(); renderTasks(); fillVisitTeachers(); renderVisitRows();
+        const c = doc.data();
+        phones = c.phones || {};
+        data = c.schoolData || data;
+        tasks = c.tasks || [];
+        phrases = c.phrases || [];
+        refresh(); renderTasks(); fillTeachersList(); renderVisitRows();
     }
 }
 
-async function syncToCloud() {
+async function sync() {
     if(currentUser) {
         await db.collection("users").doc(currentUser.uid).set({
             phones, schoolData: data, tasks, phrases,
@@ -199,22 +184,22 @@ async function syncToCloud() {
     }
 }
 
-// معالجة ملف JSON بمرونة عالية
-function handlePhrasesJSON(input) {
+// المعالج الذكي لملف الـ JSON
+function handleSmartJSON(input) {
     const reader = new FileReader();
     reader.onload = async (e) => {
         try {
             let raw = JSON.parse(e.target.result);
-            // تصحيح مفاتيح البيانات لضمان قراءتها حتى لو كانت تحتوي على رموز غريبة
-            phrases = raw.map(item => {
-                let newItem = {};
-                for (let key in item) {
-                    let cleanKey = key.trim().replace(/^\ufeff/, ""); // تنظيف مفتاح المعيار من رمز BOM
-                    newItem[cleanKey] = item[key];
+            // تنظيف البيانات من الرموز المخفية والأسطر الجديدة في المفاتيح
+            phrases = raw.map(obj => {
+                let cleanObj = {};
+                for (let key in obj) {
+                    let cleanKey = key.trim().replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\n/g, "");
+                    cleanObj[cleanKey] = obj[key];
                 }
-                return newItem;
+                return cleanObj;
             });
-            await syncToCloud();
+            await sync();
             renderVisitRows();
             alert("تم استيراد العبارات بنجاح.");
         } catch(err) { alert("خطأ في قراءة ملف JSON"); }
@@ -222,27 +207,25 @@ function handlePhrasesJSON(input) {
     reader.readAsText(input.files[0]);
 }
 
-// وظيفة تسجيل زيارة من قائمة الحصص
-function startVisitFromSchedule(teacherId, classId, subjectId) {
-    // 1. تحديث القوائم في صفحة الزيارات
-    const sel = document.getElementById('vTeacherSelect');
-    sel.value = teacherId;
-    document.getElementById('vSub').innerText = data.subjects[subjectId] || '-';
-    document.getElementById('vCls').innerText = data.classes[classId] || '-';
-    
-    // 2. الانتقال لتبويب الزيارات
-    switchTab('view-visits', document.getElementById('nav-visits'));
-}
-
-function fillVisitTeachers() {
+function fillTeachersList() {
     const sel = document.getElementById('vTeacherSelect');
     sel.innerHTML = '<option value="">-- اختر المعلم --</option>';
     Object.entries(data.teachers).forEach(([id, name]) => {
-        sel.innerHTML += `<option value="${id}">${name}</option>`;
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = name;
+        sel.appendChild(opt);
     });
 }
 
-function updateVisitFieldsFromUI() {
+function startVisit(tid, cid, sid) {
+    const sel = document.getElementById('vTeacherSelect');
+    sel.value = tid;
+    updateVisitFields();
+    switchTab('view-visits', document.getElementById('btn-vst'));
+}
+
+function updateVisitFields() {
     const tid = document.getElementById('vTeacherSelect').value;
     const lesson = data.lessons.find(l => l.t === tid);
     if(lesson) {
@@ -253,23 +236,15 @@ function updateVisitFieldsFromUI() {
 
 function renderVisitRows() {
     const container = document.getElementById('visitItemsContainer');
-    if (!phrases || phrases.length === 0) {
-        container.innerHTML = "<p style='color:red; font-size:12px; padding:10px;'>لم يتم استيراد عبارات JSON بعد. يرجى رفعها من الإعدادات.</p>";
-        return;
-    }
+    if (!phrases.length) { container.innerHTML = "<p style='color:red; font-size:11px;'>يرجى رفع ملف العبارات من الإعدادات</p>"; return; }
     
-    // استخراج البنود الفريدة (المعيار / البند)
-    const uniqueBenchmarks = [...new Set(phrases.map(p => p["المعيار / البند"] || p["﻿المعيار / البند"]))].filter(b => b);
-    
-    container.innerHTML = uniqueBenchmarks.map(b => `
+    const benchmarks = [...new Set(phrases.map(p => p["المعيار / البند"]))].filter(x => x);
+    container.innerHTML = benchmarks.map(b => `
         <div class="visit-row">
             <span class="visit-label">${b}</span>
             <select class="visit-score" data-benchmark="${b}">
-                <option value="3">3</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
+                <option value="3">3</option><option value="1">1</option>
+                <option value="2">2</option><option value="4">4</option><option value="5">5</option>
             </select>
         </div>
     `).join('');
@@ -282,34 +257,26 @@ function generateSuperReport() {
     selects.forEach(s => {
         const val = s.value;
         const b = s.dataset.benchmark;
-        const match = phrases.find(p => (p["المعيار / البند"] === b || p["﻿المعيار / البند"] === b) && p["الحكم"].includes(`(${val})`));
-        
+        const match = phrases.find(p => p["المعيار / البند"] === b && p["الحكم"].includes(`(${val})`));
         if (match) {
-            const desc = match["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"];
-            const rec = match["التوصيات"];
-            if (val == "1" || val == "2") excel.push({ desc, rec });
-            else if (val >= 4) develop.push({ desc, rec });
+            const item = { d: match["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"], r: match["التوصيات"] };
+            if (val <= 2) excel.push(item); else if (val >= 4) develop.push(item);
         }
     });
 
     const out = document.getElementById('superReportOutput');
     out.style.display = "block";
-    out.innerHTML = `
-        <h4 style="margin:0 0 10px 0; color:var(--primary); text-decoration:underline;">تقرير الزيارة الفنية:</h4>
-        <strong>جوانب الإجادة:</strong><br>${excel.map(i=>"• " + i.desc).join('<br>') || 'لا يوجد'}<br><br>
-        <strong>أولويات التطوير:</strong><br>${develop.map(i=>"• " + i.desc).join('<br>') || 'لا يوجد'}<br><br>
-        <strong>التوصيات المقترحة:</strong><br>${[...excel, ...develop].map(i=>"• " + i.rec).join('<br>') || 'لا يوجد'}
-    `;
-    window.scrollTo(0, document.body.scrollHeight);
+    out.innerHTML = `<strong>جوانب الإجادة:</strong><br>${excel.map(i=>"• "+i.d).join('<br>') || 'لا يوجد'}<br><br>
+                     <strong>أولويات التطوير:</strong><br>${develop.map(i=>"• "+i.d).join('<br>') || 'لا يوجد'}<br><br>
+                     <strong>التوصيات:</strong><br>${[...excel, ...develop].map(i=>"• "+i.r).join('<br>') || 'لا يوجد'}`;
 }
 
-// الوظائف الأساسية للمنصة
+// الوظائف الأساسية
 function refresh() {
     const now = new Date();
     const d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
     const t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
     document.getElementById('infoDate').innerText = t;
-    document.getElementById('simBadge').style.display = isSim ? "block" : "none";
     
     const p = (data.periods || []).find(p => { 
         const cur = toM(t), s = toM(p.s), e = toM(p.e); 
@@ -317,63 +284,35 @@ function refresh() {
     });
 
     const list = document.getElementById('lessons-list');
-    if (p && data.lessons && data.lessons.length > 0) {
-        document.getElementById('infoPeriod').innerText = "الحصة النشطة: " + p.id;
+    if (p && data.lessons.length > 0) {
+        document.getElementById('infoPeriod').innerText = "الحصة: " + p.id;
         const current = data.lessons.filter(l => l.d == d && l.p == p.id);
         list.innerHTML = current.map(l => {
             let n = data.teachers[l.t], ph = (phones[n] || "");
-            let className = data.classes[l.c] || '..';
             return `<div class="lesson-card">
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:15px;">
-                    <div class="class-badge">${className}</div>
+                <div style="display:flex; align-items:center; padding:15px; justify-content:space-between;">
+                    <div class="class-badge">${data.classes[l.c] || '..'}</div>
                     <div style="flex:1; padding-right:15px;"><b>${n}</b><br><small>${data.subjects[l.s] || ''}</small></div>
-                    <button onclick="window.open('https://wa.me/${ph.replace(/\s+/g,'')}?text=تذكير بالحصّة')" style="border:none; background:#10b981; color:white; width:35px; height:35px; border-radius:50%; cursor:pointer;">💬</button>
+                    <button onclick="window.open('https://wa.me/${ph.replace(/\s+/g,'')}?text=تذكير')" style="border:none; background:#10b981; color:white; width:35px; height:35px; border-radius:50%;">💬</button>
                 </div>
-                <div style="border-top:1px solid #f1f5f9; padding:10px; display:flex; gap:10px;">
-                    <button onclick="startVisitFromSchedule('${l.t}', '${l.c}', '${l.s}')" style="flex:1; background:var(--primary); color:white; border:none; padding:8px; border-radius:8px; font-size:11px; cursor:pointer;">📝 تسجيل زيارة</button>
-                    <a href="tel:${ph}" style="flex:1; background:#3b82f6; color:white; text-decoration:none; text-align:center; padding:8px; border-radius:8px; font-size:11px;">📞 اتصال سريغ</a>
+                <div style="padding:10px; background:#f8fafc; display:flex; gap:8px;">
+                    <button onclick="startVisit('${l.t}', '${l.c}', '${l.s}')" style="flex:1; background:var(--primary); color:white; border:none; padding:8px; border-radius:8px; font-size:11px;">📝 تسجيل زيارة</button>
+                    <a href="tel:${ph}" style="flex:1; background:#3b82f6; color:white; text-decoration:none; text-align:center; padding:8px; border-radius:8px; font-size:11px;">📞 اتصال</a>
                 </div>
             </div>`;
         }).join('');
     } else {
         document.getElementById('infoPeriod').innerText = "خارج الدوام";
-        list.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8;">لا توجد حصص حالياً</div>`;
+        list.innerHTML = `<p style="text-align:center; padding:40px;">لا توجد حصص حالياً</p>`;
     }
 }
 
-function renderStaff() {
-    const list = document.getElementById('staff-list');
-    const sorted = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    list.innerHTML = sorted.map((name, i) => {
-        const ph = phones[name] || "";
-        return `<div class="staff-card filter-item">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:bold; color: var(--primary);">${name}</span>
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <span style="font-size:12px; color:#64748b;">${ph || 'لا يوجد'}</span>
-                    <button style="background:none; border:none; color:var(--accent); cursor:pointer;" onclick="updatePhone('${name}')">✏️</button>
-                </div>
-            </div>
-            <select class="msg-select" id="sel_${i}">
-                <option value="" disabled selected>🔽 اختر توجيهاً سريعاً...</option>
-                <option value="الرجاء التوجه إلى مكتب الإدارة للأهمية.">الرجاء التوجه إلى مكتب الإدارة للأهمية.</option>
-                <option value="الرجاء التواجد في مكان المناوبة.">الرجاء التواجد في مكان المناوبة.</option>
-                <option value="الرجاء متابعة حصة الاحتياط لديك.">الرجاء متابعة حصة الاحتياط لديك.</option>
-            </select>
-            <div class="grid-2" style="margin-top:10px;">
-                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" class="action-btn" style="background:var(--success)">✉️ واتساب</button>
-                <a href="tel:${ph}" class="action-btn" style="background:#3b82f6; text-decoration:none;">📞 اتصال</a>
-            </div>
-        </div>`;
-    }).join('');
-}
-
-function switchTab(t, b) {
+function switchTab(id, btn) {
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    document.getElementById(t).classList.add('active');
+    document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    b.classList.add('active');
-    if(t === 'view-staff') renderStaff();
+    btn.classList.add('active');
+    if(id === 'view-staff') renderStaff();
 }
 
 function handleXML(input) {
@@ -386,16 +325,16 @@ function handleXML(input) {
         Array.from(xml.getElementsByTagName('subject')).forEach(s => newData.subjects[s.getAttribute('id')] = s.getAttribute('name'));
         Array.from(xml.getElementsByTagName('period')).forEach(p => newData.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
         newData.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({ d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID') }));
-        data = newData; await syncToCloud(); fillVisitTeachers(); closeModal(); refresh();
+        data = newData; await sync(); fillTeachersList(); closeModal(); refresh();
     };
 }
 
 function toM(t) { if(!t) return 0; const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
 function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
 function closeModal() { document.getElementById('settingsModal').style.display = 'none'; }
-function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; closeModal(); refresh(); }
 function resetTime() { isSim = false; closeModal(); refresh(); }
+function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
 setInterval(() => { if(currentUser && !isSim) refresh(); }, 30000);
 </script>
