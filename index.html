@@ -29,7 +29,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .status-card { background: var(--card); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 20px; border-right: 6px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
-        .lesson-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; border: 1px solid #f1f5f9; }
+        .lesson-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; }
         .class-badge { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 800; min-width: 60px; text-align: center; }
         
         .staff-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); }
@@ -42,14 +42,13 @@
         .nav-item span { display: block; font-size: 20px; margin-bottom: 2px; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; backdrop-filter: blur(5px); }
-        .modal-content { background: white; margin: 10% auto; width: 90%; max-width: 450px; padding: 25px; border-radius: 25px; }
+        .modal-content { background: white; margin: 10% auto; width: 90%; max-width: 450px; padding: 25px; border-radius: 25px; max-height: 80vh; overflow-y: auto; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .edit-phone-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 14px; }
-
-        /* تنسيقات قسم الزيارات */
-        .visit-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .visit-label { font-size: 13px; font-weight: 600; flex: 1; }
-        .visit-score { width: 80px; padding: 5px; border-radius: 8px; border: 1px solid #ddd; }
+        
+        /* تنسيق جدول بنود الزيارة */
+        .visit-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .visit-label { font-size: 13px; font-weight: 600; color: #334155; flex: 1; padding-left: 10px; }
+        .visit-score { padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; width: 75px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
@@ -89,19 +88,19 @@
 
 <div id="view-visits" class="container">
     <div class="staff-card">
-        <h3>📋 تقرير زيارة إشرافية</h3>
-        <select id="vTeacherSelect" class="msg-select" onchange="updateVisitInfo()">
+        <h3>📋 سجل الزيارة الإشرافية</h3>
+        <select id="vTeacherSelect" class="msg-select" onchange="updateVisitFieldsFromUI()">
             <option value="">-- اختر المعلم --</option>
         </select>
-        <div style="margin: 15px 0; font-size: 13px; color: #64748b;">
+        <div style="margin: 15px 0; font-size: 13px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 10px;">
             المادة: <span id="vSub" style="font-weight:bold; color:var(--primary)">-</span> | 
             الصف: <span id="vCls" style="font-weight:bold; color:var(--primary)">-</span>
         </div>
         <div id="visitItemsContainer">
             </div>
-        <button onclick="generateSuperReport()" class="action-btn" style="background:var(--success); width:100%; margin-top:20px; font-size:14px;">توليد التقرير النهائي</button>
+        <button onclick="generateSuperReport()" class="action-btn" style="background:var(--success); width:100%; margin-top:20px; font-size:14px;">توليد التقرير المدمج</button>
     </div>
-    <div id="superReportOutput" style="display:none; background:white; padding:20px; border-radius:16px; box-shadow:var(--shadow); margin-top:15px; font-size:14px; line-height:1.7;"></div>
+    <div id="superReportOutput" style="display:none; background:white; padding:20px; border-radius:16px; box-shadow:var(--shadow); margin-top:15px; font-size:13px; line-height:1.7;"></div>
 </div>
 
 <div id="view-agenda" class="container">
@@ -114,10 +113,10 @@
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('view-schedule', this)"><span>📅</span> الحصص</button>
-    <button class="nav-item" onclick="switchTab('view-staff', this)"><span>👥</span> المعلمين</button>
-    <button class="nav-item" onclick="switchTab('view-visits', this)"><span>📋</span> الزيارات</button>
-    <button class="nav-item" onclick="switchTab('view-agenda', this)"><span>📝</span> الأجندة</button>
+    <button class="nav-item active" id="nav-schedule" onclick="switchTab('view-schedule', this)"><span>📅</span> الحصص</button>
+    <button class="nav-item" id="nav-staff" onclick="switchTab('view-staff', this)"><span>👥</span> المعلمين</button>
+    <button class="nav-item" id="nav-visits" onclick="switchTab('view-visits', this)"><span>📋</span> الزيارات</button>
+    <button class="nav-item" id="nav-agenda" onclick="switchTab('view-agenda', this)"><span>📝</span> الأجندة</button>
 </div>
 
 <div id="settingsModal" class="modal">
@@ -126,8 +125,8 @@
         <p style="font-size:12px; font-weight:bold;">1. ملف الجدول (XML)</p>
         <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
         
-        <p style="font-size:12px; font-weight:bold;">2. ملف عبارات الزيارة (JSON)</p>
-        <input type="file" id="jsonPhrasesFile" accept=".json" onchange="handleVisitJSON(this)" style="width:100%; margin-bottom:15px;">
+        <p style="font-size:12px; font-weight:bold;">2. ملف العبارات (JSON)</p>
+        <input type="file" id="jsonFile" accept=".json" onchange="handlePhrasesJSON(this)" style="width:100%; margin-bottom:15px;">
 
         <p style="font-size:12px; font-weight:bold;">3. بيانات المعلمين (Excel)</p>
         <div class="grid-2" style="margin-bottom:15px;">
@@ -135,6 +134,7 @@
             <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white; border:none; border-radius:10px;">📤 استيراد</button>
             <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
         </div>
+        
         <p style="font-size:12px; font-weight:bold;">4. التحكم بالوقت</p>
         <div class="grid-2">
             <button onclick="doSim()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:10px;">🎲 محاكاة</button>
@@ -162,7 +162,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] }, tasks = [], visitPhrases = [];
+let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] }, tasks = [], phrases = [];
 let currentUser = null, isSim = false, sDay, sTime;
 
 auth.onAuthStateChanged(user => {
@@ -185,41 +185,64 @@ async function loadUserData() {
         phones = cloud.phones || {};
         data = cloud.schoolData || data;
         tasks = cloud.tasks || [];
-        visitPhrases = cloud.visitPhrases || [];
-        refresh(); renderTasks(); populateVisitTeachers(); renderVisitItems();
+        phrases = cloud.phrases || [];
+        refresh(); renderTasks(); fillVisitTeachers(); renderVisitRows();
     }
 }
 
 async function syncToCloud() {
     if(currentUser) {
         await db.collection("users").doc(currentUser.uid).set({
-            phones, schoolData: data, tasks, visitPhrases,
+            phones, schoolData: data, tasks, phrases,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
     }
 }
 
-// وظائف الزيارات
-function handleVisitJSON(input) {
+// معالجة ملف JSON بمرونة عالية
+function handlePhrasesJSON(input) {
     const reader = new FileReader();
     reader.onload = async (e) => {
-        visitPhrases = JSON.parse(e.target.result);
-        await syncToCloud();
-        renderVisitItems();
-        alert("تم حفظ عبارات الزيارة بنجاح.");
+        try {
+            let raw = JSON.parse(e.target.result);
+            // تصحيح مفاتيح البيانات لضمان قراءتها حتى لو كانت تحتوي على رموز غريبة
+            phrases = raw.map(item => {
+                let newItem = {};
+                for (let key in item) {
+                    let cleanKey = key.trim().replace(/^\ufeff/, ""); // تنظيف مفتاح المعيار من رمز BOM
+                    newItem[cleanKey] = item[key];
+                }
+                return newItem;
+            });
+            await syncToCloud();
+            renderVisitRows();
+            alert("تم استيراد العبارات بنجاح.");
+        } catch(err) { alert("خطأ في قراءة ملف JSON"); }
     };
     reader.readAsText(input.files[0]);
 }
 
-function populateVisitTeachers() {
+// وظيفة تسجيل زيارة من قائمة الحصص
+function startVisitFromSchedule(teacherId, classId, subjectId) {
+    // 1. تحديث القوائم في صفحة الزيارات
     const sel = document.getElementById('vTeacherSelect');
-    sel.innerHTML = '<option value="">-- اختر المعلم من الجدول --</option>';
+    sel.value = teacherId;
+    document.getElementById('vSub').innerText = data.subjects[subjectId] || '-';
+    document.getElementById('vCls').innerText = data.classes[classId] || '-';
+    
+    // 2. الانتقال لتبويب الزيارات
+    switchTab('view-visits', document.getElementById('nav-visits'));
+}
+
+function fillVisitTeachers() {
+    const sel = document.getElementById('vTeacherSelect');
+    sel.innerHTML = '<option value="">-- اختر المعلم --</option>';
     Object.entries(data.teachers).forEach(([id, name]) => {
         sel.innerHTML += `<option value="${id}">${name}</option>`;
     });
 }
 
-function updateVisitInfo() {
+function updateVisitFieldsFromUI() {
     const tid = document.getElementById('vTeacherSelect').value;
     const lesson = data.lessons.find(l => l.t === tid);
     if(lesson) {
@@ -228,13 +251,18 @@ function updateVisitInfo() {
     }
 }
 
-function renderVisitItems() {
+function renderVisitRows() {
     const container = document.getElementById('visitItemsContainer');
-    if(!visitPhrases.length) { container.innerHTML = "<p style='color:red; font-size:12px;'>يرجى رفع ملف العبارات من الإعدادات أولاً</p>"; return; }
+    if (!phrases || phrases.length === 0) {
+        container.innerHTML = "<p style='color:red; font-size:12px; padding:10px;'>لم يتم استيراد عبارات JSON بعد. يرجى رفعها من الإعدادات.</p>";
+        return;
+    }
     
-    const unique = [...new Set(visitPhrases.map(p => p["المعيار / البند"]))];
-    container.innerHTML = unique.map(b => `
-        <div class="visit-item-row">
+    // استخراج البنود الفريدة (المعيار / البند)
+    const uniqueBenchmarks = [...new Set(phrases.map(p => p["المعيار / البند"] || p["﻿المعيار / البند"]))].filter(b => b);
+    
+    container.innerHTML = uniqueBenchmarks.map(b => `
+        <div class="visit-row">
             <span class="visit-label">${b}</span>
             <select class="visit-score" data-benchmark="${b}">
                 <option value="3">3</option>
@@ -248,33 +276,34 @@ function renderVisitItems() {
 }
 
 function generateSuperReport() {
-    const scores = document.querySelectorAll('.visit-score');
+    const selects = document.querySelectorAll('.visit-score');
     let excel = [], develop = [];
-    scores.forEach(s => {
+    
+    selects.forEach(s => {
         const val = s.value;
         const b = s.dataset.benchmark;
-        const match = visitPhrases.find(p => p["المعيار / البند"] === b && p["الحكم"].includes(`(${val})`));
-        if(match) {
-            const item = { d: match["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"], r: match["التوصيات"] };
-            if(val == "1" && excel.length < 2) excel.push(item);
-            else if(val >= 4) develop.push(item);
+        const match = phrases.find(p => (p["المعيار / البند"] === b || p["﻿المعيار / البند"] === b) && p["الحكم"].includes(`(${val})`));
+        
+        if (match) {
+            const desc = match["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"];
+            const rec = match["التوصيات"];
+            if (val == "1" || val == "2") excel.push({ desc, rec });
+            else if (val >= 4) develop.push({ desc, rec });
         }
     });
 
     const out = document.getElementById('superReportOutput');
     out.style.display = "block";
-    out.innerHTML = `<strong>تقرير الزيارة:</strong><br>
-        <u>جوانب الإجادة:</u><br>${excel.map(i=>"• "+i.d).join('<br>')}<br><br>
-        <u>أولويات التطوير:</u><br>${develop.map(i=>"• "+i.d).join('<br>')}<br><br>
-        <u>التوصيات:</u><br>${[...excel, ...develop].map(i=>"• "+i.r).join('<br>')}`;
+    out.innerHTML = `
+        <h4 style="margin:0 0 10px 0; color:var(--primary); text-decoration:underline;">تقرير الزيارة الفنية:</h4>
+        <strong>جوانب الإجادة:</strong><br>${excel.map(i=>"• " + i.desc).join('<br>') || 'لا يوجد'}<br><br>
+        <strong>أولويات التطوير:</strong><br>${develop.map(i=>"• " + i.desc).join('<br>') || 'لا يوجد'}<br><br>
+        <strong>التوصيات المقترحة:</strong><br>${[...excel, ...develop].map(i=>"• " + i.rec).join('<br>') || 'لا يوجد'}
+    `;
+    window.scrollTo(0, document.body.scrollHeight);
 }
 
-// الوظائف الأصلية للموقع كما هي تماماً
-async function updatePhone(name) {
-    const newPhone = prompt(`تعديل رقم هاتف المعلم: ${name}`, phones[name] || "");
-    if (newPhone !== null) { phones[name] = newPhone.trim(); renderStaff(); await syncToCloud(); }
-}
-
+// الوظائف الأساسية للمنصة
 function refresh() {
     const now = new Date();
     const d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
@@ -290,19 +319,20 @@ function refresh() {
     const list = document.getElementById('lessons-list');
     if (p && data.lessons && data.lessons.length > 0) {
         document.getElementById('infoPeriod').innerText = "الحصة النشطة: " + p.id;
-        const current = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a,b)=> {
-            const numA = parseInt((data.classes[a.c]||'').match(/\d+/)) || 0;
-            const numB = parseInt((data.classes[b.c]||'').match(/\d+/)) || 0;
-            return numA - numB;
-        });
+        const current = data.lessons.filter(l => l.d == d && l.p == p.id);
         list.innerHTML = current.map(l => {
-            let n = data.teachers[l.t], ph = (phones[n] || "").replace(/\s+/g, '');
+            let n = data.teachers[l.t], ph = (phones[n] || "");
             let className = data.classes[l.c] || '..';
-            let msg = encodeURIComponent(`السلام عليكم، أستاذ ${n}. نلاحظ تأخركم عن الحصة ${p.id} في صف ${className}. نرجو التواجد للأهمية.`);
             return `<div class="lesson-card">
-                <div class="class-badge">${className}</div>
-                <div style="flex:1; padding-right:15px;"><b>${n}</b><br><small>${data.subjects[l.s] || ''}</small></div>
-                <button onclick="window.open('https://wa.me/${ph}?text=${msg}')" style="border:none; background:#10b981; color:white; width:35px; height:35px; border-radius:50%; cursor:pointer;">💬</button>
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:15px;">
+                    <div class="class-badge">${className}</div>
+                    <div style="flex:1; padding-right:15px;"><b>${n}</b><br><small>${data.subjects[l.s] || ''}</small></div>
+                    <button onclick="window.open('https://wa.me/${ph.replace(/\s+/g,'')}?text=تذكير بالحصّة')" style="border:none; background:#10b981; color:white; width:35px; height:35px; border-radius:50%; cursor:pointer;">💬</button>
+                </div>
+                <div style="border-top:1px solid #f1f5f9; padding:10px; display:flex; gap:10px;">
+                    <button onclick="startVisitFromSchedule('${l.t}', '${l.c}', '${l.s}')" style="flex:1; background:var(--primary); color:white; border:none; padding:8px; border-radius:8px; font-size:11px; cursor:pointer;">📝 تسجيل زيارة</button>
+                    <a href="tel:${ph}" style="flex:1; background:#3b82f6; color:white; text-decoration:none; text-align:center; padding:8px; border-radius:8px; font-size:11px;">📞 اتصال سريغ</a>
+                </div>
             </div>`;
         }).join('');
     } else {
@@ -321,7 +351,7 @@ function renderStaff() {
                 <span style="font-weight:bold; color: var(--primary);">${name}</span>
                 <div style="display:flex; align-items:center; gap:5px;">
                     <span style="font-size:12px; color:#64748b;">${ph || 'لا يوجد'}</span>
-                    <button class="edit-phone-btn" onclick="updatePhone('${name}')">✏️</button>
+                    <button style="background:none; border:none; color:var(--accent); cursor:pointer;" onclick="updatePhone('${name}')">✏️</button>
                 </div>
             </div>
             <select class="msg-select" id="sel_${i}">
@@ -338,11 +368,6 @@ function renderStaff() {
     }).join('');
 }
 
-function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; closeModal(); refresh(); }
-function resetTime() { isSim = false; closeModal(); refresh(); }
-function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
-function closeModal() { document.getElementById('settingsModal').style.display = 'none'; }
-function toM(t) { if(!t) return 0; const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
 function switchTab(t, b) {
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     document.getElementById(t).classList.add('active');
@@ -350,14 +375,7 @@ function switchTab(t, b) {
     b.classList.add('active');
     if(t === 'view-staff') renderStaff();
 }
-function addTask() {
-    const input = document.getElementById('taskInput');
-    if(input.value) { tasks.push({id:Date.now(), text:input.value, done:false}); input.value=""; renderTasks(); syncToCloud(); }
-}
-function renderTasks() {
-    const l = document.getElementById('tasks-list');
-    l.innerHTML = tasks.map(t => `<div style="background:white; padding:15px; margin-bottom:10px; border-radius:12px; display:flex; justify-content:space-between; box-shadow:var(--shadow);"><span>${t.text}</span><button onclick="tasks=tasks.filter(x=>x.id!=${t.id});renderTasks();syncToCloud();" style="border:none; color:red; background:none; cursor:pointer;">🗑️</button></div>`).join('');
-}
+
 function handleXML(input) {
     const reader = new FileReader(); reader.readAsText(input.files[0], "windows-1256");
     reader.onload = async (e) => {
@@ -368,26 +386,17 @@ function handleXML(input) {
         Array.from(xml.getElementsByTagName('subject')).forEach(s => newData.subjects[s.getAttribute('id')] = s.getAttribute('name'));
         Array.from(xml.getElementsByTagName('period')).forEach(p => newData.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
         newData.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({ d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID') }));
-        data = newData; await syncToCloud(); populateVisitTeachers(); closeModal(); refresh();
+        data = newData; await syncToCloud(); fillVisitTeachers(); closeModal(); refresh();
     };
 }
-function importFromExcel(input) {
-    const reader = new FileReader(); reader.onload = async (e) => {
-        const wb = XLSX.read(e.target.result, { type: 'binary' });
-        const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        sheet.forEach(row => { if(row["اسم المعلم"]) phones[row["اسم المعلم"]] = String(row["رقم الهاتف"] || ""); });
-        await syncToCloud(); renderStaff();
-    }; reader.readAsBinaryString(input.files[0]);
-}
-function exportToExcel() {
-    const list = Object.values(data.teachers).map(name => ({ "اسم المعلم": name, "رقم الهاتف": phones[name] || "" }));
-    const ws = XLSX.utils.json_to_sheet(list);
-    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "المعلمين");
-    XLSX.writeFile(wb, "المعلمين.xlsx");
-}
+
+function toM(t) { if(!t) return 0; const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
+function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
+function closeModal() { document.getElementById('settingsModal').style.display = 'none'; }
 function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-function filterStaff() { const q = document.getElementById('searchInput').value.toLowerCase(); document.querySelectorAll('.filter-item').forEach(el => el.style.display = el.innerText.toLowerCase().includes(q) ? 'block' : 'none'); }
-function sendStaffMsg(n, id) { const ph = (phones[n] || "").replace(/\s+/g, ''); const m = document.getElementById(id).value; if(ph && m) window.open(`https://wa.me/${ph}?text=${encodeURIComponent(m)}`); }
+function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; closeModal(); refresh(); }
+function resetTime() { isSim = false; closeModal(); refresh(); }
+
 setInterval(() => { if(currentUser && !isSim) refresh(); }, 30000);
 </script>
 </body>
