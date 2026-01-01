@@ -15,107 +15,68 @@
             --report-primary: #1a5f7a;
             --danger: #e11d48;
         }
-        * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; display: none; }
+        * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
+        body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; }
         
-        .header { background: var(--blue-grad); color: white; padding: 20px; border-radius: 0 0 25px 25px; position: sticky; top: 0; z-index: 50; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .header-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 8px 12px; border-radius: 12px; cursor: pointer; font-weight: 600; }
-
-        .container { padding: 20px; display: none; }
-        .container.active { display: block; }
-
-        /* حل مشكلة القائمة المنسدلة في ملء الشاشة */
-        .staff-card { background: white; padding: 20px; border-radius: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid #e2e8f0; }
+        .header { background: var(--blue-grad); color: white; padding: 20px; border-radius: 0 0 25px 25px; }
+        .container { padding: 20px; }
+        
+        /* تنسيق القوائم المنسدلة */
         .msg-select { 
-            width: 100%; 
-            padding: 15px; 
-            border-radius: 12px; 
-            margin-top: 10px; 
-            font-size: 1.1rem; 
-            border: 2px solid #cbd5e1;
-            background-color: #f8fafc;
-            color: #1e293b;
-            text-align: center;
-            text-align-last: center; 
-            direction: rtl;
-            font-weight: 600;
-            display: block;
+            width: 100%; padding: 15px; border-radius: 12px; margin-top: 10px; 
+            font-size: 1.1rem; border: 2px solid #cbd5e1; background-color: #f8fafc;
+            text-align: center; text-align-last: center; font-weight: 600;
         }
 
-        /* تنسيق صفحة الزيارات */
+        /* جدول المعايير */
         .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 12px; overflow: hidden; }
-        .report-table th { background: var(--report-primary); color: white; padding: 15px; font-size: 1.2rem; }
-        .report-table td { padding: 15px; border-bottom: 1px solid #eee; font-size: 1.05rem; line-height: 1.6; }
-        .score-input { width: 90px; padding: 10px; font-size: 1.2rem; text-align: center; font-weight: bold; border: 2px solid var(--report-primary); border-radius: 10px; }
+        .report-table th { background: var(--report-primary); color: white; padding: 15px; }
+        .report-table td { padding: 15px; border-bottom: 1px solid #eee; }
+        .score-input { width: 80px; padding: 10px; font-size: 1.2rem; text-align: center; font-weight: bold; border: 2px solid var(--report-primary); border-radius: 10px; }
 
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 800; cursor: pointer; }
         
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 100; }
-        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; cursor: pointer; flex: 1; font-size: 13px; }
-        .nav-item.active { color: var(--primary); font-weight: 800; }
-        .nav-item span { display: block; font-size: 24px; }
+        /* تنسيق التقرير النهائي للطباعة */
+        #reportOutput { background: white; padding: 40px; border: 1px solid #000; margin-top: 20px; border-radius: 5px; min-height: 297mm; }
+        .report-section-title { border-right: 5px solid var(--report-primary); padding-right: 10px; margin-top: 25px; color: var(--report-primary); }
 
-        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; width: 100%; padding: 0; } body { background: white; } }
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white; padding: 0; }
+            #reportOutput { border: none; padding: 0; margin: 0; width: 100%; }
+        }
     </style>
 </head>
 <body>
 
 <div class="header no-print">
-    <div class="header-top">
-        <h1 id="welcomeMsg">منصة القائد ⚡</h1>
-        <button class="header-btn" onclick="document.getElementById('settingsModal').style.display='block'">⚙️ الضبط</button>
-    </div>
-</div>
-
-<div id="view-schedule" class="container active no-print">
-    <div id="lessons-list"></div>
-</div>
-
-<div id="view-staff" class="container no-print">
-    <div id="staff-list"></div>
+    <h1 style="text-align:center;">نظام الزيارات الفنية 📝</h1>
 </div>
 
 <div id="view-visits" class="container no-print">
-    <div class="report-section" style="background:white; padding:20px; border-radius:15px;">
-        <h3 style="text-align:center;">📋 الزيارات الفنية</h3>
-        <input type="file" id="jsonFile" accept=".json" onchange="initApp(event)" style="margin-bottom:20px; width:100%;">
+    <div style="background:white; padding:20px; border-radius:15px; box-shadow: var(--shadow);">
+        <p>رفع ملف المعايير (JSON):</p>
+        <input type="file" id="jsonFile" accept=".json" onchange="initApp(event)" style="width:100%; margin-bottom:20px;">
+        
         <div id="reportForm" style="display:none;">
             <input type="text" id="tName" placeholder="اسم المعلم" style="width:100%; padding:15px; font-size:1.1rem; border:2px solid #eee; border-radius:10px; margin-bottom:10px;">
             <table class="report-table">
-                <thead><tr><th>المعيار</th><th>التقييم</th></tr></thead>
+                <thead><tr><th>المعيار</th><th style="width:100px;">التقييم</th></tr></thead>
                 <tbody id="tableBody"></tbody>
             </table>
             <br>
-            <button class="btn-gen" onclick="generateFinalReport()">توليد التقرير</button>
+            <button class="btn-gen" onclick="generateFinalReport()">توليد التقرير النهائي</button>
         </div>
     </div>
-    <div id="reportOutput" style="display:none; background:white; padding:40px; border:2px solid #333; margin-top:20px; border-radius:15px;">
-        <div id="printArea"></div>
-        <button onclick="window.print()" class="no-print btn-gen" style="background:#444; margin-top:20px;">حفظ التقرير PDF</button>
-    </div>
 </div>
 
-<div class="bottom-nav no-print">
-    <button class="nav-item active" onclick="switchTab('view-schedule', this)"><span>📅</span> الحصص</button>
-    <button class="nav-item" onclick="switchTab('view-staff', this)"><span>👥</span> المعلمين</button>
-    <button class="nav-item" onclick="switchTab('view-visits', this)"><span>📝</span> الزيارات</button>
-</div>
-
-<div id="settingsModal" class="modal no-print" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200;">
-    <div style="background:white; margin:10% auto; width:90%; max-width:400px; padding:20px; border-radius:20px;">
-        <h3>⚙️ الإعدادات</h3>
-        <p>بيانات المعلمين (Excel):</p>
-        <input type="file" id="excelFile" onchange="importFromExcel(this)" style="width:100%; margin-bottom:15px;">
-        <button onclick="this.parentElement.parentElement.style.display='none'" style="width:100%; padding:10px; border:none; background:#eee; border-radius:10px;">إغلاق</button>
-    </div>
+<div id="reportOutput" style="display:none;">
+    <div id="printArea"></div>
+    <button onclick="window.print()" class="no-print btn-gen" style="background:#444; margin-top:20px;">طباعة أو حفظ PDF</button>
 </div>
 
 <script>
-let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
 let phrasesDB = [], criteriaList = [];
-
-document.body.style.display = "block";
 
 function initApp(event) {
     const reader = new FileReader();
@@ -156,49 +117,43 @@ function generateFinalReport() {
         if (match) selections.push({ ...match, score: val });
     });
 
-    const strengths = selections.filter(s => s.score >= 3);
-    const improvements = selections.filter(s => s.score < 2);
+    // التصنيف الجديد: 1 و 2 إجادة | 3 و 4 و 5 تطوير
+    const strengths = selections.filter(s => s.score === 1 || s.score === 2);
+    const improvements = selections.filter(s => s.score >= 3);
 
     let html = `
-        <div style="text-align:center; border-bottom:3px solid #333; padding-bottom:10px; margin-bottom:20px;">
-            <h1 style="color:var(--report-primary); margin-bottom:5px;">تقرير زيارة فنية إشرافية</h1>
-            <h3 style="margin:0;">المعلم: ${name}</h3>
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px;">
+            <h2>استمارة تقرير الزيارة الصفية</h2>
+            <p style="font-size:1.2rem;">اسم المعلم: <b>${name}</b></p>
         </div>
 
-        <div style="margin-bottom:25px;">
-            <h3 style="color:var(--success); border-right:5px solid var(--success); padding-right:10px;">✅ جوانب الإجادة:</h3>
-            <ul style="line-height:1.8;">${strengths.length > 0 ? strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') : "<li>لا يوجد بنود محددة</li>"}</ul>
-        </div>
+        <h3 class="report-section-title">✅ جوانب الإجادة (التقييم 1-2):</h3>
+        <ul style="line-height:1.8;">
+            ${strengths.length > 0 ? strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') : "<li>لا توجد بنود مسجلة</li>"}
+        </ul>
 
-        <div style="margin-bottom:25px;">
-            <h3 style="color:var(--danger); border-right:5px solid var(--danger); padding-right:10px;">⚠️ جوانب تحتاج إلى تحسين:</h3>
-            <ul style="line-height:1.8;">${improvements.length > 0 ? improvements.map(i => `<li>${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') : "<li>لا يوجد بنود محددة</li>"}</ul>
-        </div>
+        <h3 class="report-section-title" style="color:var(--danger); border-right-color:var(--danger);">⚠️ جوانب القصور (التي تحتاج لتحسين 3-5):</h3>
+        <ul style="line-height:1.8;">
+            ${improvements.length > 0 ? improvements.map(i => `<li>${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') : "<li>لا توجد بنود مسجلة</li>"}
+        </ul>
 
-        <div style="margin-bottom:25px; background:#f9fafb; padding:15px; border-radius:10px; border:1px solid #e5e7eb;">
-            <h3 style="color:var(--primary); margin-top:0;">💡 التوصيات:</h3>
-            <p style="font-weight:bold; font-size:1.1rem;">أشكر المعلم على أداء الحصة وأوصيه بالتالي:</p>
-            <ol style="line-height:1.8; font-size:1.05rem;">
-                ${improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('')}
+        <div style="margin-top:40px; border:1px solid #ddd; padding:20px; border-radius:10px; background:#fcfcfc;">
+            <h3 style="margin-top:0; color:var(--primary);">💡 التوصيات الختامية:</h3>
+            <p style="font-size:1.15rem; font-weight:bold;">أشكر المعلم على أداء الحصة وأوصيه بالتالي:</p>
+            <ol style="line-height:2; font-size:1.1rem;">
+                ${improvements.length > 0 ? improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('') : "<li>الاستمرار على هذا المستوى المتميز.</li>"}
             </ol>
         </div>
 
-        <div style="margin-top:60px; display:flex; justify-content:space-around; font-weight:bold; border-top:1px dashed #ccc; padding-top:20px;">
-            <div style="text-align:center;"><p>مدير المدرسة</p><br><span>..........................</span></div>
-            <div style="text-align:center;"><p>المعلم</p><br><span>..........................</span></div>
+        <div style="margin-top:100px; display:flex; justify-content:space-between; text-align:center;">
+            <div style="width:200px; border-top:1px solid #000; padding-top:10px;">توقيع مدير المدرسة</div>
+            <div style="width:200px; border-top:1px solid #000; padding-top:10px;">توقيع المعلم</div>
         </div>
     `;
     
     document.getElementById('printArea').innerHTML = html;
     document.getElementById('reportOutput').style.display = 'block';
     window.scrollTo(0, document.body.scrollHeight);
-}
-
-function switchTab(t, b) {
-    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    document.getElementById(t).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    b.classList.add('active');
 }
 </script>
 </body>
