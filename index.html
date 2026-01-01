@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - الربط الذكي</title>
+    <title>منصة القائد - الإصدار الاحترافي</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -17,6 +17,7 @@
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
         body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; display: none; }
         
+        /* الهيدر */
         .header { background: var(--blue-grad); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 18px; border-radius: 14px; cursor: pointer; font-weight: bold; }
@@ -24,27 +25,33 @@
         .container { padding: 20px; display: none; }
         .container.active { display: block; }
 
-        /* تعديل بطاقة الحصة لإضافة زر الزيارة */
-        .lesson-card { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); display: block; border: 1px solid rgba(0,0,0,0.02); }
-        .lesson-main { display: flex; align-items: center; width: 100%; margin-bottom: 12px; }
+        /* البطاقات */
+        .lesson-card { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); display: block; }
+        .lesson-main { display: flex; align-items: center; margin-bottom: 12px; }
         .class-badge { background: var(--primary); color: white; padding: 12px; border-radius: 15px; font-weight: 800; min-width: 75px; text-align: center; margin-left: 15px; font-size: 1.1rem; }
         .lesson-actions { display: flex; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
-        .action-btn { flex: 1; padding: 10px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .action-btn { flex: 1; padding: 10px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+
+        /* نافذة الإعدادات (التصميم المطلوب) */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 200; overflow-y: auto; backdrop-filter: blur(8px); padding: 20px; }
+        .modal-content { background: white; margin: 5% auto; width: 100%; max-width: 500px; padding: 30px; border-radius: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .settings-section { background: #f8fafc; padding: 20px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .section-title { font-weight: 800; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
+        .file-input-wrapper { margin-bottom: 15px; }
+        .file-input-wrapper label { display: block; font-size: 0.85rem; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+
+        /* صفحة الزيارات */
+        .visit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; font-size: 1rem; margin-bottom: 10px; transition: 0.3s; }
+        .score-select { width: 70px; padding: 8px; border-radius: 12px; border: 2px solid var(--report-primary); font-weight: bold; }
+        .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #e2e8f0; z-index: 100; }
         .nav-item { text-align: center; color: #94a3b8; background: none; border: none; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--primary); font-weight: 800; }
         .nav-item span { display: block; font-size: 26px; }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 200; overflow-y: auto; backdrop-filter: blur(8px); padding: 20px; }
-        .modal-content { background: white; margin: 5% auto; width: 100%; max-width: 500px; padding: 30px; border-radius: 35px; }
-        .settings-section { background: #f8fafc; padding: 20px; border-radius: 25px; margin-bottom: 20px; }
-
-        .styled-input { width: 100%; padding: 18px; border: 2px solid #e2e8f0; border-radius: 15px; font-size: 1.1rem; margin-bottom: 15px; }
-        .score-select { width: 70px; padding: 10px; border-radius: 12px; border: 2px solid var(--report-primary); font-weight: bold; }
-        .btn-gen { width: 100%; padding: 20px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.3rem; font-weight: 800; cursor: pointer; }
-
-        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; width: 100%; } }
+        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; } }
     </style>
 </head>
 <body>
@@ -64,7 +71,7 @@
 </div>
 
 <div id="view-schedule" class="container active no-print">
-    <div id="sim-status" style="background:var(--accent); color:white; padding:10px; text-align:center; border-radius:15px; margin-bottom:20px; font-weight:800; display:none;">وضع المحاكاة نشط 🎲</div>
+    <div id="sim-status" style="background:var(--accent); color:white; padding:10px; text-align:center; border-radius:15px; margin-bottom:20px; display:none; font-weight:bold;">وضع المحاكاة نشط 🎲</div>
     <div id="lessons-list"></div>
 </div>
 
@@ -76,19 +83,26 @@
 <div id="view-visits" class="container no-print">
     <div id="visit-content">
         <div id="reportForm" style="display:none; background:white; padding:25px; border-radius:30px; box-shadow: var(--shadow);">
-            <h3 style="text-align:center; margin-top:0;">📋 تسجيل زيارة فنية</h3>
-            <label style="font-size:0.9rem; font-weight:bold; color:var(--primary);">اسم المعلم:</label>
-            <input type="text" id="tName" placeholder="اسم المعلم" class="styled-input">
-            <label style="font-size:0.9rem; font-weight:bold; color:var(--primary);">تفاصيل الدرس:</label>
-            <input type="text" id="lessonTitle" placeholder="مثال: الحصة 3 - صف 10-1 (اسم الدرس)" class="styled-input">
-            <table style="width:100%; border-collapse: collapse;"><tbody id="tableBody"></tbody></table>
-            <button class="btn-gen" onclick="generateFinalReport()" style="margin-top:30px;">توليد التقرير</button>
+            <h3 style="text-align:center; margin-top:0; color:var(--primary);">📋 بيانات الزيارة الصفية</h3>
+            
+            <input type="text" id="v_teacher" placeholder="اسم المعلم" class="styled-input">
+            
+            <div class="visit-grid">
+                <input type="text" id="v_class" placeholder="الصف" class="styled-input">
+                <input type="text" id="v_period" placeholder="الحصة" class="styled-input">
+            </div>
+            
+            <input type="text" id="v_lesson" placeholder="عنوان الدرس" class="styled-input">
+
+            <table style="width:100%; border-collapse: collapse; margin-top:10px;"><tbody id="tableBody"></tbody></table>
+            <button class="btn-gen" onclick="generateFinalReport()" style="margin-top:25px;">توليد التقرير النهائي</button>
         </div>
-        <div id="no-db-msg" style="text-align:center; padding:80px; color:#94a3b8; background:white; border-radius:30px;">📂 يرجى رفع ملف الزيارات (JSON)</div>
+        <div id="no-db-msg" style="text-align:center; padding:80px; color:#94a3b8; background:white; border-radius:30px;">📂 يرجى رفع ملف الزيارات (JSON) من الإعدادات.</div>
     </div>
-    <div id="reportOutput" style="display:none; background:white; padding:40px; border:1px solid #000; margin-top:20px;">
+    
+    <div id="reportOutput" style="display:none; background:white; padding:40px; border:1px solid #000; margin-top:20px; border-radius:15px;">
         <div id="printArea"></div>
-        <button onclick="window.print()" class="no-print btn-gen" style="background:#334155; margin-top:20px;">حفظ PDF</button>
+        <button onclick="window.print()" class="no-print btn-gen" style="background:#334155; margin-top:20px;">حفظ التقرير PDF</button>
     </div>
 </div>
 
@@ -100,22 +114,38 @@
 
 <div id="settingsModal" class="modal no-print">
     <div class="modal-content">
-        <h2 style="text-align: center;">⚙️ الإعدادات</h2>
-        <div class="settings-section" style="background: #fff7ed;">
-            <button onclick="doSim()" style="padding:15px; background:var(--primary); color:white; border:none; border-radius:15px; cursor:pointer; width:48%;">محاكاة</button>
-            <button onclick="resetTime()" style="padding:15px; background:#64748b; color:white; border:none; border-radius:15px; cursor:pointer; width:48%;">الآن</button>
+        <h2 style="margin-top:0; border-bottom: 3px solid #f1f5f9; padding-bottom: 15px; text-align: center; color: var(--primary);">⚙️ لوحة التحكم</h2>
+        
+        <div class="settings-section" style="background: #fff7ed; border-color: #ffedd5;">
+            <div class="section-title">🎲 أدوات الوقت والمحاكاة</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <button onclick="doSim()" style="padding:15px; background:var(--primary); color:white; border:none; border-radius:15px; cursor:pointer; font-weight:800;">تشغيل المحاكاة</button>
+                <button onclick="resetTime()" style="padding:15px; background:#64748b; color:white; border:none; border-radius:15px; cursor:pointer; font-weight:800;">الوقت الفعلي</button>
+            </div>
         </div>
-        <div class="settings-section" style="background: #f0fdf4;">
-            <label>جدول الحصص (XML):</label>
-            <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="margin-bottom:10px;">
-            <label>بنود الزيارات (JSON):</label>
-            <input type="file" id="jsonFile" accept=".json" onchange="handleJSON(this)">
+
+        <div class="settings-section" style="background: #f0fdf4; border-color: #dcfce7;">
+            <div class="section-title">📤 رفع وربط البيانات (سحابي)</div>
+            <div class="file-input-wrapper">
+                <label>1. ملف جدول الحصص (XML):</label>
+                <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)">
+            </div>
+            <div class="file-input-wrapper">
+                <label>2. ملف بنود الزيارات (JSON):</label>
+                <input type="file" id="jsonFile" accept=".json" onchange="handleJSON(this)">
+            </div>
         </div>
-        <div class="settings-section" style="background: #eff6ff;">
-            <button onclick="downloadStaffTemplate()" style="width:100%; padding:12px; border:2px solid #3b82f6; background:white; border-radius:15px; margin-bottom:10px;">نموذج الأرقام</button>
-            <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importFromExcel(this)">
+
+        <div class="settings-section" style="background: #eff6ff; border-color: #dbeafe;">
+            <div class="section-title">📞 إدارة أرقام التواصل</div>
+            <button onclick="downloadStaffTemplate()" style="width:100%; padding:15px; border:2px solid #3b82f6; background:white; color:#3b82f6; border-radius:15px; margin-bottom:12px; cursor:pointer; font-weight:bold;">تنزيل قائمة المعلمين (Excel)</button>
+            <div class="file-input-wrapper">
+                <label>رفع ملف الأرقام المحدث (Excel):</label>
+                <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importFromExcel(this)">
+            </div>
         </div>
-        <button onclick="closeModal()" style="width:100%; padding:15px; background:#f1f5f9; border:none; border-radius:15px;">إغلاق</button>
+
+        <button onclick="closeModal()" style="width:100%; padding:20px; background:#f1f5f9; border:none; border-radius:20px; font-weight: 800; cursor:pointer; color: #475569;">إغلاق النافذة</button>
     </div>
 </div>
 
@@ -168,12 +198,13 @@ async function syncToCloud() {
     }
 }
 
-// دالة الانتقال للزيارة
-function startVisit(teacherName, className, periodNum) {
+// دالة بدء الزيارة مع توزيع البيانات
+function startVisit(teacherName, className, periodID) {
     switchTab('view-visits', document.getElementById('nav-vis'));
-    document.getElementById('tName').value = teacherName;
-    document.getElementById('lessonTitle').value = `الحصة ${periodNum} - صف ${className} ( )`;
-    document.getElementById('lessonTitle').focus();
+    document.getElementById('v_teacher').value = teacherName;
+    document.getElementById('v_class').value = className;
+    document.getElementById('v_period').value = "الحصة " + periodID;
+    document.getElementById('v_lesson').focus();
 }
 
 function refresh() {
@@ -187,7 +218,7 @@ function refresh() {
         let current = data.lessons.filter(l => l.d == d && l.p == p.id);
         current.sort((a, b) => (data.classes[a.c]||"").localeCompare(data.classes[b.c]||"", 'ar', {numeric:true}));
         list.innerHTML = current.map(l => {
-            let n = data.teachers[l.t], ph = (phones[n] || "").replace(/\s+/g, ''), cl = data.classes[l.c]||'..';
+            let n = data.teachers[l.t], cl = data.classes[l.c]||'..', ph = (phones[n] || "").replace(/\s+/g, '');
             return `
             <div class="lesson-card">
                 <div class="lesson-main">
@@ -195,7 +226,7 @@ function refresh() {
                     <div style="flex:1;"><b>${n}</b><br><small style="color:#64748b;">${data.subjects[l.s]||''}</small></div>
                 </div>
                 <div class="lesson-actions">
-                    <button class="action-btn" style="background:#fef3c7; color:#92400e;" onclick="startVisit('${n}', '${cl}', '${l.p}')">📝 زيارة</button>
+                    <button class="action-btn" style="background:#fef3c7; color:#92400e;" onclick="startVisit('${n}', '${cl}', '${l.p}')">📝 تسجيل زيارة</button>
                     <button class="action-btn" style="background:var(--success); color:white;" onclick="window.open('https://wa.me/${ph}?text=تحية طيبة')">💬 واتساب</button>
                 </div>
             </div>`;
@@ -205,6 +236,7 @@ function refresh() {
     }
 }
 
+// معالجة الملفات والبيانات
 function handleXML(input) {
     const reader = new FileReader();
     reader.readAsText(input.files[0], "windows-1256");
@@ -257,7 +289,7 @@ function processPhrases() {
     });
     document.getElementById('tableBody').innerHTML = criteriaList.map(c => `
         <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding:15px 0;"><b>${c.m}</b><br><small style="color:#64748b;">${c.d}</small></td>
+            <td style="padding:12px 0;"><b>${c.m}</b><br><small style="color:#64748b;">${c.d}</small></td>
             <td style="text-align:left;"><select class="score-select" data-m="${c.m}" data-d="${c.d}"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td>
         </tr>`).join('');
     document.getElementById('reportForm').style.display = 'block';
@@ -265,30 +297,41 @@ function processPhrases() {
 }
 
 function generateFinalReport() {
-    const name = document.getElementById('tName').value;
-    const title = document.getElementById('lessonTitle').value;
+    const name = document.getElementById('v_teacher').value;
+    const cls = document.getElementById('v_class').value;
+    const prd = document.getElementById('v_period').value;
+    const lesson = document.getElementById('v_lesson').value;
+    
     const selections = [];
     document.querySelectorAll('.score-select').forEach(sel => {
         const val = parseInt(sel.value);
         const match = phrasesDB.find(p => p.parentCrit === sel.dataset.m && p.parentDesc === sel.dataset.d && p["الحكم"].includes(`(${val})`));
         if (match) selections.push({ ...match, score: val });
     });
+
     const strengths = selections.filter(s => s.score <= 2);
     const improvements = selections.filter(s => s.score >= 3);
+
     let html = `
         <div style="text-align:center; border-bottom:4px double #000; padding-bottom:15px; margin-bottom:20px;">
-            <h2 style="margin:0;">تقرير الزيارة الفنية</h2>
-            <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                <span>المعلم: ${name}</span><span>التفاصيل: ${title}</span><span>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</span>
+            <h2 style="margin:0;">تقرير الزيارة الفنية الصفية</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:15px; text-align:right; gap:10px;">
+                <span>المعلم: <b>${name}</b></span>
+                <span>التاريخ: <b>${new Date().toLocaleDateString('ar-EG')}</b></span>
+                <span>الصف: <b>${cls}</b></span>
+                <span>الحصة: <b>${prd}</b></span>
             </div>
+            <div style="margin-top:10px; text-align:right;">عنوان الدرس: <b>${lesson}</b></div>
         </div>
         <h3 style="color:var(--success);">✅ جوانب الإجادة:</h3><ul>${strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
         <h3 style="color:var(--danger);">⚠️ جوانب التطوير:</h3><ul>${improvements.map(i => `<li>${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
-        <div style="margin-top:20px; border:1px solid #000; padding:10px;"><b>التوصيات:</b><ol>${improvements.length > 0 ? improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('') : "<li>الاستمرار في العطاء.</li>"}</ol></div>`;
+        <div style="margin-top:20px; border:1px solid #000; padding:15px;"><b>التوصيات الفنية:</b><ol>${improvements.length > 0 ? improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('') : "<li>الاستمرار في العطاء المتميز.</li>"}</ol></div>`;
+    
     document.getElementById('printArea').innerHTML = html;
     document.getElementById('reportOutput').style.display = 'block';
 }
 
+// الوظائف المساعدة
 function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; document.getElementById('sim-status').style.display='block'; closeModal(); refresh(); }
 function resetTime() { isSim = false; document.getElementById('sim-status').style.display='none'; closeModal(); refresh(); }
 function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
@@ -311,10 +354,17 @@ function renderStaff() {
             <div style="display:flex; justify-content:space-between; align-items:center;"><b>${name}</b><span style="color:#64748b;">${phones[name]||'--'}</span></div>
             <select class="msg-select" id="sel_${i}"><option value="الرجاء التوجه للإدارة.">الرجاء التوجه للإدارة.</option><option value="شكراً لجهودكم.">رسالة شكر.</option></select>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:15px;">
-                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" style="padding:15px; background:var(--success); color:white; border:none; border-radius:15px; cursor:pointer; font-weight:bold;">واتساب</button>
-                <a href="tel:${phones[name]}" style="padding:15px; background:#3b82f6; color:white; border:none; border-radius:15px; text-align:center; text-decoration:none; font-weight:bold;">اتصال</a>
+                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" style="padding:15px; background:var(--success); color:white; border:none; border-radius:15px; cursor:pointer;">واتساب</button>
+                <a href="tel:${phones[name]}" style="padding:15px; background:#3b82f6; color:white; border:none; border-radius:15px; text-align:center; text-decoration:none;">اتصال</a>
             </div>
         </div>`).join('');
+}
+function downloadStaffTemplate() {
+    const names = Object.values(data.teachers).sort().map(name => ({ "اسم المعلم": name, "رقم الهاتف": phones[name] || "" }));
+    const ws = XLSX.utils.json_to_sheet(names);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "المعلمين");
+    XLSX.writeFile(wb, "قائمة_المعلمين.xlsx");
 }
 </script>
 </body>
