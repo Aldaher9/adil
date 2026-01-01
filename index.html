@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - النظام المتكامل</title>
+    <title>منصة القائد - نظام مقيد وصارم</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -24,18 +24,15 @@
         .container { padding: 20px; display: none; }
         .container.active { display: block; }
 
-        /* بطاقة الحصة */
         .lesson-card { background: white; border-radius: 18px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; align-items: center; border: 1px solid rgba(0,0,0,0.05); }
-        .class-badge { background: var(--primary); color: white; padding: 12px; border-radius: 14px; font-weight: 800; min-width: 70px; text-align: center; margin-left: 15px; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(15,23,42,0.2); }
+        .class-badge { background: var(--primary); color: white; padding: 12px; border-radius: 14px; font-weight: 800; min-width: 70px; text-align: center; margin-left: 15px; font-size: 1.1rem; }
 
-        /* بطاقة المعلم */
         .staff-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: var(--shadow); }
         .msg-select { width: 100%; padding: 15px; border-radius: 12px; margin-top: 10px; font-size: 1.1rem; border: 2px solid #cbd5e1; background-color: #f8fafc; text-align: center; font-weight: 600; }
 
-        /* التنقل السفلي */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; cursor: pointer; flex: 1; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); font-weight: 800; transform: translateY(-3px); }
+        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--primary); font-weight: 800; transform: translateY(-3px); transition: 0.3s; }
         .nav-item span { display: block; font-size: 24px; margin-bottom: 4px; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; overflow-y: auto; backdrop-filter: blur(5px); }
@@ -45,6 +42,9 @@
         .report-table td { padding: 15px; border-bottom: 1px solid #eee; }
         .score-input { width: 70px; padding: 10px; border-radius: 10px; border: 2px solid var(--report-primary); text-align: center; font-weight: bold; }
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: 800; cursor: pointer; }
+
+        label.file-label { display: block; margin: 10px 0 5px; font-size: 0.85rem; font-weight: bold; color: var(--primary); }
+        input[type="file"] { width: 100%; padding: 10px; background: #fff; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 10px; }
 
         @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; width: 100%; } }
     </style>
@@ -74,7 +74,7 @@
 </div>
 
 <div id="view-staff" class="container no-print">
-    <input type="text" id="searchInput" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:18px; border-radius:15px; border:2px solid #ddd; margin-bottom:15px; font-size:1rem;">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:18px; border-radius:15px; border:2px solid #ddd; margin-bottom:15px;">
     <div id="staff-list"></div>
 </div>
 
@@ -88,10 +88,10 @@
         </div>
         <div id="no-db-msg" style="text-align:center; padding:60px; color:#94a3b8; background:white; border-radius:20px;">
             <span style="font-size:3rem; display:block; margin-bottom:10px;">📂</span>
-            يرجى رفع قاعدة بيانات الزيارات (JSON) من الإعدادات أولاً لبدء الاستخدام.
+            يرجى رفع قاعدة بيانات الزيارات (JSON) من الإعدادات.
         </div>
     </div>
-    <div id="reportOutput" style="display:none; background:white; padding:40px; border:1px solid #000; margin-top:20px; border-radius:10px;">
+    <div id="reportOutput" style="display:none; background:white; padding:40px; border:1px solid #000; margin-top:20px;">
         <div id="printArea"></div>
         <button onclick="window.print()" class="no-print btn-gen" style="background:#444; margin-top:20px;">حفظ التقرير PDF</button>
     </div>
@@ -108,7 +108,7 @@
         <h3 style="margin-top:0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px;">⚙️ الإعدادات والمزامنة</h3>
         
         <div style="background:#f8fafc; padding:15px; border-radius:20px; margin-bottom:20px;">
-            <p style="margin-top:0; font-weight: bold; color:var(--primary);">🎲 أدوات المحاكاة:</p>
+            <p style="margin-top:0; font-weight: bold;">🎲 أدوات المحاكاة:</p>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <button onclick="doSim()" style="padding:12px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer;">تشغيل المحاكاة</button>
                 <button onclick="resetTime()" style="padding:12px; background:#64748b; color:white; border:none; border-radius:12px; cursor:pointer;">الوقت الفعلي</button>
@@ -116,18 +116,18 @@
         </div>
 
         <div style="background:#f0fdf4; padding:15px; border-radius:20px; margin-bottom:20px;">
-            <p style="margin-top:0; font-weight: bold; color:#166534;">📤 رفع الملفات (تحفظ سحابياً):</p>
-            <label style="font-size:0.85rem;">جدول الحصص (XML):</label>
-            <input type="file" id="xmlFile" onchange="handleXML(this)" style="width:100%; margin-bottom:12px;">
-            <label style="font-size:0.85rem;">قاعدة بيانات الزيارات (JSON):</label>
-            <input type="file" id="jsonFile" onchange="handleJSON(this)" style="width:100%;">
-        </div>
-
-        <div style="background:#fff7ed; padding:15px; border-radius:20px; margin-bottom:20px;">
-            <p style="margin-top:0; font-weight: bold; color:#9a3412;">📞 تحديث أرقام الهواتف:</p>
-            <button onclick="downloadStaffTemplate()" style="width:100%; padding:12px; border:1px solid #f97316; background:white; color:#f97316; border-radius:12px; margin-bottom:10px; cursor:pointer; font-weight:bold;">تنزيل الأسماء (Excel)</button>
-            <label style="font-size:0.85rem;">رفع الملف بعد التعديل:</label>
-            <input type="file" id="excelFile" onchange="importFromExcel(this)" style="width:100%;">
+            <p style="margin-top:0; font-weight: bold; color:#166534;">📤 رفع الملفات (مقيد):</p>
+            
+            <label class="file-label">1. جدول الحصص (فقط XML):</label>
+            <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)">
+            
+            <label class="file-label">2. قاعدة بيانات الزيارات (فقط JSON):</label>
+            <input type="file" id="jsonFile" accept=".json" onchange="handleJSON(this)">
+            
+            <label class="file-label">3. تحديث الهواتف (فقط Excel):</label>
+            <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importFromExcel(this)">
+            
+            <button onclick="downloadStaffTemplate()" style="width:100%; padding:10px; border:1px solid #f97316; background:white; color:#f97316; border-radius:10px; margin-top:10px; cursor:pointer; font-weight:bold;">تنزيل نموذج الأسماء الحالي</button>
         </div>
 
         <button onclick="closeModal()" style="width:100%; padding:15px; background:#f1f5f9; border:none; border-radius:15px; font-weight: bold; cursor:pointer;">إغلاق</button>
@@ -139,7 +139,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
 <script>
-// --- إعدادات Firebase ---
 const firebaseConfig = {
     apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
     authDomain: "school-9416e.firebaseapp.com",
@@ -155,7 +154,6 @@ let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], 
 let phrasesDB = [], criteriaList = [];
 let currentUser = null, isSim = false, sDay, sTime;
 
-// --- إدارة الدخول والمزامنة ---
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
@@ -187,10 +185,22 @@ async function syncToCloud() {
     }
 }
 
-// --- معالجة الملفات والبيانات ---
+// دالة التحقق من الامتداد
+function validateFile(file, allowedExtension) {
+    const fileName = file.name.toLowerCase();
+    if (!fileName.endsWith(allowedExtension)) {
+        alert(`خطأ: يرجى اختيار ملف بصيغة ${allowedExtension} فقط.`);
+        return false;
+    }
+    return true;
+}
+
 function handleXML(input) {
+    const file = input.files[0];
+    if (!file || !validateFile(file, '.xml')) return;
+
     const reader = new FileReader();
-    reader.readAsText(input.files[0], "windows-1256");
+    reader.readAsText(file, "windows-1256");
     reader.onload = async (e) => {
         const parser = new DOMParser();
         const xml = parser.parseFromString(e.target.result, "text/xml");
@@ -203,18 +213,44 @@ function handleXML(input) {
             d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
         }));
         data = newData; await syncToCloud(); refresh(); closeModal();
+        alert("تم رفع الجدول بنجاح");
     };
 }
 
 function handleJSON(input) {
+    const file = input.files[0];
+    if (!file || !validateFile(file, '.json')) return;
+
     const reader = new FileReader();
     reader.onload = async (e) => {
-        phrasesDB = JSON.parse(e.target.result);
-        await syncToCloud();
-        processPhrases();
-        closeModal();
+        try {
+            phrasesDB = JSON.parse(e.target.result);
+            await syncToCloud();
+            processPhrases();
+            closeModal();
+            alert("تم رفع قاعدة بيانات الزيارات بنجاح");
+        } catch (err) { alert("الملف ليس JSON صحيحاً."); }
     };
-    reader.readAsText(input.files[0]);
+    reader.readAsText(file);
+}
+
+function importFromExcel(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const name = file.name.toLowerCase();
+    if (!name.endsWith('.xlsx') && !name.endsWith('.xls')) {
+        alert("يرجى اختيار ملف Excel فقط."); return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const wb = XLSX.read(e.target.result, {type: 'binary'});
+        const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        sheet.forEach(row => { if(row["اسم المعلم"]) phones[row["اسم المعلم"]] = String(row["رقم الهاتف"] || ""); });
+        await syncToCloud(); renderStaff(); closeModal();
+        alert("تم تحديث الأرقام بنجاح");
+    };
+    reader.readAsBinaryString(file);
 }
 
 function processPhrases() {
@@ -237,7 +273,6 @@ function processPhrases() {
     document.getElementById('no-db-msg').style.display = 'none';
 }
 
-// --- العرض والترتيب ---
 function refresh() {
     const now = new Date();
     const d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
@@ -247,14 +282,11 @@ function refresh() {
     
     if (p && data.lessons) {
         let current = data.lessons.filter(l => l.d == d && l.p == p.id);
-        
-        // الترتيب الطبيعي للصفوف (1 ثم 2 ثم 10 ...)
         current.sort((a, b) => {
             const classA = data.classes[a.c] || "";
             const classB = data.classes[b.c] || "";
             return classA.localeCompare(classB, undefined, {numeric: true, sensitivity: 'base'});
         });
-
         list.innerHTML = current.map(l => {
             let n = data.teachers[l.t], ph = (phones[n] || "").replace(/\s+/g, '');
             return `<div class="lesson-card"><div class="class-badge">${data.classes[l.c]||'..'}</div><div style="flex:1;"><b>${n}</b><br><small>${data.subjects[l.s]||''}</small></div>
@@ -265,7 +297,6 @@ function refresh() {
     }
 }
 
-// --- توليد التقارير ---
 function generateFinalReport() {
     const name = document.getElementById('tName').value || "المعلم";
     const selections = [];
@@ -283,24 +314,18 @@ function generateFinalReport() {
             <h2 style="margin:0;">تقرير الزيارة الفنية الصفية</h2>
             <p style="font-size:1.2rem;">المعلم: <b>${name}</b></p>
         </div>
-        <h3 style="color:var(--success); margin-top:25px;">✅ جوانب الإجادة (التقييم 1-2):</h3>
+        <h3 style="color:var(--success); margin-top:25px;">✅ جوانب الإجادة:</h3>
         <ul style="line-height:1.7;">${strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
-        <h3 style="color:var(--danger); margin-top:25px;">⚠️ جوانب القصور (التقييم 3-5):</h3>
+        <h3 style="color:var(--danger); margin-top:25px;">⚠️ جوانب تحتاج تحسين:</h3>
         <ul style="line-height:1.7;">${improvements.map(i => `<li>${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
         <div style="margin-top:40px; border:1px solid #ddd; padding:20px; border-radius:12px; background:#f9fafb;">
-            <p style="font-weight:bold; font-size:1.1rem; margin-top:0;">أشكر المعلم على أداء الحصة وأوصيه بالتالي:</p>
+            <p style="font-weight:bold; margin-top:0;">أشكر المعلم على أداء الحصة وأوصيه بالتالي:</p>
             <ol style="line-height:1.8;">${improvements.length > 0 ? improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('') : "<li>الاستمرار على هذا المستوى المتميز.</li>"}</ol>
-        </div>
-        <div style="margin-top:80px; display:flex; justify-content:space-around; font-weight:bold;">
-            <p>توقيع مدير المدرسة</p>
-            <p>توقيع المعلم</p>
         </div>`;
     document.getElementById('printArea').innerHTML = html;
     document.getElementById('reportOutput').style.display = 'block';
-    window.scrollTo(0, document.body.scrollHeight);
 }
 
-// --- أدوات Excel ---
 function downloadStaffTemplate() {
     const names = Object.values(data.teachers).sort().map(name => ({ "اسم المعلم": name, "رقم الهاتف": phones[name] || "" }));
     const ws = XLSX.utils.json_to_sheet(names);
@@ -309,19 +334,6 @@ function downloadStaffTemplate() {
     XLSX.writeFile(wb, "قائمة_معلمين_المدرسة.xlsx");
 }
 
-function importFromExcel(input) {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const wb = XLSX.read(e.target.result, {type: 'binary'});
-        const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        sheet.forEach(row => { if(row["اسم المعلم"]) phones[row["اسم المعلم"]] = String(row["رقم الهاتف"] || ""); });
-        await syncToCloud(); renderStaff(); closeModal();
-        alert("تم تحديث أرقام الهواتف بنجاح");
-    };
-    reader.readAsBinaryString(input.files[0]);
-}
-
-// --- وظائف المساعدة ---
 function doSim() { isSim = true; sDay = 1; sTime = data.periods[0]?.s || "08:00"; document.getElementById('sim-status').style.display='block'; closeModal(); refresh(); }
 function resetTime() { isSim = false; document.getElementById('sim-status').style.display='none'; closeModal(); refresh(); }
 function openModal() { document.getElementById('settingsModal').style.display = 'block'; }
@@ -341,15 +353,11 @@ function renderStaff() {
     const list = document.getElementById('staff-list');
     list.innerHTML = Object.values(data.teachers).sort().map((name, i) => `
         <div class="staff-card filter-item">
-            <div style="display:flex; justify-content:space-between; align-items:center;"><b>${name}</b><span style="color:#64748b;">${phones[name]||'--'}</span></div>
-            <select class="msg-select" id="sel_${i}">
-                <option value="الرجاء التوجه للإدارة فوراً.">الرجاء التوجه للإدارة.</option>
-                <option value="نذكركم بموعد المناوبة اليوم، شاكرين تعاونكم.">تذكير بالمناوبة.</option>
-                <option value="شكراً لجهودكم المتميزة في الحصة.">رسالة شكر.</option>
-            </select>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><b>${name}</b><span>${phones[name]||'--'}</span></div>
+            <select class="msg-select" id="sel_${i}"><option value="الرجاء التوجه للإدارة.">الرجاء التوجه للإدارة.</option><option value="شكراً لجهودكم.">رسالة شكر.</option></select>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
-                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" style="padding:15px; background:var(--success); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:bold;">✉️ واتساب</button>
-                <a href="tel:${phones[name]}" style="padding:15px; background:#3b82f6; color:white; border:none; border-radius:12px; text-align:center; text-decoration:none; font-weight:bold;">📞 اتصال</a>
+                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" style="padding:15px; background:var(--success); color:white; border:none; border-radius:12px; cursor:pointer;">✉️ واتساب</button>
+                <a href="tel:${phones[name]}" style="padding:15px; background:#3b82f6; color:white; border:none; border-radius:12px; text-align:center; text-decoration:none;">📞 اتصال</a>
             </div>
         </div>`).join('');
 }
