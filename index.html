@@ -1,42 +1,55 @@
-<div id="smartReportSection" class="card" style="margin-top: 20px; display: none;">
-    <div class="header">
-        <h2 style="color: var(--accent);">📊 التقرير الفني الذكي (بناءً على العبارات)</h2>
-    </div>
-    
-    <div id="dbUploadArea" style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:20px; border:1px dashed var(--accent);">
-        <label><b>⚙️ إعداد النظام:</b> ارفع ملف (العبارات جديدة.json) لمرة واحدة فقط:</label>
-        <input type="file" id="jsonFile" accept=".json" onchange="saveDatabaseLocally(event)" style="margin-top:10px;">
-        <p id="dbStatus" style="font-size:0.8rem; color: var(--success); margin-top:5px;"></p>
-    </div>
+<body>
+    <div class="container">
+        <div id="smartReportSection" class="card" style="margin-top: 20px;">
+            <div class="header">
+                <h2 style="color: var(--accent);">📊 التقرير الفني الذكي</h2>
+            </div>
+            
+            <div id="dbUploadArea" style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:20px; border:1px dashed var(--accent);">
+                <label><b>⚙️ إعداد النظام:</b> ارفع ملف العبارات لمرة واحدة فقط (يتم حفظه تلقائياً):</label>
+                <input type="file" id="jsonFile" accept=".json" onchange="saveDatabaseLocally(event)" style="margin-top:10px;">
+                <p id="dbStatus" style="font-size:0.8rem; color: var(--success); margin-top:5px;"></p>
+            </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
-        <div>
-            <label>اختيار المعلم (من المسجلين):</label>
-            <select id="smartTeacherSelect" onchange="syncWithSiteData()">
-                <option value="">-- اختر معلم من الجدول --</option>
-                </select>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
+                <div>
+                    <label>اختيار المعلم:</label>
+                    <select id="smartTeacherSelect" style="width:100%; padding:10px; border-radius:5px;">
+                        <option value="">-- اختر من القائمة --</option>
+                    </select>
+                </div>
+                <div>
+                    <label>المادة / الصف:</label>
+                    <input type="text" id="smartInfoInput" style="width:100%; padding:10px; border-radius:5px;" placeholder="مثال: رياضيات - 10/1">
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table id="smartCriteriaTable" style="width:100%; border-collapse: collapse; display:none;">
+                    <thead>
+                        <tr style="background: var(--primary); color: white;">
+                            <th style="padding:10px; text-align:right;">المعيار (وصف المعيار)</th>
+                            <th style="width:150px;">التقدير</th>
+                        </tr>
+                    </thead>
+                    <tbody id="smartTableBody"></tbody>
+                </table>
+            </div>
+
+            <button class="btn" style="width:100%; margin-top:20px; background:var(--success); color:white; padding:15px; border:none; border-radius:8px; cursor:pointer;" onclick="generateSmartReport()">📄 توليد التقرير النهائي</button>
         </div>
-        <div>
-            <label>المادة / الصف:</label>
-            <input type="text" id="smartInfoInput" placeholder="سيتم جلبه آلياً">
+
+        <div id="smartReportOutput" style="display:none; background:white; padding:30px; margin-top:20px; border:2px solid #333; color: black; text-align: right; direction: rtl;">
+            <div id="smartPrintArea"></div>
+            <div class="no-print" style="margin-top:20px;">
+                <button class="btn" onclick="window.print()" style="background:var(--primary); color:white; padding:10px 20px;">🖨️ طباعة PDF</button>
+                <button class="btn" onclick="document.getElementById('smartReportOutput').style.display='none'" style="background:#64748b; color:white; padding:10px 20px;">إغلاق</button>
+            </div>
         </div>
     </div>
 
-    <table id="smartCriteriaTable" style="width:100%; border-collapse: collapse;">
-        <thead>
-            <tr style="background: var(--primary); color: white;">
-                <th style="padding:10px; text-align:right;">المعيار (المؤشر)</th>
-                <th style="width:150px;">التقدير</th>
-            </tr>
-        </thead>
-        <tbody id="smartTableBody"></tbody>
-    </table>
-
-    <button class="btn" style="width:100%; margin-top:20px; background:var(--success);" onclick="generateSmartReport()">📄 توليد التقرير واعتماده</button>
-</div>
-
-<div id="smartReportOutput" style="display:none; background:white; padding:30px; margin-top:20px; border:2px solid #333;">
-    <div id="smartPrintArea"></div>
-    <button class="btn" onclick="window.print()">🖨️ طباعة التقرير PDF</button>
-    <button class="btn" style="background:#64748b" onclick="document.getElementById('smartReportOutput').style.display='none'">إغلاق</button>
-</div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="script.js"></script>
+</body>
