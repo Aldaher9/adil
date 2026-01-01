@@ -56,7 +56,7 @@
         .nav-item.active { color: var(--primary); font-weight: 800; }
         .nav-item span { display: block; font-size: 24px; }
 
-        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; width: 100%; } body { background: white; } }
+        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; width: 100%; padding: 0; } body { background: white; } }
     </style>
 </head>
 <body>
@@ -102,11 +102,19 @@
     <button class="nav-item" onclick="switchTab('view-visits', this)"><span>📝</span> الزيارات</button>
 </div>
 
+<div id="settingsModal" class="modal no-print" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200;">
+    <div style="background:white; margin:10% auto; width:90%; max-width:400px; padding:20px; border-radius:20px;">
+        <h3>⚙️ الإعدادات</h3>
+        <p>بيانات المعلمين (Excel):</p>
+        <input type="file" id="excelFile" onchange="importFromExcel(this)" style="width:100%; margin-bottom:15px;">
+        <button onclick="this.parentElement.parentElement.style.display='none'" style="width:100%; padding:10px; border:none; background:#eee; border-radius:10px;">إغلاق</button>
+    </div>
+</div>
+
 <script>
 let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
 let phrasesDB = [], criteriaList = [];
 
-// محاكاة تسجيل الدخول والبيانات للتبسيط
 document.body.style.display = "block";
 
 function initApp(event) {
@@ -148,36 +156,36 @@ function generateFinalReport() {
         if (match) selections.push({ ...match, score: val });
     });
 
-    // فرز البنود: جوانب الإجادة (تقييم 3 فما فوق) - جوانب التطوير (أقل من 2)
     const strengths = selections.filter(s => s.score >= 3);
     const improvements = selections.filter(s => s.score < 2);
 
     let html = `
         <div style="text-align:center; border-bottom:3px solid #333; padding-bottom:10px; margin-bottom:20px;">
-            <h1 style="color:var(--report-primary);">تقرير زيارة إشرافية</h1>
-            <h3>المعلم: ${name}</h3>
+            <h1 style="color:var(--report-primary); margin-bottom:5px;">تقرير زيارة فنية إشرافية</h1>
+            <h3 style="margin:0;">المعلم: ${name}</h3>
         </div>
 
-        <h3 style="color:var(--success);">✅ جوانب الإجادة:</h3>
-        <ul>${strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('')}</ul>
+        <div style="margin-bottom:25px;">
+            <h3 style="color:var(--success); border-right:5px solid var(--success); padding-right:10px;">✅ جوانب الإجادة:</h3>
+            <ul style="line-height:1.8;">${strengths.length > 0 ? strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') : "<li>لا يوجد بنود محددة</li>"}</ul>
+        </div>
 
-        <h3 style="color:var(--danger);">⚠️ جوانب تحتاج إلى تحسين (أولويات التطوير):</h3>
-        <table style="width:100%; border-collapse: collapse; margin-top:10px;">
-            <tr style="background:#f8f8f8;">
-                <th style="border:1px solid #ddd; padding:10px; text-align:right;">البند</th>
-                <th style="border:1px solid #ddd; padding:10px; text-align:right;">التوصية المرتبطة</th>
-            </tr>
-            ${improvements.map(i => `
-                <tr>
-                    <td style="border:1px solid #ddd; padding:10px;">${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</td>
-                    <td style="border:1px solid #ddd; padding:10px;">${i["التوصيات"]}</td>
-                </tr>
-            `).join('')}
-        </table>
+        <div style="margin-bottom:25px;">
+            <h3 style="color:var(--danger); border-right:5px solid var(--danger); padding-right:10px;">⚠️ جوانب تحتاج إلى تحسين:</h3>
+            <ul style="line-height:1.8;">${improvements.length > 0 ? improvements.map(i => `<li>${i["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') : "<li>لا يوجد بنود محددة</li>"}</ul>
+        </div>
 
-        <div style="margin-top:50px; display:flex; justify-content:space-around; font-weight:bold;">
-            <p>مدير المدرسة</p>
-            <p>المعلم</p>
+        <div style="margin-bottom:25px; background:#f9fafb; padding:15px; border-radius:10px; border:1px solid #e5e7eb;">
+            <h3 style="color:var(--primary); margin-top:0;">💡 التوصيات:</h3>
+            <p style="font-weight:bold; font-size:1.1rem;">أشكر المعلم على أداء الحصة وأوصيه بالتالي:</p>
+            <ol style="line-height:1.8; font-size:1.05rem;">
+                ${improvements.map(i => `<li>${i["التوصيات"]}</li>`).join('')}
+            </ol>
+        </div>
+
+        <div style="margin-top:60px; display:flex; justify-content:space-around; font-weight:bold; border-top:1px dashed #ccc; padding-top:20px;">
+            <div style="text-align:center;"><p>مدير المدرسة</p><br><span>..........................</span></div>
+            <div style="text-align:center;"><p>المعلم</p><br><span>..........................</span></div>
         </div>
     `;
     
