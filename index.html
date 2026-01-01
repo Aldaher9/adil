@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - الإصدار السحابي</title>
+    <title>منصة القائد - تنظيم الصفوف</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -32,7 +32,7 @@
         }
 
         .lesson-card { background: white; border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; align-items: center; }
-        .class-badge { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 800; min-width: 60px; text-align: center; margin-left: 15px; }
+        .class-badge { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 800; min-width: 65px; text-align: center; margin-left: 15px; font-size: 1.1rem; }
 
         .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 12px; overflow: hidden; }
         .report-table th { background: var(--report-primary); color: white; padding: 15px; }
@@ -70,7 +70,7 @@
 </div>
 
 <div id="view-schedule" class="container active no-print">
-    <div id="sim-status" style="background:var(--accent); padding:5px; text-align:center; border-radius:10px; margin-bottom:10px; display:none; font-weight:bold;">وضع المحاكاة نشط</div>
+    <div id="sim-status" style="background:var(--accent); padding:5px; text-align:center; border-radius:10px; margin-bottom:10px; display:none; font-weight:bold; font-size: 0.9rem;">وضع المحاكاة نشط 🎲</div>
     <div id="lessons-list"></div>
 </div>
 
@@ -102,18 +102,18 @@
 
 <div id="settingsModal" class="modal no-print">
     <div class="modal-content">
-        <h3 style="margin-top:0;">⚙️ الإعدادات والمحاكاة</h3>
+        <h3 style="margin-top:0; border-bottom: 1px solid #eee; padding-bottom: 10px;">⚙️ الإعدادات والمحاكاة</h3>
         
         <div style="background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:20px;">
-            <p style="margin-top:0;">🎲 تحكم المحاكاة:</p>
+            <p style="margin-top:0; font-weight: bold;">🎲 تحكم المحاكاة:</p>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button onclick="doSim()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:8px;">تشغيل المحاكاة</button>
-                <button onclick="resetTime()" style="padding:10px; background:#64748b; color:white; border:none; border-radius:8px;">الوقت الفعلي</button>
+                <button onclick="doSim()" style="padding:12px; background:var(--primary); color:white; border:none; border-radius:8px;">تشغيل المحاكاة</button>
+                <button onclick="resetTime()" style="padding:12px; background:#64748b; color:white; border:none; border-radius:8px;">الوقت الفعلي</button>
             </div>
         </div>
 
         <div style="background:#f0fdf4; padding:15px; border-radius:15px; margin-bottom:20px;">
-            <p style="margin-top:0;">📤 استيراد البيانات:</p>
+            <p style="margin-top:0; font-weight: bold;">📤 استيراد الملفات:</p>
             <label>جدول الحصص (XML):</label>
             <input type="file" id="xmlFile" onchange="handleXML(this)" style="width:100%; margin-bottom:10px;">
             <label>قاعدة بيانات الزيارات (JSON):</label>
@@ -121,13 +121,13 @@
         </div>
 
         <div style="background:#fefce8; padding:15px; border-radius:15px; margin-bottom:20px;">
-            <p style="margin-top:0;">📞 إدارة هواتف المعلمين:</p>
+            <p style="margin-top:0; font-weight: bold;">📞 إدارة هواتف المعلمين:</p>
             <button onclick="downloadStaffTemplate()" style="width:100%; padding:10px; border:1px solid #eab308; background:white; border-radius:8px; margin-bottom:10px;">تنزيل قائمة الأسماء (Excel)</button>
             <label>رفع الملف بعد إضافة الأرقام:</label>
             <input type="file" id="excelFile" onchange="importFromExcel(this)" style="width:100%;">
         </div>
 
-        <button onclick="closeModal()" style="width:100%; padding:12px; background:#eee; border:none; border-radius:10px;">إغلاق</button>
+        <button onclick="closeModal()" style="width:100%; padding:12px; background:#eee; border:none; border-radius:10px; font-weight: bold;">إغلاق</button>
     </div>
 </div>
 
@@ -240,6 +240,14 @@ function refresh() {
     
     if (p && data.lessons) {
         let current = data.lessons.filter(l => l.d == d && l.p == p.id);
+        
+        // --- تعديل ترتيب الصفوف تصاعدياً ---
+        current.sort((a, b) => {
+            const nameA = data.classes[a.c] || "";
+            const nameB = data.classes[b.c] || "";
+            return nameA.localeCompare(nameB, 'ar', {numeric: true});
+        });
+
         list.innerHTML = current.map(l => {
             let n = data.teachers[l.t], ph = (phones[n] || "").replace(/\s+/g, '');
             return `<div class="lesson-card"><div class="class-badge">${data.classes[l.c]||'..'}</div><div style="flex:1;"><b>${n}</b><br><small>${data.subjects[l.s]||''}</small></div>
