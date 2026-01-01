@@ -25,38 +25,47 @@
         .container { padding: 20px; display: none; }
         .container.active { display: block; }
 
-        /* البطاقات والحصص */
+        /* البطاقات */
         .status-card { background: var(--card); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 20px; border-right: 6px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
         .lesson-card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; }
         .class-badge { background: var(--primary); color: white; padding: 10px; border-radius: 12px; font-weight: 800; min-width: 60px; text-align: center; }
 
-        /* قـسـم الـتـقـاريـر (تعديل أحجام الخطوط) */
-        .report-section h3 { font-size: 1.5rem; color: var(--report-primary); margin-bottom: 20px; text-align: center; }
-        .report-input-large { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 1.1rem; font-weight: 600; }
-        
-        .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        .report-table th { background: var(--report-primary); color: white; padding: 15px; font-size: 1.1rem; text-align: right; }
-        .report-table td { padding: 18px 15px; border-bottom: 1px solid #eee; font-size: 1.05rem; line-height: 1.6; }
-        .report-table b { color: #000; font-size: 1.15rem; }
-        .report-table small { font-size: 0.95rem; color: #475569; display: block; margin-top: 5px; }
-        
-        .score-input { width: 70px; padding: 10px; font-size: 1.2rem; font-weight: bold; border-radius: 8px; border: 2px solid var(--report-primary); text-align: center; }
+        /* قائمة المعلمين - حل مشكلة القائمة المنسدلة */
+        .staff-card { background: white; padding: 20px; border-radius: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid #e2e8f0; }
+        .msg-select { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-top: 10px; 
+            font-size: 1.1rem; 
+            border: 2px solid #cbd5e1;
+            background-color: #f8fafc;
+            color: #1e293b;
+            appearance: none; /* إزالة شكل السهم الافتراضي لضمان التنسيق */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 15px center; /* وضع السهم لليسار لأننا بالعربية */
+            text-align: right;
+            direction: rtl;
+        }
 
-        .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-gen:active { transform: scale(0.98); }
+        /* صفحة التقارير - خطوط كبيرة */
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .report-table th { background: var(--report-primary); color: white; padding: 15px; font-size: 1.2rem; }
+        .report-table td { padding: 15px; border-bottom: 1px solid #eee; font-size: 1.1rem; }
+        .score-input { width: 80px; padding: 10px; font-size: 1.2rem; text-align: center; font-weight: bold; border: 2px solid var(--report-primary); border-radius: 10px; }
 
-        /* قائمة المعلمين */
-        .staff-card { background: white; padding: 20px; border-radius: 18px; margin-bottom: 15px; box-shadow: var(--shadow); }
-        .msg-select { width: 100%; padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 1rem; }
+        .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: 800; cursor: pointer; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 100; }
-        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; cursor: pointer; flex: 1; }
+        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; cursor: pointer; flex: 1; font-size: 12px; }
         .nav-item.active { color: var(--primary); font-weight: 800; }
+        .nav-item span { display: block; font-size: 22px; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; backdrop-filter: blur(5px); }
         .modal-content { background: white; margin: 10% auto; width: 90%; max-width: 450px; padding: 25px; border-radius: 25px; }
 
-        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; font-size: 14pt; } }
+        @media print { .no-print { display: none !important; } #reportOutput { display: block !important; border: none; } }
     </style>
 </head>
 <body>
@@ -85,38 +94,29 @@
     <div id="lessons-list"></div>
 </div>
 
-<div id="view-reports" class="container no-print">
-    <div class="report-section">
-        <h3>📊 نظام التقارير الإشرافية</h3>
-        <p style="text-align:center; font-weight:bold;">قم برفع ملف العبارات أولاً:</p>
-        <input type="file" id="jsonFile" accept=".json" onchange="initApp(event)" style="margin-bottom:20px; width:100%;">
-        
-        <div id="reportForm" style="display:none;">
-            <input type="text" id="tName" placeholder="اسم المعلم المزار" class="report-input-large">
-            <input type="text" id="tInfo" placeholder="المادة / الصف" class="report-input-large">
-            
-            <table class="report-table">
-                <thead>
-                    <tr>
-                        <th>المعيار والوصف</th>
-                        <th style="width:100px;">التقدير</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-            <br>
-            <button class="btn-gen" onclick="generateFinalReport()">توليد التقرير النهائي</button>
-        </div>
-    </div>
-    <div id="reportOutput" style="display:none; background:white; padding:30px; border:2px solid #333; margin-top:20px; border-radius:15px;">
-        <div id="printArea"></div>
-        <button onclick="window.print()" class="no-print btn-gen" style="background:#444; margin-top:20px;">طباعة التقرير (PDF)</button>
-    </div>
-</div>
-
 <div id="view-staff" class="container no-print">
     <input type="text" id="searchInput" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:15px; border-radius:12px; border:2px solid #ddd; margin-bottom:15px; font-size:1.1rem;">
     <div id="staff-list"></div>
+</div>
+
+<div id="view-reports" class="container no-print">
+    <div class="report-section" style="background:white; padding:20px; border-radius:15px;">
+        <h3 style="text-align:center;">📊 نظام التقارير الإشرافية</h3>
+        <input type="file" id="jsonFile" accept=".json" onchange="initApp(event)" style="margin-bottom:20px; width:100%;">
+        <div id="reportForm" style="display:none;">
+            <input type="text" id="tName" placeholder="اسم المعلم" style="width:100%; padding:15px; font-size:1.1rem; border:1px solid #ddd; border-radius:10px; margin-bottom:10px;">
+            <input type="text" id="tInfo" placeholder="المادة / الصف" style="width:100%; padding:15px; font-size:1.1rem; border:1px solid #ddd; border-radius:10px; margin-bottom:10px;">
+            <table class="report-table">
+                <thead><tr><th>المعيار</th><th>التقدير</th></tr></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <button class="btn-gen" style="margin-top:20px;" onclick="generateFinalReport()">توليد التقرير</button>
+        </div>
+    </div>
+    <div id="reportOutput" style="display:none; background:white; padding:30px; border:2px solid #333; margin-top:20px;">
+        <div id="printArea"></div>
+        <button onclick="window.print()" class="no-print btn-gen" style="background:#444; margin-top:20px;">طباعة PDF</button>
+    </div>
 </div>
 
 <div class="bottom-nav no-print">
@@ -127,16 +127,16 @@
 
 <div id="settingsModal" class="modal no-print">
     <div class="modal-content">
-        <h3>⚙️ إعدادات المنصة</h3>
+        <h3>⚙️ الإعدادات</h3>
         <p>1. استيراد الجدول (XML):</p>
-        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
+        <input type="file" id="xmlFile" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
         <p>2. بيانات المعلمين (Excel):</p>
-        <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="importFromExcel(this)" style="width:100%; margin-bottom:15px;">
+        <input type="file" id="excelFile" onchange="importFromExcel(this)" style="width:100%; margin-bottom:15px;">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button onclick="doSim()" style="padding:12px; background:var(--primary); color:white; border:none; border-radius:10px; cursor:pointer;">🎲 محاكاة</button>
-            <button onclick="resetTime()" style="padding:12px; background:#64748b; color:white; border:none; border-radius:10px; cursor:pointer;">🕒 الآن</button>
+            <button onclick="doSim()" style="padding:12px; background:var(--primary); color:white; border:none; border-radius:10px;">🎲 محاكاة</button>
+            <button onclick="resetTime()" style="padding:12px; background:#64748b; color:white; border:none; border-radius:10px;">🕒 الآن</button>
         </div>
-        <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; border-radius:10px; border:none; background:#eee;">إغلاق</button>
+        <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; border:none; background:#eee; border-radius:10px;">إغلاق</button>
     </div>
 </div>
 
@@ -241,13 +241,14 @@ function renderStaff() {
                 <span>${ph} <button onclick="updatePhone('${name}')" style="background:none; border:none; cursor:pointer;">✏️</button></span>
             </div>
             <select class="msg-select" id="sel_${i}">
-                <option value="الرجاء التوجه للإدارة فوراً.">الرجاء التوجه للإدارة.</option>
-                <option value="نرجو الالتزام بموعد المناوبة.">الالتزام بالمناوبة.</option>
-                <option value="شكراً لجهودكم وتميزكم في الحصة.">رسالة شكر.</option>
+                <option value="الرجاء التوجه للإدارة فوراً لموضوع عاجل.">الرجاء التوجه للإدارة.</option>
+                <option value="نرجو الالتزام التام بموعد المناوبة اليوم.">الالتزام بالمناوبة.</option>
+                <option value="نرجو إرسال سجلات التحضير في أقرب وقت.">إرسال سجل التحضير.</option>
+                <option value="شكراً لجهودكم المتميزة داخل الفصل اليوم.">رسالة شكر وتقدير.</option>
             </select>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
-                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" style="padding:12px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:bold;">✉️ واتساب</button>
-                <a href="tel:${ph}" style="padding:12px; background:#3b82f6; color:white; border:none; border-radius:10px; font-weight:bold; text-align:center; text-decoration:none;">📞 اتصال</a>
+                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" style="padding:15px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:bold; font-size:1.1rem;">✉️ واتساب</button>
+                <a href="tel:${ph}" style="padding:15px; background:#3b82f6; color:white; border:none; border-radius:10px; font-weight:bold; text-align:center; text-decoration:none; font-size:1.1rem;">📞 اتصال</a>
             </div>
         </div>`;
     }).join('');
@@ -289,17 +290,14 @@ function initApp(event) {
 
 function generateFinalReport() {
     const name = document.getElementById('tName').value || "المعلم";
-    const info = document.getElementById('tInfo').value || "غير محدد";
     const results = [];
     document.querySelectorAll('.score-input').forEach(sel => {
         const match = phrasesDB.find(p => p.parentCrit === sel.dataset.m && p.parentDesc === sel.dataset.d && p["الحكم"].includes(`(${sel.value})`));
         if (match) results.push(match);
     });
-    
-    let html = `<div style="text-align:center;"><h2>تقرير زيارة إشرافية</h2><h3>المعلم: ${name} | ${info}</h3></div><hr>`;
-    html += `<h3 style="color:var(--report-primary)">✅ جوانب الإجادة (نقاط القوة):</h3><ul>` + results.slice(0,3).map(r => `<li style="margin-bottom:10px; font-size:1.1rem;">${r["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') + `</ul>`;
-    html += `<h3 style="color:#c2410c">📌 التوصيات والتطوير:</h3><ul>` + [...new Set(results.map(r => r["التوصيات"]))].slice(0,3).map(t => `<li style="margin-bottom:10px; font-size:1.1rem;">${t}</li>`).join('') + `</ul>`;
-    
+    let html = `<div style="text-align:center;"><h2>تقرير الزيارة الإشرافية</h2><h3>المعلم: ${name}</h3></div><hr>`;
+    html += `<b>✅ نقاط القوة:</b><ul>` + results.slice(0,3).map(r => `<li>${r["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') + `</ul>`;
+    html += `<b>📌 التوصيات:</b><ul>` + [...new Set(results.map(r => r["التوصيات"]))].slice(0,3).map(t => `<li>${t}</li>`).join('') + `</ul>`;
     document.getElementById('printArea').innerHTML = html;
     document.getElementById('reportOutput').style.display = 'block';
 }
@@ -310,7 +308,7 @@ function importFromExcel(input) {
         const wb = XLSX.read(e.target.result, {type: 'binary'});
         const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
         sheet.forEach(row => { if(row["اسم المعلم"]) phones[row["اسم المعلم"]] = String(row["رقم الهاتف"] || ""); });
-        await syncToCloud(); alert("تم تحديث أرقام المعلمين ✅"); renderStaff();
+        await syncToCloud(); renderStaff();
     };
     reader.readAsBinaryString(input.files[0]);
 }
