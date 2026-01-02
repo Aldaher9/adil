@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - النسخة المعتمدة</title>
+    <title>منصة القائد - نسخة التقارير المعتمدة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -31,7 +31,13 @@
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
 
         #reportModal { display: none; position: fixed; inset: 0; background: white; z-index: 2000; overflow-y: auto; padding: 20px; }
-        .report-content { border: 2px solid #000; padding: 30px; direction: rtl; line-height: 1.8; color: #000; }
+        
+        /* تنسيق التقرير للـ PDF */
+        .pdf-page { padding: 40px; background: white; direction: rtl; line-height: 1.6; color: #000; }
+        .report-header { border-bottom: 4px solid #1e3a5f; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        .info-table td { border: 1px solid #cbd5e1; padding: 12px; background: #f8fafc; }
+        .section-title { background: #f1f5f9; padding: 10px; border-right: 6px solid #1e3a5f; font-weight: 800; margin-top: 20px; margin-bottom: 10px; }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; }
         .modal-body { background: white; border-radius: 30px; padding: 30px; max-width: 500px; margin: auto; }
@@ -50,7 +56,7 @@
 <div id="login-screen" style="position:fixed; inset:0; background:var(--bg); z-index:3000; display:flex; align-items:center; justify-content:center;">
     <div style="background:white; padding:40px; border-radius:40px; text-align:center; width:90%; max-width:400px; box-shadow: var(--shadow);">
         <h1>منصة القائد ⚡</h1>
-        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800;">الدخول عبر جوجل</button>
+        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800; cursor:pointer;">الدخول عبر جوجل</button>
     </div>
 </div>
 
@@ -62,8 +68,8 @@
 </div>
 
 <div id="reportModal">
-    <div id="reportContainer" class="report-content"></div>
-    <div class="no-print" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+    <div id="allReportsContainer"></div>
+    <div class="no-print" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-bottom:40px;">
         <button class="btn-gen" style="background:#334155;" onclick="downloadPDF()">📥 تحميل PDF</button>
         <button class="btn-gen" style="background:#94a3b8;" onclick="closeReport()">إغلاق</button>
     </div>
@@ -92,7 +98,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:white; padding:15px; border-radius:20px;">
         <button onclick="deleteSelected()" style="background:#ef4444; color:white; border:none; padding:10px; border-radius:12px;">🗑️ حذف</button>
         <h3 style="margin:0;">📜 السجل</h3>
-        <button onclick="exportSelectedAsPDF()" style="background:var(--primary); color:white; border:none; padding:10px; border-radius:12px;">📥 تصدير PDF</button>
+        <button onclick="exportSelectedAsPDF()" style="background:var(--primary); color:white; border:none; padding:10px; border-radius:12px;">📥 تصدير المختار</button>
     </div>
     <div id="history-list"></div>
 </div>
@@ -155,7 +161,6 @@ async function init() {
 }
 async function sync() { await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data, phrasesDB, visitHistory }); }
 
-// منطق الوقت والمحاكاة المصلح
 function refresh() {
     const now = new Date();
     let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
@@ -190,7 +195,6 @@ function doRandomSim() {
 
 function resetTime() { isSim = false; document.getElementById('sim-status').style.display = 'none'; refresh(); closeSettings(); }
 
-// التقرير الفني المعتمد (أفضل 4 وأسوأ 4 أقل من 2)
 function saveComplexVisit() {
     const t = document.getElementById('v_teacher').value, l = document.getElementById('v_lesson').value;
     if(!t || !l) return alert("يرجى إكمال البيانات");
@@ -198,88 +202,91 @@ function saveComplexVisit() {
     const serialNum = "REF-" + Date.now().toString().slice(-6);
     const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, v: parseInt(s.value) || 2 }));
     
-    // 1. أفضل 4 بنود (جوانب الإجادة)
     const best4 = [...scores].sort((a,b)=>b.v - a.v).slice(0,4).map(s => {
         const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
         return p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : s.m;
     });
 
-    // 2. أسوأ 4 بنود (جوانب التحسين) - بشرط التقييم أقل من 2
-    const worst4 = [...scores].sort((a,b)=>a.v - b.v)
-                    .filter(s => s.v < 2)
-                    .slice(0,4)
-                    .map(s => {
-                        const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
-                        return {
-                            criteria: s.m,
-                            desc: p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "يحتاج تطوير",
-                            rec: p ? p["التوصيات"] : "متابعة الأداء"
-                        };
-                    });
+    const worst4 = [...scores].sort((a,b)=>a.v - b.v).filter(s => s.v < 2).slice(0,4).map(s => {
+        const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
+        return { criteria: s.m, desc: p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "تطوير مستمر", rec: p ? p["التوصيات"] : "متابعة" };
+    });
 
     const v = { id: Date.now(), serial: serialNum, date: new Date().toLocaleDateString('ar-EG'), teacher: t, lesson: l, class: document.getElementById('v_class').value, period: document.getElementById('v_period').value, strengths: best4, improvements: worst4 };
-    visitHistory.unshift(v); sync(); renderHistory(); showFullReport(v);
-    document.getElementById('v_lesson').value = ""; // مسح العنوان
+    visitHistory.unshift(v); sync(); renderHistory(); 
+    showMultipleReports([v]);
+    document.getElementById('v_lesson').value = ""; 
 }
 
-function showFullReport(v) {
-    const html = `
-        <div id="pdf-content">
-            <div style="display:flex; justify-content:space-between; border-bottom:3px solid #000; padding-bottom:10px; margin-bottom:20px;">
-                <div><h2 style="margin:0;">تقرير زيارة فنية</h2><p>منصة القائد</p></div>
-                <div style="text-align:left;"><b>رقم المرجع:</b> ${v.serial}</div>
-            </div>
-            <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:20px;">
-                <tr><td style="border:1px solid #000; padding:8px;"><b>المعلم:</b> ${v.teacher}</td><td style="border:1px solid #000; padding:8px;"><b>التاريخ:</b> ${v.date}</td></tr>
-                <tr><td style="border:1px solid #000; padding:8px;"><b>الصف:</b> ${v.class}</td><td style="border:1px solid #000; padding:8px;"><b>الحصة:</b> ${v.period}</td></tr>
-                <tr><td colspan="2" style="border:1px solid #000; padding:8px;"><b>الموضوع:</b> ${v.lesson}</td></tr>
-            </table>
-            <h3 style="background:#eee; padding:8px; border-right:5px solid green;">✅ جوانب الإجادة:</h3>
-            <ol>${v.strengths.map(s=>`<li>${s}</li>`).join('')}</ol>
-            
-            <h3 style="background:#eee; padding:8px; border-right:5px solid red;">⚠️ جوانب التحسين:</h3>
-            <ul>${v.improvements.map(i=>`<li><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد</li>"}</ul>
+function showMultipleReports(reports) {
+    let htmlContent = "";
+    reports.forEach((v, index) => {
+        htmlContent += `
+            <div class="pdf-page" style="${index > 0 ? 'page-break-before: always;' : ''}">
+                <div class="report-header">
+                    <div><h1 style="margin:0; color:#1e3a5f;">تقرير زيارة فنية</h1><p>سجل القائد التعليمي</p></div>
+                    <div style="text-align:left;"><b>الرقم المرجعي:</b> ${v.serial}</div>
+                </div>
+                <table class="info-table">
+                    <tr><td><b>المعلم:</b> ${v.teacher}</td><td><b>التاريخ:</b> ${v.date}</td></tr>
+                    <tr><td><b>الصف:</b> ${v.class}</td><td><b>الحصة:</b> ${v.period}</td></tr>
+                    <tr><td colspan="2"><b>موضوع الدرس:</b> ${v.lesson}</td></tr>
+                </table>
+                <div class="section-title">✅ جوانب الإجادة</div>
+                <ul style="padding-right:20px;">${v.strengths.map(s=>`<li style="margin-bottom:8px;">${s}</li>`).join('')}</ul>
+                
+                <div class="section-title">⚠️ جوانب التحسين</div>
+                <ul style="padding-right:20px;">${v.improvements.map(i=>`<li style="margin-bottom:8px;"><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد (الأداء ضمن المعايير)</li>"}</ul>
 
-            <h3 style="background:#eee; padding:8px; border-right:5px solid orange;">💡 التوصيات:</h3>
-            <ol>${v.improvements.map(i=>`<li>${i.rec}</li>`).join('') || "<li>الاستمرار في التميز</li>"}</ol>
-            
-            <div style="margin-top:20px; text-align:center; font-style:italic; border-top:1px solid #ccc; padding-top:10px;">
-                " شكر وتقدير للمعلم على جهوده المبذولة في الحصة الدراسية "
+                <div class="section-title">💡 التوصيات المقترحة</div>
+                <ol style="padding-right:20px;">${v.improvements.map(i=>`<li style="margin-bottom:8px;">${i.rec}</li>`).join('') || "<li>الاستمرار في العطاء المتميز وتطوير الأدوات التقنية</li>"}</ol>
+                
+                <div style="margin-top:50px; text-align:center; font-style:italic; color:#64748b; border-top:1px solid #e2e8f0; padding-top:20px;">
+                    " تم إنشاء هذا التقرير آلياً عبر منصة القائد لضمان جودة الأداء التعليمي "
+                </div>
             </div>
-        </div>
-    `;
-    document.getElementById('reportContainer').innerHTML = html;
+        `;
+    });
+    document.getElementById('allReportsContainer').innerHTML = htmlContent;
     document.getElementById('reportModal').style.display='block';
 }
 
-// الوظائف المساعدة
+function exportSelectedAsPDF() {
+    const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
+    if(!ids.length) return alert("يرجى اختيار زيارة واحدة على الأقل من القائمة");
+    const selectedReports = visitHistory.filter(h => ids.includes(h.id));
+    showMultipleReports(selectedReports);
+}
+
+function downloadPDF() {
+    const element = document.getElementById('allReportsContainer');
+    const opt = {
+        margin: 0,
+        filename: `تقارير_الزيارات_${Date.now()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+}
+
 function startV(t,c,p) { 
     tab('view-visits', document.querySelector('[onclick*="view-visits"]')); 
     document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "حصة "+p;
     document.getElementById('v_lesson').value = ""; document.querySelectorAll('.score-select').forEach(s => s.value = "2");
 }
-function downloadPDF() { html2pdf().from(document.getElementById('pdf-content')).save(`تقرير_${Date.now()}.pdf`); }
-function exportSelectedAsPDF() {
-    const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
-    if(!ids.length) return alert("اختر زيارة");
-    showFullReport(visitHistory.find(h => h.id === ids[0]));
-}
 function deleteSelected() {
     const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
-    if(!ids.length || !confirm("حذف؟")) return;
+    if(!ids.length || !confirm("هل أنت متأكد من حذف السجلات المختارة؟")) return;
     visitHistory = visitHistory.filter(v => !ids.includes(v.id)); sync(); renderHistory();
 }
 function renderVisitForm() {
     let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
-    document.getElementById('criteriaTable').innerHTML = list.map(m => `
-        <tr style="border-bottom:1px solid #eee;">
-            <td style="padding:10px 0;"><b>${m}</b></td>
-            <td style="text-align:left;"><select class="score-select" data-m="${m}"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td>
-        </tr>`).join('');
+    document.getElementById('criteriaTable').innerHTML = list.map(m => `<tr style="border-bottom:1px solid #eee;"><td style="padding:12px 0;"><b>${m}</b></td><td style="text-align:left;"><select class="score-select" data-m="${m}"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td></tr>`).join('');
 }
 function renderHistory() {
     document.getElementById('history-list').innerHTML = visitHistory.map(v => `
-        <div class="history-item"><input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;"><div style="padding:0 40px; cursor:pointer;" onclick='showFullReport(${JSON.stringify(v)})'><b>${v.teacher}</b> <small>(${v.serial})</small><br><small>${v.date} - ${v.class}</small></div></div>`).join('');
+        <div class="history-item"><input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;"><div style="padding:0 40px; cursor:pointer;" onclick='showMultipleReports([${JSON.stringify(v)}])'><b>${v.teacher}</b> <small style="color:var(--accent);">(${v.serial})</small><br><small>${v.date} - ${v.class}</small></div></div>`).join('');
 }
 function renderStaff(f) {
     const teachers = Object.values(data.teachers || {}).filter(n => n.includes(f)).sort();
