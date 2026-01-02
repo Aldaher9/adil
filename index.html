@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - نسخة التقارير المعتمدة</title>
+    <title>منصة القائد - النسخة المعتمدة نهائياً</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -17,6 +17,7 @@
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
         body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 90px; }
         
+        /* الواجهة */
         .header { background: var(--blue-grad); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 18px; border-radius: 14px; cursor: pointer; font-weight: bold; }
@@ -24,23 +25,22 @@
         .container { padding: 20px; display: none; }
         .container.active { display: block; }
 
-        .lesson-card, .history-item { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; }
+        .lesson-card, .history-item { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); }
         .class-badge { background: var(--primary); color: white; padding: 12px; border-radius: 15px; font-weight: 800; min-width: 70px; text-align: center; margin-left: 15px; }
         
         .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
 
-        #reportModal { display: none; position: fixed; inset: 0; background: white; z-index: 2000; overflow-y: auto; padding: 20px; }
-        
-        /* تنسيق التقرير للـ PDF */
-        .pdf-page { padding: 40px; background: white; direction: rtl; line-height: 1.6; color: #000; }
-        .report-header { border-bottom: 4px solid #1e3a5f; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
-        .info-table td { border: 1px solid #cbd5e1; padding: 12px; background: #f8fafc; }
-        .section-title { background: #f1f5f9; padding: 10px; border-right: 6px solid #1e3a5f; font-weight: 800; margin-top: 20px; margin-bottom: 10px; }
-        
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; }
-        .modal-body { background: white; border-radius: 30px; padding: 30px; max-width: 500px; margin: auto; }
+        /* تنسيق التقرير الرسمي (المطلوب) */
+        #reportModal { display: none; position: fixed; inset: 0; background: white; z-index: 2000; overflow-y: auto; padding: 10px; }
+        .pdf-page { background: white; padding: 30px; border: 2px solid #000; margin-bottom: 20px; direction: rtl; }
+        .report-title-box { border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .info-table { width: 100%; border: 1px solid #000; border-collapse: collapse; margin-bottom: 20px; }
+        .info-table td { border: 1px solid #000; padding: 10px; background: #f9f9f9; font-weight: bold; }
+        .section-header { background: #eeeeee; padding: 8px; border: 1px solid #000; font-weight: 800; margin-top: 15px; }
+        .strengths-border { border-right: 5px solid green; }
+        .improvements-border { border-right: 5px solid red; }
+        .recs-border { border-right: 5px solid orange; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #e2e8f0; z-index: 100; }
         .nav-item { text-align: center; color: #94a3b8; background: none; border: none; flex: 1; font-weight: bold; cursor: pointer; }
@@ -48,7 +48,8 @@
 
         .score-select { padding: 8px; border-radius: 10px; border: 2px solid var(--primary); font-weight: bold; }
         .check-box { width: 22px; height: 22px; margin-left: 10px; cursor: pointer; }
-        .msg-select { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #cbd5e1; margin-top: 10px; background: #f8fafc; font-weight: 600; color: var(--primary); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; }
+        .modal-body { background: white; border-radius: 30px; padding: 30px; max-width: 500px; margin: auto; }
     </style>
 </head>
 <body style="display:none;">
@@ -69,7 +70,7 @@
 
 <div id="reportModal">
     <div id="allReportsContainer"></div>
-    <div class="no-print" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-bottom:40px;">
+    <div class="no-print" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:20px;">
         <button class="btn-gen" style="background:#334155;" onclick="downloadPDF()">📥 تحميل PDF</button>
         <button class="btn-gen" style="background:#94a3b8;" onclick="closeReport()">إغلاق</button>
     </div>
@@ -161,6 +162,7 @@ async function init() {
 }
 async function sync() { await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data, phrasesDB, visitHistory }); }
 
+// المحاكاة والوقت
 function refresh() {
     const now = new Date();
     let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
@@ -168,39 +170,31 @@ function refresh() {
     const list = document.getElementById('lessons-list');
     const p = (data.periods || []).find(p => {
         const cur = (str) => { const [h, m] = str.split(':'); return parseInt(h)*60 + parseInt(m); };
-        const nowV = cur(t);
-        return nowV >= cur(p.s) && nowV <= cur(p.e);
+        return cur(t) >= cur(p.s) && cur(t) <= cur(p.e);
     });
     if(p && data.lessons) {
-        let cur = data.lessons.filter(l => l.d == d && l.p == p.id)
-                  .sort((a,b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", undefined, {numeric: true}));
-        if(cur.length > 0) {
-            list.innerHTML = cur.map(l => {
-                const tN = data.teachers[l.t], cN = data.classes[l.c];
-                return `<div class="lesson-card"><div style="display:flex; align-items:center;"><div class="class-badge">${cN||'..'}</div><div style="flex:1;"><b>${tN}</b></div><button onclick="startV('${tN}','${cN}','${l.p}')" style="background:none; border:none; font-size:1.5rem;">📝</button></div></div>`;
-            }).join('');
-        } else { list.innerHTML = `<p style='text-align:center; padding:20px;'>لا توجد حصص</p>`; }
-    } else { list.innerHTML = `<p style='text-align:center; padding:40px;'>خارج الدوام</p>`; }
+        let cur = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a,b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", undefined, {numeric: true}));
+        list.innerHTML = cur.map(l => `<div class="lesson-card"><div style="display:flex; align-items:center;"><div class="class-badge">${data.classes[l.c]||'..'}</div><div style="flex:1;"><b>${data.teachers[l.t]}</b></div><button onclick="startV('${data.teachers[l.t]}','${data.classes[l.c]}','${l.p}')" style="background:none; border:none; font-size:1.5rem;">📝</button></div></div>`).join('');
+    } else { list.innerHTML = "<p style='text-align:center;'>لا توجد حصص حالياً</p>"; }
 }
 
 function doRandomSim() {
-    if(!data.lessons || data.lessons.length === 0) return alert("ارفع الجدول");
+    if(!data.lessons.length) return alert("ارفع الجدول أولاً");
     isSim = true; const rl = data.lessons[Math.floor(Math.random() * data.lessons.length)];
-    const pd = data.periods.find(p => p.id == rl.p);
-    sDay = rl.d; sTime = pd ? pd.s : "08:00";
+    sDay = rl.d; sTime = data.periods.find(p=>p.id==rl.p)?.s || "08:00";
     document.getElementById('sim-status').style.display = 'block';
-    document.getElementById('sim-status').innerText = `🎲 محاكاة: يوم ${sDay} | حصة ${rl.p}`;
+    document.getElementById('sim-status').innerText = `🎲 وضع المحاكاة: يوم ${sDay} | حصة ${rl.p}`;
     refresh(); closeSettings();
 }
-
 function resetTime() { isSim = false; document.getElementById('sim-status').style.display = 'none'; refresh(); closeSettings(); }
 
+// منطق التقرير المعتمد
 function saveComplexVisit() {
     const t = document.getElementById('v_teacher').value, l = document.getElementById('v_lesson').value;
-    if(!t || !l) return alert("يرجى إكمال البيانات");
+    if(!t || !l) return alert("أكمل البيانات");
     
-    const serialNum = "REF-" + Date.now().toString().slice(-6);
-    const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, v: parseInt(s.value) || 2 }));
+    const serial = "REF-" + Date.now().toString().slice(-6);
+    const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, v: parseInt(s.value) }));
     
     const best4 = [...scores].sort((a,b)=>b.v - a.v).slice(0,4).map(s => {
         const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
@@ -209,92 +203,71 @@ function saveComplexVisit() {
 
     const worst4 = [...scores].sort((a,b)=>a.v - b.v).filter(s => s.v < 2).slice(0,4).map(s => {
         const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
-        return { criteria: s.m, desc: p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "تطوير مستمر", rec: p ? p["التوصيات"] : "متابعة" };
+        return { criteria: s.m, desc: p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "تطوير", rec: p ? p["التوصيات"] : "متابعة" };
     });
 
-    const v = { id: Date.now(), serial: serialNum, date: new Date().toLocaleDateString('ar-EG'), teacher: t, lesson: l, class: document.getElementById('v_class').value, period: document.getElementById('v_period').value, strengths: best4, improvements: worst4 };
+    const v = { id: Date.now(), serial, date: new Date().toLocaleDateString('ar-EG'), teacher: t, lesson: l, class: document.getElementById('v_class').value, period: document.getElementById('v_period').value, strengths: best4, improvements: worst4 };
     visitHistory.unshift(v); sync(); renderHistory(); 
     showMultipleReports([v]);
     document.getElementById('v_lesson').value = ""; 
 }
 
 function showMultipleReports(reports) {
-    let htmlContent = "";
-    reports.forEach((v, index) => {
-        htmlContent += `
-            <div class="pdf-page" style="${index > 0 ? 'page-break-before: always;' : ''}">
-                <div class="report-header">
-                    <div><h1 style="margin:0; color:#1e3a5f;">تقرير زيارة فنية</h1><p>سجل القائد التعليمي</p></div>
-                    <div style="text-align:left;"><b>الرقم المرجعي:</b> ${v.serial}</div>
+    let html = "";
+    reports.forEach((v, idx) => {
+        html += `
+            <div class="pdf-page" style="${idx > 0 ? 'page-break-before: always;' : ''}">
+                <div class="report-title-box">
+                    <div><h1 style="margin:0;">تقرير زيارة فنية</h1><p>منصة القائد للإدارة</p></div>
+                    <div style="text-align:left;"><b>رقم المرجع:</b> ${v.serial}</div>
                 </div>
                 <table class="info-table">
-                    <tr><td><b>المعلم:</b> ${v.teacher}</td><td><b>التاريخ:</b> ${v.date}</td></tr>
-                    <tr><td><b>الصف:</b> ${v.class}</td><td><b>الحصة:</b> ${v.period}</td></tr>
-                    <tr><td colspan="2"><b>موضوع الدرس:</b> ${v.lesson}</td></tr>
+                    <tr><td>المعلم: ${v.teacher}</td><td>التاريخ: ${v.date}</td></tr>
+                    <tr><td>الصف: ${v.class}</td><td>الحصة: ${v.period}</td></tr>
+                    <tr><td colspan="2">موضوع الدرس: ${v.lesson}</td></tr>
                 </table>
-                <div class="section-title">✅ جوانب الإجادة</div>
-                <ul style="padding-right:20px;">${v.strengths.map(s=>`<li style="margin-bottom:8px;">${s}</li>`).join('')}</ul>
+                <div class="section-header strengths-border">✅ جوانب الإجادة:</div>
+                <ol>${v.strengths.map(s=>`<li>${s}</li>`).join('')}</ol>
                 
-                <div class="section-title">⚠️ جوانب التحسين</div>
-                <ul style="padding-right:20px;">${v.improvements.map(i=>`<li style="margin-bottom:8px;"><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد (الأداء ضمن المعايير)</li>"}</ul>
+                <div class="section-header improvements-border">⚠️ جوانب التحسين:</div>
+                <ul>${v.improvements.map(i=>`<li><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد</li>"}</ul>
 
-                <div class="section-title">💡 التوصيات المقترحة</div>
-                <ol style="padding-right:20px;">${v.improvements.map(i=>`<li style="margin-bottom:8px;">${i.rec}</li>`).join('') || "<li>الاستمرار في العطاء المتميز وتطوير الأدوات التقنية</li>"}</ol>
+                <div class="section-header recs-border">💡 التوصيات:</div>
+                <ol>${v.improvements.map(i=>`<li>${i.rec}</li>`).join('') || "<li>الاستمرار في الأداء المتميز</li>"}</ol>
                 
-                <div style="margin-top:50px; text-align:center; font-style:italic; color:#64748b; border-top:1px solid #e2e8f0; padding-top:20px;">
-                    " تم إنشاء هذا التقرير آلياً عبر منصة القائد لضمان جودة الأداء التعليمي "
+                <div style="margin-top:30px; text-align:center; font-weight:bold; border-top:1px solid #000; padding-top:10px;">
+                    " شكراً لجهودكم في الميدان التربوي "
                 </div>
             </div>
         `;
     });
-    document.getElementById('allReportsContainer').innerHTML = htmlContent;
+    document.getElementById('allReportsContainer').innerHTML = html;
     document.getElementById('reportModal').style.display='block';
 }
 
 function exportSelectedAsPDF() {
     const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
-    if(!ids.length) return alert("يرجى اختيار زيارة واحدة على الأقل من القائمة");
-    const selectedReports = visitHistory.filter(h => ids.includes(h.id));
-    showMultipleReports(selectedReports);
+    if(!ids.length) return alert("اختر من القائمة");
+    showMultipleReports(visitHistory.filter(h => ids.includes(h.id)));
 }
 
 function downloadPDF() {
     const element = document.getElementById('allReportsContainer');
-    const opt = {
-        margin: 0,
-        filename: `تقارير_الزيارات_${Date.now()}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save();
+    html2pdf().from(element).set({ margin: 10, filename: `تقرير_${Date.now()}.pdf`, jsPDF: { format: 'a4', orientation: 'portrait' } }).save();
 }
 
-function startV(t,c,p) { 
-    tab('view-visits', document.querySelector('[onclick*="view-visits"]')); 
-    document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "حصة "+p;
-    document.getElementById('v_lesson').value = ""; document.querySelectorAll('.score-select').forEach(s => s.value = "2");
-}
-function deleteSelected() {
-    const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
-    if(!ids.length || !confirm("هل أنت متأكد من حذف السجلات المختارة؟")) return;
-    visitHistory = visitHistory.filter(v => !ids.includes(v.id)); sync(); renderHistory();
-}
+// الدوال النمطية
+function startV(t,c,p) { tab('view-visits', document.querySelector('[onclick*="view-visits"]')); document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "حصة "+p; document.getElementById('v_lesson').value = ""; document.querySelectorAll('.score-select').forEach(s => s.value = "2"); }
 function renderVisitForm() {
     let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
-    document.getElementById('criteriaTable').innerHTML = list.map(m => `<tr style="border-bottom:1px solid #eee;"><td style="padding:12px 0;"><b>${m}</b></td><td style="text-align:left;"><select class="score-select" data-m="${m}"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td></tr>`).join('');
+    document.getElementById('criteriaTable').innerHTML = list.map(m => `<tr><td style="padding:10px 0;"><b>${m}</b></td><td style="text-align:left;"><select class="score-select" data-m="${m}"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td></tr>`).join('');
 }
 function renderHistory() {
-    document.getElementById('history-list').innerHTML = visitHistory.map(v => `
-        <div class="history-item"><input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;"><div style="padding:0 40px; cursor:pointer;" onclick='showMultipleReports([${JSON.stringify(v)}])'><b>${v.teacher}</b> <small style="color:var(--accent);">(${v.serial})</small><br><small>${v.date} - ${v.class}</small></div></div>`).join('');
+    document.getElementById('history-list').innerHTML = visitHistory.map(v => `<div class="history-item"><input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;"><div style="padding:0 40px; cursor:pointer;" onclick='showMultipleReports([${JSON.stringify(v)}])'><b>${v.teacher}</b> <small>(${v.serial})</small><br><small>${v.date} - ${v.class}</small></div></div>`).join('');
 }
 function renderStaff(f) {
     const teachers = Object.values(data.teachers || {}).filter(n => n.includes(f)).sort();
-    document.getElementById('staff-list').innerHTML = teachers.map(n => `<div class="lesson-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><b>${n}</b><br><small>${phones[n] || ''}</small></div><select class="msg-select" style="width:130px;" onchange="sendWhatsApp('${n}', this.value); this.selectedIndex=0;"><option value="">تواصل 💬</option><option value="office">استدعاء</option></select></div></div>`).join('');
-}
-function sendWhatsApp(teacher, type) {
-    const phone = (phones[teacher] || "").replace(/\s+/g, ''); if(!phone) return alert("لا يوجد رقم.");
-    const msgs = { office: `أ/ ${teacher}، يرجى مراجعة المكتب.` }; window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgs[type])}`);
+    document.getElementById('staff-list').innerHTML = teachers.map(n => `<div class="lesson-card"><b>${n}</b><br><small>${phones[n] || ''}</small></div>`).join('');
 }
 function tab(id, b) { document.querySelectorAll('.container').forEach(c=>c.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); b.classList.add('active'); }
 function openSettings() { document.getElementById('settingsModal').style.display='block'; }
@@ -324,6 +297,7 @@ function loadExcel(input) {
     };
     r.readAsBinaryString(input.files[0]);
 }
+function deleteSelected() { const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id)); visitHistory = visitHistory.filter(v => !ids.includes(v.id)); sync(); renderHistory(); }
 </script>
 </body>
 </html>
