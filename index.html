@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - النسخة النهائية المعتمدة</title>
+    <title>منصة القائد - النسخة الاحترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -24,10 +24,10 @@
         .container { padding: 20px; display: none; }
         .container.active { display: block; }
 
-        .lesson-card, .history-item { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); position: relative; border: 1px solid rgba(0,0,0,0.02); }
+        .lesson-card, .history-item { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; }
         .class-badge { background: var(--primary); color: white; padding: 12px; border-radius: 15px; font-weight: 800; min-width: 70px; text-align: center; margin-left: 15px; }
         
-        .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 10px; }
+        .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
 
         .msg-select { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #cbd5e1; margin-top: 10px; background: #f8fafc; font-weight: 600; color: var(--primary); }
@@ -42,12 +42,8 @@
         .nav-item { text-align: center; color: #94a3b8; background: none; border: none; flex: 1; font-weight: bold; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
 
+        .score-select { padding: 8px; border-radius: 10px; border: 2px solid var(--primary); font-weight: bold; }
         .check-box { width: 22px; height: 22px; margin-left: 10px; cursor: pointer; }
-
-        @media print {
-            .no-print { display: none !important; }
-            #reportModal { display: block !important; position: absolute; top: 0; width: 100%; }
-        }
     </style>
 </head>
 <body style="display:none;">
@@ -55,7 +51,7 @@
 <div id="login-screen" style="position:fixed; inset:0; background:var(--bg); z-index:3000; display:flex; align-items:center; justify-content:center;">
     <div style="background:white; padding:40px; border-radius:40px; text-align:center; width:90%; max-width:400px; box-shadow: var(--shadow);">
         <h1>منصة القائد ⚡</h1>
-        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800; cursor:pointer;">الدخول عبر جوجل</button>
+        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800;">الدخول عبر جوجل</button>
     </div>
 </div>
 
@@ -75,7 +71,7 @@
 </div>
 
 <div id="view-schedule" class="container active no-print">
-    <div id="sim-status" style="display:none; background:var(--accent); color:white; padding:12px; border-radius:15px; text-align:center; margin-bottom:15px; font-weight:800;"></div>
+    <div id="sim-status" style="display:none; background:var(--accent); color:white; padding:12px; border-radius:15px; text-align:center; margin-bottom:15px;"></div>
     <div id="lessons-list"></div>
 </div>
 
@@ -88,16 +84,16 @@
             <input type="text" id="v_class" placeholder="الصف" class="styled-input">
             <input type="text" id="v_period" placeholder="الحصة" class="styled-input">
         </div>
-        <table style="width:100%; margin-top:15px; border-collapse: collapse;"><tbody id="criteriaTable"></tbody></table>
+        <table style="width:100%; margin-top:15px;"><tbody id="criteriaTable"></tbody></table>
         <button class="btn-gen" style="margin-top:20px;" onclick="saveComplexVisit()">حفظ وتوليد التقرير</button>
     </div>
 </div>
 
 <div id="view-history" class="container no-print">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:white; padding:15px; border-radius:20px;">
-        <button onclick="deleteSelected()" style="background:#ef4444; color:white; border:none; padding:10px; border-radius:12px; font-weight:bold;">🗑️ حذف</button>
+        <button onclick="deleteSelected()" style="background:#ef4444; color:white; border:none; padding:10px; border-radius:12px;">🗑️ حذف</button>
         <h3 style="margin:0;">📜 السجل</h3>
-        <button onclick="exportSelectedAsPDF()" style="background:var(--primary); color:white; border:none; padding:10px; border-radius:12px; font-weight:bold;">📥 تصدير PDF</button>
+        <button onclick="exportSelectedAsPDF()" style="background:var(--primary); color:white; border:none; padding:10px; border-radius:12px;">📥 تصدير PDF</button>
     </div>
     <div id="history-list"></div>
 </div>
@@ -110,8 +106,8 @@
 <div id="settingsModal" class="modal no-print">
     <div class="modal-body">
         <h2 style="text-align:center;">⚙️ الإعدادات</h2>
-        <button onclick="doRandomSim()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:10px;">🎲 محاكاة حصة عشوائية</button>
-        <button onclick="resetTime()" style="width:100%; padding:15px; background:#64748b; color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:20px;">🕒 الوقت الحالي</button>
+        <button onclick="doRandomSim()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:15px; margin-bottom:10px;">🎲 محاكاة حصة عشوائية</button>
+        <button onclick="resetTime()" style="width:100%; padding:15px; background:#64748b; color:white; border:none; border-radius:15px; margin-bottom:20px;">🕒 الوقت الحالي</button>
         <div style="background:#f0fdf4; padding:15px; border-radius:20px;">
             <input type="file" accept=".xml" onchange="loadXML(this)" style="margin-bottom:10px; width:100%;">
             <input type="file" accept=".json" onchange="loadJSON(this)" style="margin-bottom:10px; width:100%;">
@@ -160,47 +156,49 @@ async function init() {
 }
 async function sync() { await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data, phrasesDB, visitHistory }); }
 
-function sendWhatsApp(teacher, type, info = {}) {
-    const phone = (phones[teacher] || "").replace(/\s+/g, '');
-    if(!phone) return alert("لا يوجد رقم مسجل لهذا المعلم.");
-    const msgs = {
-        delay: `أ/ ${teacher} الموقر، نرجو التكرم بالعلم بأن طلاب صف (${info.c}) بانتظاركم في (الحصة ${info.p})، عسى أن يكون المانع خيراً. شاكرين حرصكم.`,
-        office: `تحية طيبة أ/ ${teacher}، يرجى التكرم بالحضور للمكتب عند توفر وقت لديكم لأمر مهني يسير. شكراً لتعاونكم.`,
-        duty: `السلام عليكم أ/ ${teacher}، لوحظ عدم تواجدكم في موقع المناوبة المخصص لكم، يرجى المتابعة للأهمية. وفقكم الله.`,
-        assembly: `أخي أ/ ${teacher}، نؤكد على أهمية التواجد مع الطلاب في ساحة الطابور لتعزيز الانضباط. تقبل تحياتي.`,
-        reserve: `أ/ ${teacher} الموقر، نرجو التكرم بمتابعة حصة الاحتياط المسندة إليكم حالياً لضمان سير اليوم الدراسي. جزيتم خيراً.`
-    };
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgs[type])}`);
-}
-
 function saveComplexVisit() {
     const t = document.getElementById('v_teacher').value, l = document.getElementById('v_lesson').value;
     if(!t || !l) return alert("يرجى ملء البيانات");
-    const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, v: parseInt(s.value) || 0 }));
+    
+    // توليد رقم تسلسلي ذكي
+    const serialNum = "REF-" + Date.now().toString().slice(-6);
+    const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, v: parseInt(s.value) || 2 }));
     
     const sorted = [...scores].sort((a,b)=>b.v - a.v);
     const top4 = sorted.slice(0,4).map(s => phrasesDB.find(p=>p["المعيار / البند"]===s.m && p["الحكم"].includes(`(${s.v})`))?.["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] || s.m);
     
-    // رصد جوانب التحسين (أقل من 2) والتوصيات المقابلة
     const weakItems = scores.filter(s=>s.v > 0 && s.v <= 2).map(s => {
         const f = phrasesDB.find(p=>p["المعيار / البند"]===s.m && p["الحكم"].includes(`(${s.v})`));
-        return { 
-            criteria: s.m, 
-            desc: f?.["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] || "يحتاج تحسين",
-            rec: f?.["التوصيات"] || "متابعة الأداء" 
-        };
+        return { criteria: s.m, desc: f?.["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] || "يحتاج تحسين", rec: f?.["التوصيات"] || "متابعة الأداء" };
     });
 
-    const v = { id: Date.now(), date: new Date().toLocaleDateString('ar-EG'), teacher: t, lesson: l, class: document.getElementById('v_class').value, period: document.getElementById('v_period').value, strengths: top4, improvements: weakItems };
-    visitHistory.unshift(v); sync(); renderHistory(); showFullReport(v);
+    const v = { 
+        id: Date.now(), 
+        serial: serialNum,
+        date: new Date().toLocaleDateString('ar-EG'), 
+        teacher: t, lesson: l, 
+        class: document.getElementById('v_class').value, 
+        period: document.getElementById('v_period').value, 
+        strengths: top4, 
+        improvements: weakItems 
+    };
+
+    visitHistory.unshift(v); 
+    sync(); 
+    renderHistory(); 
+    showFullReport(v);
+    
+    // مسح خانة العنوان والنموذج للبدء بجديد
+    document.getElementById('v_lesson').value = "";
+    document.querySelectorAll('.score-select').forEach(s => s.value = "2");
 }
 
 function showFullReport(v) {
     const html = `
         <div id="pdf-content">
-            <div style="text-align:center; border-bottom:3px solid #000; padding-bottom:10px; margin-bottom:20px;">
-                <h1 style="margin:0;">تقرير زيارة فنية</h1>
-                <p>منصة القائد للإدارة التربوية</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #000; padding-bottom:10px; margin-bottom:20px;">
+                <div><h1 style="margin:0;">تقرير زيارة فنية</h1><p>منصة القائد للإدارة التربوية</p></div>
+                <div style="text-align:left;"><b>رقم المرجع:</b> ${v.serial}</div>
             </div>
             <table style="width:100%; border:1px solid #000; margin-bottom:20px; background:#f9f9f9; border-collapse:collapse;">
                 <tr><td style="padding:10px; border:1px solid #000;"><b>المعلم:</b> ${v.teacher}</td><td style="padding:10px; border:1px solid #000;"><b>التاريخ:</b> ${v.date}</td></tr>
@@ -213,8 +211,8 @@ function showFullReport(v) {
             <h3 style="background:#eee; padding:8px; border-right:5px solid red;">⚠️ جوانب التحسين:</h3>
             <ul>${v.improvements.map(i=>`<li><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد</li>"}</ul>
 
-            <div style="margin-top:20px; padding:20px; border:1px dashed #000;">
-                <p style="font-weight:bold; text-align:center;">" نتقدم بالشكر الجزيل للمعلم على أدائه الحصة، ونضع بين يديه التوصيات التالية لمزيد من التطور المهني: "</p>
+            <div style="margin-top:20px; padding:20px; border:1px dashed #000; background:#fffcf0;">
+                <p style="font-weight:bold; text-align:center;">" نتقدم بالشكر الجزيل للمعلم على أدائه الحصة، ونضع بين يديه التوصيات التالية: "</p>
                 <ol>${v.improvements.map(i=>`<li>${i.rec}</li>`).join('') || "<li>الاستمرار في العطاء المتميز</li>"}</ol>
             </div>
         </div>
@@ -223,26 +221,22 @@ function showFullReport(v) {
     document.getElementById('reportModal').style.display='block';
 }
 
-function downloadPDF() {
-    const element = document.getElementById('pdf-content');
-    html2pdf().from(element).save(`تقرير_${Date.now()}.pdf`);
-}
-
-function exportSelectedAsPDF() {
-    const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
-    if(!ids.length) return alert("اختر زيارة واحدة على الأقل");
-    const v = visitHistory.find(h => h.id === ids[0]);
-    showFullReport(v);
-}
-
-function renderHistory() {
-    document.getElementById('history-list').innerHTML = visitHistory.map(v => `
-        <div class="history-item">
-            <input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;">
-            <div style="padding:0 40px; cursor:pointer;" onclick='showFullReport(${JSON.stringify(v)})'>
-                <b>${v.teacher}</b><br><small>${v.date} - ${v.class}</small>
-            </div>
-        </div>`).join('');
+function renderVisitForm() {
+    let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
+    // تعيين القيمة الافتراضية 2 لكل البنود
+    document.getElementById('criteriaTable').innerHTML = list.map(m => `
+        <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:10px 0;"><b>${m}</b></td>
+            <td style="text-align:left;">
+                <select class="score-select" data-m="${m}">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </td>
+        </tr>`).join('');
 }
 
 function refresh() {
@@ -256,7 +250,6 @@ function refresh() {
     });
     const list = document.getElementById('lessons-list');
     if(p && data.lessons) {
-        // ترتيب الحصص حسب اسم الصف (من الأصغر للأكبر)
         let cur = data.lessons.filter(l => l.d == d && l.p == p.id)
                   .sort((a,b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", undefined, {numeric: true}));
         
@@ -278,23 +271,43 @@ function refresh() {
     } else { list.innerHTML = "<p style='text-align:center; padding:40px;'>خارج أوقات الحصص</p>"; }
 }
 
-function renderStaff(f) {
-    const teachers = Object.values(data.teachers || {}).filter(n => n.includes(f)).sort();
-    document.getElementById('staff-list').innerHTML = teachers.map(n => `
-        <div class="lesson-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div><b>${n}</b><br><small>${phones[n] || 'بدون رقم'}</small></div>
-                <select class="msg-select" style="width:130px; margin-top:0;" onchange="sendWhatsApp('${n}', this.value); this.selectedIndex=0;">
-                    <option value="">تواصل 💬</option>
-                    <option value="office">استدعاء</option>
-                    <option value="duty">مناوبة</option>
-                    <option value="assembly">طابور</option>
-                </select>
+function renderHistory() {
+    document.getElementById('history-list').innerHTML = visitHistory.map(v => `
+        <div class="history-item">
+            <input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;">
+            <div style="padding:0 40px; cursor:pointer;" onclick='showFullReport(${JSON.stringify(v)})'>
+                <b>${v.teacher}</b> <small style="color:var(--accent);">(${v.serial})</small><br><small>${v.date} - ${v.class}</small>
             </div>
         </div>`).join('');
 }
 
-function startV(t,c,p) { tab('view-visits', document.querySelector('[onclick*="view-visits"]')); document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "حصة "+p; }
+// الدوال المساعدة المستقرة
+function downloadPDF() { html2pdf().from(document.getElementById('pdf-content')).save(`تقرير_${Date.now()}.pdf`); }
+function exportSelectedAsPDF() {
+    const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
+    if(!ids.length) return alert("اختر زيارة");
+    showFullReport(visitHistory.find(h => h.id === ids[0]));
+}
+function startV(t,c,p) { 
+    tab('view-visits', document.querySelector('[onclick*="view-visits"]')); 
+    document.getElementById('v_teacher').value = t; 
+    document.getElementById('v_class').value = c; 
+    document.getElementById('v_period').value = "حصة "+p;
+    document.getElementById('v_lesson').value = ""; // مسح العنوان عند البدء بزيارة جديدة
+}
+function sendWhatsApp(teacher, type, info = {}) {
+    const phone = (phones[teacher] || "").replace(/\s+/g, '');
+    if(!phone) return alert("لا يوجد رقم مسجل.");
+    const msgs = {
+        delay: `أ/ ${teacher}، طلاب صف (${info.c}) بانتظاركم في (الحصة ${info.p}). شاكرين حرصكم.`,
+        office: `تحية طيبة أ/ ${teacher}، يرجى التكرم بالحضور للمكتب عند توفر وقت.`
+    };
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgs[type])}`);
+}
+function renderStaff(f) {
+    const teachers = Object.values(data.teachers || {}).filter(n => n.includes(f)).sort();
+    document.getElementById('staff-list').innerHTML = teachers.map(n => `<div class="lesson-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><b>${n}</b><br><small>${phones[n] || ''}</small></div><select class="msg-select" style="width:130px; margin-top:0;" onchange="sendWhatsApp('${n}', this.value); this.selectedIndex=0;"><option value="">تواصل 💬</option><option value="office">استدعاء</option></select></div></div>`).join('');
+}
 function deleteSelected() {
     const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
     if(!ids.length || !confirm("حذف المختار؟")) return;
@@ -306,19 +319,6 @@ function openSettings() { document.getElementById('settingsModal').style.display
 function closeSettings() { document.getElementById('settingsModal').style.display='none'; }
 function closeReport() { document.getElementById('reportModal').style.display='none'; }
 function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-function renderVisitForm() {
-    let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
-    document.getElementById('criteriaTable').innerHTML = list.map(m => `<tr style="border-bottom:1px solid #eee;"><td style="padding:10px 0;"><b>${m}</b></td><td><select class="score-select" data-m="${m}"><option value="0">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td></tr>`).join('');
-}
-function doRandomSim() {
-    if(!data.lessons.length) return alert("ارفع الجدول");
-    isSim = true; const rl = data.lessons[Math.floor(Math.random()*data.lessons.length)];
-    sDay = rl.d; sTime = data.periods.find(p=>p.id==rl.p)?.s || "08:00";
-    document.getElementById('sim-status').style.display='block';
-    document.getElementById('sim-status').innerText = `🎲 محاكاة: حصة ${rl.p}`;
-    refresh(); closeSettings();
-}
-function resetTime() { isSim = false; document.getElementById('sim-status').style.display='none'; refresh(); closeSettings(); }
 function loadXML(input) {
     const r = new FileReader(); r.readAsText(input.files[0], "windows-1256");
     r.onload = (e) => {
@@ -332,6 +332,7 @@ function loadXML(input) {
         data = n; sync(); location.reload();
     };
 }
+function loadJSON(input) { const r = new FileReader(); r.onload = (e) => { phrasesDB = JSON.parse(e.target.result); sync(); location.reload(); }; r.readAsText(input.files[0]); }
 function loadExcel(input) {
     const r = new FileReader(); r.onload = (e) => {
         const wb = XLSX.read(e.target.result, {type: 'binary'});
@@ -341,7 +342,6 @@ function loadExcel(input) {
     };
     r.readAsBinaryString(input.files[0]);
 }
-function loadJSON(input) { const r = new FileReader(); r.onload = (e) => { phrasesDB = JSON.parse(e.target.result); sync(); location.reload(); }; r.readAsText(input.files[0]); }
 </script>
 </body>
 </html>
