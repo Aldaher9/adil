@@ -3,941 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - نظام الإدارة المتكامل</title>
+    <title>منصة القائد - نسخة التقارير المعتمدة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root { 
+            --primary: #0f172a; --accent: #f59e0b; --success: #10b981; 
+            --bg: #f1f5f9; --card: #ffffff; --text: #1e293b;
+            --blue-grad: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
+        body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 90px; }
+        
+        .header { background: var(--blue-grad); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 18px; border-radius: 14px; cursor: pointer; font-weight: bold; }
+
+        .container { padding: 20px; display: none; }
+        .container.active { display: block; }
+
+        .lesson-card, .history-item { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; }
+        .class-badge { background: var(--primary); color: white; padding: 12px; border-radius: 15px; font-weight: 800; min-width: 70px; text-align: center; margin-left: 15px; }
+        
+        .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
+        .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
+
+        #reportModal { display: none; position: fixed; inset: 0; background: white; z-index: 2000; overflow-y: auto; padding: 20px; }
+        
+        /* تنسيق التقرير للـ PDF */
+        .pdf-page { padding: 40px; background: white; direction: rtl; line-height: 1.6; color: #000; }
+        .report-header { border-bottom: 4px solid #1e3a5f; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        .info-table td { border: 1px solid #cbd5e1; padding: 12px; background: #f8fafc; }
+        .section-title { background: #f1f5f9; padding: 10px; border-right: 6px solid #1e3a5f; font-weight: 800; margin-top: 20px; margin-bottom: 10px; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; }
+        .modal-body { background: white; border-radius: 30px; padding: 30px; max-width: 500px; margin: auto; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #e2e8f0; z-index: 100; }
+        .nav-item { text-align: center; color: #94a3b8; background: none; border: none; flex: 1; font-weight: bold; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+
+        .score-select { padding: 8px; border-radius: 10px; border: 2px solid var(--primary); font-weight: bold; }
+        .check-box { width: 22px; height: 22px; margin-left: 10px; cursor: pointer; }
+        .msg-select { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #cbd5e1; margin-top: 10px; background: #f8fafc; font-weight: 600; color: var(--primary); }
+    </style>
 </head>
-<body>
+<body style="display:none;">
 
-<!-- Login Screen -->
-<div id="login-screen" style="position:fixed; inset:0; background:var(--bg); z-index:1000; display:flex; align-items:center; justify-content:center; padding:20px;">
-    <div style="background:white; padding:40px; border-radius:30px; text-align:center; box-shadow:var(--shadow); width:100%; max-width:400px;">
-        <h1 style="color:var(--primary)">منصة القائد ⚡</h1>
-        <button onclick="handleGoogleLogin()" style="width:100%; padding:15px; background:white; border:2px solid #f1f5f9; border-radius:15px; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:12px;">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> الدخول عبر جوجل
-        </button>
-    </div>
-</div>
-
-<!-- Header -->
-<div class="header">
-    <div class="user-welcome" id="welcomeMsg">👤 نرحب بالقائد...</div>
-    <div class="header-top">
+<div id="login-screen" style="position:fixed; inset:0; background:var(--bg); z-index:3000; display:flex; align-items:center; justify-content:center;">
+    <div style="background:white; padding:40px; border-radius:40px; text-align:center; width:90%; max-width:400px; box-shadow: var(--shadow);">
         <h1>منصة القائد ⚡</h1>
-        <div class="header-actions">
-            <button class="header-btn" onclick="openModal()">⚙️ ضبط</button>
-            <button class="header-btn logout-btn" onclick="auth.signOut().then(()=>location.reload())">🚪 خروج</button>
-        </div>
+        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800; cursor:pointer;">الدخول عبر جوجل</button>
     </div>
 </div>
 
-<!-- Dashboard View -->
-<div id="view-dashboard" class="container active">
-    <h3 style="margin-top:0;">📊 لوحة المعلومات</h3>
-    
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div class="stat-value" id="statTeachers">0</div>
-            <div class="stat-label">عدد المعلمين</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">📚</div>
-            <div class="stat-value" id="statClasses">0</div>
-            <div class="stat-label">عدد الفصول</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">👁️</div>
-            <div class="stat-value" id="statVisits">0</div>
-            <div class="stat-label">الزيارات هذا الأسبوع</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">📝</div>
-            <div class="stat-value" id="statTasks">0</div>
-            <div class="stat-label">المهام النشطة</div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h4>📈 إحصائيات الزيارات الإشرافية</h4>
-        <canvas id="visitsChart"></canvas>
-    </div>
-
-    <div class="card">
-        <h4>⏰ الحصة الحالية</h4>
-        <div class="status-card">
-            <div>
-                <div id="dashDate">--:--</div>
-                <div id="dashPeriod" style="font-weight:800; font-size:1.1rem; color: var(--primary);">جاري المزامنة..</div>
-            </div>
-            <div id="dashSimBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold;">وضع المحاكاة</div>
-        </div>
+<div class="header no-print">
+    <div class="header-top">
+        <h1 style="margin:0; font-size:1.3rem;">منصة القائد</h1>
+        <button class="header-btn" onclick="openSettings()">⚙️ الإعدادات</button>
     </div>
 </div>
 
-<!-- Schedule View -->
-<div id="view-schedule" class="container">
-    <div class="status-card">
-        <div>
-            <div id="infoDate">--:--</div>
-            <div id="infoPeriod" style="font-weight:800; font-size:1.1rem; color: var(--primary);">جاري المزامنة..</div>
-        </div>
-        <div id="simBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold;">وضع المحاكاة</div>
+<div id="reportModal">
+    <div id="allReportsContainer"></div>
+    <div class="no-print" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-bottom:40px;">
+        <button class="btn-gen" style="background:#334155;" onclick="downloadPDF()">📥 تحميل PDF</button>
+        <button class="btn-gen" style="background:#94a3b8;" onclick="closeReport()">إغلاق</button>
     </div>
+</div>
+
+<div id="view-schedule" class="container active no-print">
+    <div id="sim-status" style="display:none; background:var(--accent); color:white; padding:12px; border-radius:15px; text-align:center; margin-bottom:15px; font-weight:800;"></div>
     <div id="lessons-list"></div>
 </div>
 
-<!-- Staff View -->
-<div id="view-staff" class="container">
-    <input type="text" id="searchInput" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:15px; border-radius:12px; border:2px solid #ddd; margin-bottom:15px;">
+<div id="view-visits" class="container no-print">
+    <div style="background:white; padding:25px; border-radius:30px;">
+        <h3 style="text-align:center;">📝 تقييم زيارة صفية</h3>
+        <input type="text" id="v_teacher" placeholder="اسم المعلم" class="styled-input">
+        <input type="text" id="v_lesson" placeholder="موضوع الدرس" class="styled-input">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <input type="text" id="v_class" placeholder="الصف" class="styled-input">
+            <input type="text" id="v_period" placeholder="الحصة" class="styled-input">
+        </div>
+        <table style="width:100%; margin-top:15px; border-collapse: collapse;"><tbody id="criteriaTable"></tbody></table>
+        <button class="btn-gen" style="margin-top:20px;" onclick="saveComplexVisit()">حفظ وتوليد التقرير</button>
+    </div>
+</div>
+
+<div id="view-history" class="container no-print">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:white; padding:15px; border-radius:20px;">
+        <button onclick="deleteSelected()" style="background:#ef4444; color:white; border:none; padding:10px; border-radius:12px;">🗑️ حذف</button>
+        <h3 style="margin:0;">📜 السجل</h3>
+        <button onclick="exportSelectedAsPDF()" style="background:var(--primary); color:white; border:none; padding:10px; border-radius:12px;">📥 تصدير المختار</button>
+    </div>
+    <div id="history-list"></div>
+</div>
+
+<div id="view-staff" class="container no-print">
+    <input type="text" id="searchStaff" placeholder="🔍 بحث عن معلم..." onkeyup="renderStaff(this.value)" class="styled-input">
     <div id="staff-list"></div>
 </div>
 
-<!-- Visits View -->
-<div id="view-visits" class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3 style="margin:0;">👁️ الزيارات الإشرافية</h3>
-        <button onclick="openVisitModal()" class="btn-primary">+ زيارة جديدة</button>
-    </div>
-    
-    <div class="filter-section">
-        <select id="visitFilter" onchange="filterVisits()" class="filter-select">
-            <option value="all">جميع الزيارات</option>
-            <option value="today">اليوم</option>
-            <option value="week">هذا الأسبوع</option>
-            <option value="month">هذا الشهر</option>
-        </select>
-    </div>
-    
-    <div id="visits-list"></div>
-</div>
-
-<!-- Reports View -->
-<div id="view-reports" class="container">
-    <h3 style="margin-top:0;">📋 التقارير</h3>
-    
-    <div class="report-options">
-        <div class="card report-card" onclick="generateTeacherReport()">
-            <div class="report-icon">👥</div>
-            <h4>تقرير المعلمين</h4>
-            <p>تقرير شامل عن جميع المعلمين وأرقامهم</p>
+<div id="settingsModal" class="modal no-print">
+    <div class="modal-body">
+        <h2 style="text-align:center;">⚙️ الإعدادات</h2>
+        <button onclick="doRandomSim()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:10px;">🎲 محاكاة حصة عشوائية</button>
+        <button onclick="resetTime()" style="width:100%; padding:15px; background:#64748b; color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:20px;">🕒 الوقت الحالي</button>
+        <div style="background:#f0fdf4; padding:15px; border-radius:20px;">
+            <input type="file" accept=".xml" onchange="loadXML(this)" style="margin-bottom:10px; width:100%;">
+            <input type="file" accept=".json" onchange="loadJSON(this)" style="margin-bottom:10px; width:100%;">
+            <input type="file" accept=".xlsx" onchange="loadExcel(this)" style="width:100%;">
         </div>
-        
-        <div class="card report-card" onclick="generateVisitsReport()">
-            <div class="report-icon">👁️</div>
-            <h4>تقرير الزيارات</h4>
-            <p>ملخص الزيارات الإشرافية والتقييمات</p>
-        </div>
-        
-        <div class="card report-card" onclick="generateScheduleReport()">
-            <div class="report-icon">📅</div>
-            <h4>تقرير الجدول</h4>
-            <p>تحليل توزيع الحصص والمواد</p>
-        </div>
-        
-        <div class="card report-card" onclick="generatePerformanceReport()">
-            <div class="report-icon">📊</div>
-            <h4>تقرير الأداء</h4>
-            <p>تقييم شامل للأداء العام</p>
-        </div>
+        <button class="btn-gen" style="background:#f1f5f9; color:black; margin-top:20px;" onclick="closeSettings()">إغلاق</button>
     </div>
 </div>
 
-<!-- Agenda View -->
-<div id="view-agenda" class="container">
-    <h3 style="margin-top:0;">📝 أجندة المهام</h3>
-    <div style="display:flex; gap:10px; margin-bottom:20px;">
-        <input type="text" id="taskInput" style="flex:1; padding:12px; border-radius:12px; border:2px solid #ddd;" placeholder="اكتب مهمة جديدة...">
-        <button onclick="addTask()" class="btn-primary">إضافة</button>
-    </div>
-    <div id="tasks-list"></div>
+<div class="bottom-nav no-print">
+    <button class="nav-item active" onclick="tab('view-schedule', this)">📅<br>الجدول</button>
+    <button class="nav-item" onclick="tab('view-visits', this)">📝<br>زيارة</button>
+    <button class="nav-item" onclick="tab('view-history', this)">📜<br>السجل</button>
+    <button class="nav-item" onclick="tab('view-staff', this)">👥<br>المعلمين</button>
 </div>
 
-<!-- Bottom Navigation -->
-<div class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('view-dashboard', this)">
-        <span>📊</span> الرئيسية
-    </button>
-    <button class="nav-item" onclick="switchTab('view-schedule', this)">
-        <span>📅</span> الحصص
-    </button>
-    <button class="nav-item" onclick="switchTab('view-staff', this)">
-        <span>👥</span> المعلمين
-    </button>
-    <button class="nav-item" onclick="switchTab('view-visits', this)">
-        <span>👁️</span> الزيارات
-    </button>
-    <button class="nav-item" onclick="switchTab('view-reports', this)">
-        <span>📋</span> التقارير
-    </button>
-</div>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
-<!-- Settings Modal -->
-<div id="settingsModal" class="modal">
-    <div class="modal-content">
-        <h3>⚙️ إعدادات المنصة</h3>
-        <p style="font-size:12px; font-weight:bold;">1. ملف الجدول (XML)</p>
-        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
-        
-        <p style="font-size:12px; font-weight:bold;">2. بيانات المعلمين (Excel)</p>
-        <div class="grid-2" style="margin-bottom:15px;">
-            <button onclick="exportToExcel()" style="padding:10px; background:#10b981; color:white; border:none; border-radius:10px;">📥 تصدير</button>
-            <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white; border:none; border-radius:10px;">📤 استيراد</button>
-            <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
-        </div>
-        
-        <p style="font-size:12px; font-weight:bold;">3. التحكم بالوقت</p>
-        <div class="grid-2">
-            <button onclick="doSim()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:10px;">🎲 محاكاة</button>
-            <button onclick="resetTime()" style="padding:10px; background:#ef4444; color:white; border:none; border-radius:10px;">♻️ إعادة</button>
-        </div>
-        
-        <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; background:#94a3b8; color:white; border:none; border-radius:10px;">إغلاق</button>
-    </div>
-</div>
-
-<!-- Visit Modal -->
-<div id="visitModal" class="modal">
-    <div class="modal-content">
-        <h3>👁️ زيارة إشرافية جديدة</h3>
-        
-        <div class="form-group">
-            <label>اسم المعلم</label>
-            <select id="visitTeacher" class="form-control"></select>
-        </div>
-        
-        <div class="form-group">
-            <label>التاريخ والوقت</label>
-            <input type="datetime-local" id="visitDate" class="form-control">
-        </div>
-        
-        <div class="form-group">
-            <label>الفصل</label>
-            <input type="text" id="visitClass" class="form-control" placeholder="مثال: 3/1">
-        </div>
-        
-        <div class="form-group">
-            <label>المادة</label>
-            <input type="text" id="visitSubject" class="form-control" placeholder="مثال: الرياضيات">
-        </div>
-        
-        <div class="form-group">
-            <label>التقييم العام</label>
-            <div class="rating-section">
-                <button class="rating-btn" onclick="setVisitRating(5)">⭐⭐⭐⭐⭐ ممتاز</button>
-                <button class="rating-btn" onclick="setVisitRating(4)">⭐⭐⭐⭐ جيد جداً</button>
-                <button class="rating-btn" onclick="setVisitRating(3)">⭐⭐⭐ جيد</button>
-                <button class="rating-btn" onclick="setVisitRating(2)">⭐⭐ مقبول</button>
-                <button class="rating-btn" onclick="setVisitRating(1)">⭐ يحتاج تحسين</button>
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <label>نقاط القوة</label>
-            <textarea id="visitStrengths" class="form-control" rows="3" placeholder="اذكر نقاط القوة الملاحظة..."></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label>نقاط التحسين</label>
-            <textarea id="visitWeaknesses" class="form-control" rows="3" placeholder="اذكر نقاط التحسين المقترحة..."></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label>ملاحظات إضافية</label>
-            <textarea id="visitNotes" class="form-control" rows="3" placeholder="أي ملاحظات أخرى..."></textarea>
-        </div>
-        
-        <div class="grid-2" style="margin-top:20px;">
-            <button onclick="saveVisit()" class="btn-primary">💾 حفظ الزيارة</button>
-            <button onclick="closeVisitModal()" style="padding:12px; background:#94a3b8; color:white; border:none; border-radius:10px;">إلغاء</button>
-        </div>
-    </div>
-</div>
-
-<!-- Firebase Config -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
-firebase.initializeApp({
-    apiKey: "AIzaSyBnR6bFZ4eqU-uL4KSlY6mCXDlXOT3FjnM",
-    authDomain: "teacher-principal-app.firebaseapp.com",
-    databaseURL: "https://teacher-principal-app-default-rtdb.firebaseio.com",
-    projectId: "teacher-principal-app",
-    storageBucket: "teacher-principal-app.appspot.com",
-    messagingSenderId: "904637140479",
-    appId: "1:904637140479:web:a8e5c9f5b0e8e8e8e8e8e8"
-});
+const firebaseConfig = {
+    apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
+    authDomain: "school-9416e.firebaseapp.com",
+    projectId: "school-9416e",
+    storageBucket: "school-9416e.firebasestorage.app",
+    messagingSenderId: "680872052240",
+    appId: "1:680872052240:web:96d2e544166ab5f8096c95"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(), db = firebase.firestore();
 
-const auth = firebase.auth();
-const db = firebase.database();
-let currentUser = null;
-let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
-let phones = {};
-let tasks = [];
-let visits = [];
-let isSim = false, sDay = 1, sTime = "08:00";
-let selectedRating = 0;
-let visitsChart = null;
+let phones = {}, data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
+let phrasesDB = [], visitHistory = [], currentUser = null, isSim = false, sDay, sTime;
 
-// Authentication
-auth.onAuthStateChanged(user => {
-    if (user) {
-        currentUser = user;
-        document.getElementById('login-screen').style.display = 'none';
-        document.body.style.display = 'block';
-        document.getElementById('welcomeMsg').innerText = `👤 مرحباً ${user.displayName || user.email}`;
-        loadData();
-    } else {
-        document.getElementById('login-screen').style.display = 'flex';
-        document.body.style.display = 'none';
-    }
-});
+auth.onAuthStateChanged(user => { if (user) { currentUser = user; document.body.style.display="block"; document.getElementById('login-screen').style.display="none"; init(); } });
 
-// Load data from Firebase
-async function loadData() {
-    try {
-        const snap = await db.ref(`users/${currentUser.uid}`).once('value');
-        const d = snap.val() || {};
-        data = d.data || data;
-        phones = d.phones || {};
-        tasks = d.tasks || [];
-        visits = d.visits || [];
-        refresh();
-        renderStaff();
-        renderTasks();
-        renderVisits();
-        updateDashboard();
-    } catch (e) {
-        console.error('Error loading data:', e);
+async function init() {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    if(doc.exists) {
+        const c = doc.data();
+        phones = c.phones || {}; data = c.schoolData || data;
+        phrasesDB = c.phrasesDB || []; visitHistory = c.visitHistory || [];
+        renderVisitForm(); refresh(); renderHistory(); renderStaff("");
     }
 }
+async function sync() { await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data, phrasesDB, visitHistory }); }
 
-// Sync to Firebase
-async function syncToCloud() {
-    if (!currentUser) return;
-    try {
-        await db.ref(`users/${currentUser.uid}`).set({
-            data, phones, tasks, visits,
-            updated: new Date().toISOString()
-        });
-    } catch (e) {
-        console.error('Error syncing:', e);
-    }
-}
-
-// Update Dashboard
-function updateDashboard() {
-    document.getElementById('statTeachers').innerText = Object.keys(data.teachers).length;
-    document.getElementById('statClasses').innerText = Object.keys(data.classes).length;
-    document.getElementById('statTasks').innerText = tasks.filter(t => !t.done).length;
-    
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const weekVisits = visits.filter(v => new Date(v.date) >= weekAgo);
-    document.getElementById('statVisits').innerText = weekVisits.length;
-    
-    updateVisitsChart();
-    updateDashboardTime();
-}
-
-// Update Dashboard Time
-function updateDashboardTime() {
-    const now = new Date();
-    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    let d = days[now.getDay()];
-    let t = now.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit', hour12: false});
-    
-    if (isSim) {
-        d = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'][sDay - 1];
-        t = sTime;
-    }
-    
-    document.getElementById('dashDate').innerText = t;
-    document.getElementById('dashSimBadge').style.display = isSim ? "block" : "none";
-    
-    const p = (data.periods || []).find(p => {
-        const cur = toM(t), s = toM(p.s), e = toM(p.e);
-        return cur >= s && cur <= e;
-    });
-    
-    if (p) {
-        document.getElementById('dashPeriod').innerText = "الحصة النشطة: " + p.id;
-    } else {
-        document.getElementById('dashPeriod').innerText = "خارج الدوام";
-    }
-}
-
-// Update Visits Chart
-function updateVisitsChart() {
-    const ctx = document.getElementById('visitsChart');
-    if (!ctx) return;
-    
-    const last7Days = [];
-    const visitCounts = [];
-    
-    for (let i = 6; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-        last7Days.push(date.toLocaleDateString('ar-SA', {weekday: 'short'}));
-        
-        const count = visits.filter(v => v.date && v.date.startsWith(dateStr)).length;
-        visitCounts.push(count);
-    }
-    
-    if (visitsChart) {
-        visitsChart.destroy();
-    }
-    
-    visitsChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: last7Days,
-            datasets: [{
-                label: 'عدد الزيارات',
-                data: visitCounts,
-                borderColor: '#0f172a',
-                backgroundColor: 'rgba(15, 23, 42, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Refresh schedule
 function refresh() {
     const now = new Date();
-    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    let d = days[now.getDay()];
-    let t = now.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit', hour12: false});
-    
-    if (isSim) {
-        d = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'][sDay - 1];
-        t = sTime;
-    }
-    
-    document.getElementById('infoDate').innerText = t;
-    document.getElementById('simBadge').style.display = isSim ? "block" : "none";
-    
-    const p = (data.periods || []).find(p => {
-        const cur = toM(t), s = toM(p.s), e = toM(p.e);
-        return cur >= s && cur <= e;
-    });
-    
+    let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
+    let t = isSim ? sTime : now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
     const list = document.getElementById('lessons-list');
-    if (p && data.lessons && data.lessons.length > 0) {
-        document.getElementById('infoPeriod').innerText = "الحصة النشطة: " + p.id;
-        const current = data.lessons.filter(l => l.d == d && l.p == p.id).sort((a,b)=> {
-            const numA = parseInt((data.classes[a.c]||'').match(/\d+/)) || 0;
-            const numB = parseInt((data.classes[b.c]||'').match(/\d+/)) || 0;
-            return numA - numB;
-        });
-        
-        list.innerHTML = current.map(l => {
-            let n = data.teachers[l.t], ph = (phones[n] || "").replace(/\s+/g, '');
-            let className = data.classes[l.c] || '..';
-            let msg = encodeURIComponent(`السلام عليكم، أستاذ ${n}. نلاحظ تأخركم عن الحصة ${p.id} في صف ${className}. نرجو التواجد للأهمية.`);
-            return `<div class="lesson-card">
-                <div class="class-badge">${className}</div>
-                <div style="flex:1; padding-right:15px;"><b>${n}</b><br><small>${data.subjects[l.s] || ''}</small></div>
-                <button onclick="window.open('https://wa.me/${ph}?text=${msg}')" style="border:none; background:#10b981; color:white; width:35px; height:35px; border-radius:50%; cursor:pointer;">💬</button>
-            </div>`;
-        }).join('');
-    } else {
-        document.getElementById('infoPeriod').innerText = "خارج الدوام";
-        list.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8;">لا توجد حصص حالياً</div>`;
-    }
+    const p = (data.periods || []).find(p => {
+        const cur = (str) => { const [h, m] = str.split(':'); return parseInt(h)*60 + parseInt(m); };
+        const nowV = cur(t);
+        return nowV >= cur(p.s) && nowV <= cur(p.e);
+    });
+    if(p && data.lessons) {
+        let cur = data.lessons.filter(l => l.d == d && l.p == p.id)
+                  .sort((a,b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", undefined, {numeric: true}));
+        if(cur.length > 0) {
+            list.innerHTML = cur.map(l => {
+                const tN = data.teachers[l.t], cN = data.classes[l.c];
+                return `<div class="lesson-card"><div style="display:flex; align-items:center;"><div class="class-badge">${cN||'..'}</div><div style="flex:1;"><b>${tN}</b></div><button onclick="startV('${tN}','${cN}','${l.p}')" style="background:none; border:none; font-size:1.5rem;">📝</button></div></div>`;
+            }).join('');
+        } else { list.innerHTML = `<p style='text-align:center; padding:20px;'>لا توجد حصص</p>`; }
+    } else { list.innerHTML = `<p style='text-align:center; padding:40px;'>خارج الدوام</p>`; }
 }
 
-// Render Staff
-function renderStaff() {
-    const list = document.getElementById('staff-list');
-    const sorted = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    list.innerHTML = sorted.map((name, i) => {
-        const ph = phones[name] || "";
-        const teacherVisits = visits.filter(v => v.teacher === name);
-        const avgRating = teacherVisits.length > 0 
-            ? (teacherVisits.reduce((sum, v) => sum + v.rating, 0) / teacherVisits.length).toFixed(1)
-            : 'لا يوجد';
-        
-        return `<div class="staff-card filter-item">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span style="font-weight:bold; color: var(--primary);">${name}</span>
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <span style="font-size:12px; color:#64748b;">${ph || 'لا يوجد'}</span>
-                    <button class="edit-phone-btn" onclick="updatePhone('${name}')">✏️</button>
+function doRandomSim() {
+    if(!data.lessons || data.lessons.length === 0) return alert("ارفع الجدول");
+    isSim = true; const rl = data.lessons[Math.floor(Math.random() * data.lessons.length)];
+    const pd = data.periods.find(p => p.id == rl.p);
+    sDay = rl.d; sTime = pd ? pd.s : "08:00";
+    document.getElementById('sim-status').style.display = 'block';
+    document.getElementById('sim-status').innerText = `🎲 محاكاة: يوم ${sDay} | حصة ${rl.p}`;
+    refresh(); closeSettings();
+}
+
+function resetTime() { isSim = false; document.getElementById('sim-status').style.display = 'none'; refresh(); closeSettings(); }
+
+function saveComplexVisit() {
+    const t = document.getElementById('v_teacher').value, l = document.getElementById('v_lesson').value;
+    if(!t || !l) return alert("يرجى إكمال البيانات");
+    
+    const serialNum = "REF-" + Date.now().toString().slice(-6);
+    const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, v: parseInt(s.value) || 2 }));
+    
+    const best4 = [...scores].sort((a,b)=>b.v - a.v).slice(0,4).map(s => {
+        const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
+        return p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : s.m;
+    });
+
+    const worst4 = [...scores].sort((a,b)=>a.v - b.v).filter(s => s.v < 2).slice(0,4).map(s => {
+        const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
+        return { criteria: s.m, desc: p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "تطوير مستمر", rec: p ? p["التوصيات"] : "متابعة" };
+    });
+
+    const v = { id: Date.now(), serial: serialNum, date: new Date().toLocaleDateString('ar-EG'), teacher: t, lesson: l, class: document.getElementById('v_class').value, period: document.getElementById('v_period').value, strengths: best4, improvements: worst4 };
+    visitHistory.unshift(v); sync(); renderHistory(); 
+    showMultipleReports([v]);
+    document.getElementById('v_lesson').value = ""; 
+}
+
+function showMultipleReports(reports) {
+    let htmlContent = "";
+    reports.forEach((v, index) => {
+        htmlContent += `
+            <div class="pdf-page" style="${index > 0 ? 'page-break-before: always;' : ''}">
+                <div class="report-header">
+                    <div><h1 style="margin:0; color:#1e3a5f;">تقرير زيارة فنية</h1><p>سجل القائد التعليمي</p></div>
+                    <div style="text-align:left;"><b>الرقم المرجعي:</b> ${v.serial}</div>
+                </div>
+                <table class="info-table">
+                    <tr><td><b>المعلم:</b> ${v.teacher}</td><td><b>التاريخ:</b> ${v.date}</td></tr>
+                    <tr><td><b>الصف:</b> ${v.class}</td><td><b>الحصة:</b> ${v.period}</td></tr>
+                    <tr><td colspan="2"><b>موضوع الدرس:</b> ${v.lesson}</td></tr>
+                </table>
+                <div class="section-title">✅ جوانب الإجادة</div>
+                <ul style="padding-right:20px;">${v.strengths.map(s=>`<li style="margin-bottom:8px;">${s}</li>`).join('')}</ul>
+                
+                <div class="section-title">⚠️ جوانب التحسين</div>
+                <ul style="padding-right:20px;">${v.improvements.map(i=>`<li style="margin-bottom:8px;"><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد (الأداء ضمن المعايير)</li>"}</ul>
+
+                <div class="section-title">💡 التوصيات المقترحة</div>
+                <ol style="padding-right:20px;">${v.improvements.map(i=>`<li style="margin-bottom:8px;">${i.rec}</li>`).join('') || "<li>الاستمرار في العطاء المتميز وتطوير الأدوات التقنية</li>"}</ol>
+                
+                <div style="margin-top:50px; text-align:center; font-style:italic; color:#64748b; border-top:1px solid #e2e8f0; padding-top:20px;">
+                    " تم إنشاء هذا التقرير آلياً عبر منصة القائد لضمان جودة الأداء التعليمي "
                 </div>
             </div>
-            <div style="background:#f8fafc; padding:8px; border-radius:8px; margin-bottom:10px; font-size:12px;">
-                <span>📊 التقييم: ${avgRating}</span> | 
-                <span>👁️ الزيارات: ${teacherVisits.length}</span>
-            </div>
-            <select class="msg-select" id="sel_${i}">
-                <option value="" disabled selected>🔽 اختر توجيهاً سريعاً...</option>
-                <option value="الرجاء التوجه إلى مكتب الإدارة للأهمية.">الرجاء التوجه إلى مكتب الإدارة للأهمية.</option>
-                <option value="الرجاء التواجد في مكان المناوبة.">الرجاء التواجد في مكان المناوبة.</option>
-                <option value="الرجاء متابعة حصة الاحتياط لديك.">الرجاء متابعة حصة الاحتياط لديك.</option>
-            </select>
-            <div class="grid-2" style="margin-top:10px;">
-                <button onclick="sendStaffMsg('${name}', 'sel_${i}')" class="action-btn" style="background:var(--success)">✉️ واتساب</button>
-                <a href="tel:${ph}" class="action-btn" style="background:#3b82f6; text-decoration:none;">📞 اتصال</a>
-            </div>
-        </div>`;
-    }).join('');
+        `;
+    });
+    document.getElementById('allReportsContainer').innerHTML = htmlContent;
+    document.getElementById('reportModal').style.display='block';
 }
 
-// Visits Functions
-function openVisitModal() {
-    const modal = document.getElementById('visitModal');
-    const teacherSelect = document.getElementById('visitTeacher');
-    
-    const teachers = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    teacherSelect.innerHTML = '<option value="">اختر المعلم...</option>' + 
-        teachers.map(t => `<option value="${t}">${t}</option>`).join('');
-    
-    const now = new Date();
-    const dateString = now.toISOString().slice(0, 16);
-    document.getElementById('visitDate').value = dateString;
-    
-    selectedRating = 0;
-    document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
-    
-    modal.style.display = 'block';
+function exportSelectedAsPDF() {
+    const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
+    if(!ids.length) return alert("يرجى اختيار زيارة واحدة على الأقل من القائمة");
+    const selectedReports = visitHistory.filter(h => ids.includes(h.id));
+    showMultipleReports(selectedReports);
 }
 
-function closeVisitModal() {
-    document.getElementById('visitModal').style.display = 'none';
-    document.getElementById('visitTeacher').value = '';
-    document.getElementById('visitClass').value = '';
-    document.getElementById('visitSubject').value = '';
-    document.getElementById('visitStrengths').value = '';
-    document.getElementById('visitWeaknesses').value = '';
-    document.getElementById('visitNotes').value = '';
-    selectedRating = 0;
-}
-
-function setVisitRating(rating) {
-    selectedRating = rating;
-    document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
-    event.target.classList.add('selected');
-}
-
-async function saveVisit() {
-    const teacher = document.getElementById('visitTeacher').value;
-    const date = document.getElementById('visitDate').value;
-    const className = document.getElementById('visitClass').value;
-    const subject = document.getElementById('visitSubject').value;
-    const strengths = document.getElementById('visitStrengths').value;
-    const weaknesses = document.getElementById('visitWeaknesses').value;
-    const notes = document.getElementById('visitNotes').value;
-    
-    if (!teacher || !date || selectedRating === 0) {
-        alert('الرجاء ملء الحقول المطلوبة (المعلم، التاريخ، التقييم)');
-        return;
-    }
-    
-    const visit = {
-        id: Date.now(),
-        teacher,
-        date,
-        class: className,
-        subject,
-        rating: selectedRating,
-        strengths,
-        weaknesses,
-        notes,
-        createdAt: new Date().toISOString()
+function downloadPDF() {
+    const element = document.getElementById('allReportsContainer');
+    const opt = {
+        margin: 0,
+        filename: `تقارير_الزيارات_${Date.now()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    
-    visits.push(visit);
-    await syncToCloud();
-    renderVisits();
-    updateDashboard();
-    closeVisitModal();
-    alert('تم حفظ الزيارة بنجاح ✅');
+    html2pdf().set(opt).from(element).save();
 }
 
-function renderVisits() {
-    const list = document.getElementById('visits-list');
-    const sortedVisits = [...visits].sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    if (sortedVisits.length === 0) {
-        list.innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;">لا توجد زيارات مسجلة</div>';
-        return;
-    }
-    
-    list.innerHTML = sortedVisits.map(v => {
-        const dateObj = new Date(v.date);
-        const dateStr = dateObj.toLocaleDateString('ar-SA');
-        const timeStr = dateObj.toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit'});
-        const stars = '⭐'.repeat(v.rating);
-        
-        return `<div class="visit-card">
-            <div class="visit-header">
-                <div>
-                    <h4>${v.teacher}</h4>
-                    <div class="visit-meta">
-                        <span>📅 ${dateStr}</span>
-                        <span>🕐 ${timeStr}</span>
-                        ${v.class ? `<span>📚 ${v.class}</span>` : ''}
-                    </div>
-                </div>
-                <div class="visit-rating">${stars}</div>
-            </div>
-            
-            ${v.subject ? `<div class="visit-detail"><strong>المادة:</strong> ${v.subject}</div>` : ''}
-            ${v.strengths ? `<div class="visit-detail"><strong>✅ نقاط القوة:</strong> ${v.strengths}</div>` : ''}
-            ${v.weaknesses ? `<div class="visit-detail"><strong>⚠️ نقاط التحسين:</strong> ${v.weaknesses}</div>` : ''}
-            ${v.notes ? `<div class="visit-detail"><strong>📝 ملاحظات:</strong> ${v.notes}</div>` : ''}
-            
-            <div style="margin-top:10px; display:flex; gap:10px;">
-                <button onclick="deleteVisit(${v.id})" style="flex:1; padding:8px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">🗑️ حذف</button>
-            </div>
-        </div>`;
-    }).join('');
+function startV(t,c,p) { 
+    tab('view-visits', document.querySelector('[onclick*="view-visits"]')); 
+    document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "حصة "+p;
+    document.getElementById('v_lesson').value = ""; document.querySelectorAll('.score-select').forEach(s => s.value = "2");
 }
-
-function filterVisits() {
-    const filter = document.getElementById('visitFilter').value;
-    const now = new Date();
-    let filteredVisits = [...visits];
-    
-    if (filter === 'today') {
-        const today = now.toISOString().split('T')[0];
-        filteredVisits = visits.filter(v => v.date.startsWith(today));
-    } else if (filter === 'week') {
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        filteredVisits = visits.filter(v => new Date(v.date) >= weekAgo);
-    } else if (filter === 'month') {
-        const monthAgo = new Date();
-        monthAgo.setMonth(monthAgo.getMonth() - 1);
-        filteredVisits = visits.filter(v => new Date(v.date) >= monthAgo);
-    }
-    
-    visits = filteredVisits;
-    renderVisits();
-    visits = [...visits];
+function deleteSelected() {
+    const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
+    if(!ids.length || !confirm("هل أنت متأكد من حذف السجلات المختارة؟")) return;
+    visitHistory = visitHistory.filter(v => !ids.includes(v.id)); sync(); renderHistory();
 }
-
-async function deleteVisit(id) {
-    if (confirm('هل أنت متأكد من حذف هذه الزيارة؟')) {
-        visits = visits.filter(v => v.id !== id);
-        await syncToCloud();
-        renderVisits();
-        updateDashboard();
-    }
+function renderVisitForm() {
+    let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
+    document.getElementById('criteriaTable').innerHTML = list.map(m => `<tr style="border-bottom:1px solid #eee;"><td style="padding:12px 0;"><b>${m}</b></td><td style="text-align:left;"><select class="score-select" data-m="${m}"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td></tr>`).join('');
 }
-
-// Reports Functions
-function generateTeacherReport() {
-    const teachers = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    
-    const reportData = teachers.map(name => {
-        const teacherVisits = visits.filter(v => v.teacher === name);
-        const avgRating = teacherVisits.length > 0
-            ? (teacherVisits.reduce((sum, v) => sum + v.rating, 0) / teacherVisits.length).toFixed(1)
-            : 'N/A';
-        
-        return {
-            'اسم المعلم': name,
-            'رقم الهاتف': phones[name] || '',
-            'عدد الزيارات': teacherVisits.length,
-            'متوسط التقييم': avgRating
-        };
-    });
-    
-    const ws = XLSX.utils.json_to_sheet(reportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "تقرير المعلمين");
-    XLSX.writeFile(wb, `تقرير_المعلمين_${new Date().toLocaleDateString('ar-SA')}.xlsx`);
+function renderHistory() {
+    document.getElementById('history-list').innerHTML = visitHistory.map(v => `
+        <div class="history-item"><input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;"><div style="padding:0 40px; cursor:pointer;" onclick='showMultipleReports([${JSON.stringify(v)}])'><b>${v.teacher}</b> <small style="color:var(--accent);">(${v.serial})</small><br><small>${v.date} - ${v.class}</small></div></div>`).join('');
 }
-
-function generateVisitsReport() {
-    if (visits.length === 0) {
-        alert('لا توجد زيارات لإنشاء تقرير');
-        return;
-    }
-    
-    const reportData = visits.map(v => ({
-        'المعلم': v.teacher,
-        'التاريخ': new Date(v.date).toLocaleDateString('ar-SA'),
-        'الوقت': new Date(v.date).toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit'}),
-        'الفصل': v.class || '',
-        'المادة': v.subject || '',
-        'التقييم': v.rating,
-        'نقاط القوة': v.strengths || '',
-        'نقاط التحسين': v.weaknesses || '',
-        'ملاحظات': v.notes || ''
-    }));
-    
-    const ws = XLSX.utils.json_to_sheet(reportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "تقرير الزيارات");
-    XLSX.writeFile(wb, `تقرير_الزيارات_${new Date().toLocaleDateString('ar-SA')}.xlsx`);
+function renderStaff(f) {
+    const teachers = Object.values(data.teachers || {}).filter(n => n.includes(f)).sort();
+    document.getElementById('staff-list').innerHTML = teachers.map(n => `<div class="lesson-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><b>${n}</b><br><small>${phones[n] || ''}</small></div><select class="msg-select" style="width:130px;" onchange="sendWhatsApp('${n}', this.value); this.selectedIndex=0;"><option value="">تواصل 💬</option><option value="office">استدعاء</option></select></div></div>`).join('');
 }
-
-function generateScheduleReport() {
-    if (!data.lessons || data.lessons.length === 0) {
-        alert('لا يوجد جدول لإنشاء تقرير');
-        return;
-    }
-    
-    const reportData = data.lessons.map(l => ({
-        'اليوم': l.d,
-        'الحصة': l.p,
-        'المعلم': data.teachers[l.t] || '',
-        'الفصل': data.classes[l.c] || '',
-        'المادة': data.subjects[l.s] || ''
-    }));
-    
-    const ws = XLSX.utils.json_to_sheet(reportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "الجدول الدراسي");
-    XLSX.writeFile(wb, `تقرير_الجدول_${new Date().toLocaleDateString('ar-SA')}.xlsx`);
+function sendWhatsApp(teacher, type) {
+    const phone = (phones[teacher] || "").replace(/\s+/g, ''); if(!phone) return alert("لا يوجد رقم.");
+    const msgs = { office: `أ/ ${teacher}، يرجى مراجعة المكتب.` }; window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgs[type])}`);
 }
+function tab(id, b) { document.querySelectorAll('.container').forEach(c=>c.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); b.classList.add('active'); }
+function openSettings() { document.getElementById('settingsModal').style.display='block'; }
+function closeSettings() { document.getElementById('settingsModal').style.display='none'; }
+function closeReport() { document.getElementById('reportModal').style.display='none'; }
+function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
-function generatePerformanceReport() {
-    const teachers = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    
-    const reportData = teachers.map(name => {
-        const teacherVisits = visits.filter(v => v.teacher === name);
-        const avgRating = teacherVisits.length > 0
-            ? (teacherVisits.reduce((sum, v) => sum + v.rating, 0) / teacherVisits.length).toFixed(1)
-            : 'N/A';
-        
-        const lessons = data.lessons ? data.lessons.filter(l => data.teachers[l.t] === name).length : 0;
-        
-        const performance = avgRating !== 'N/A' && parseFloat(avgRating) >= 4 ? 'ممتاز' : 
-                          avgRating !== 'N/A' && parseFloat(avgRating) >= 3 ? 'جيد' : 
-                          avgRating !== 'N/A' ? 'يحتاج تحسين' : 'غير محدد';
-        
-        return {
-            'اسم المعلم': name,
-            'عدد الحصص': lessons,
-            'عدد الزيارات': teacherVisits.length,
-            'متوسط التقييم': avgRating,
-            'الأداء العام': performance
-        };
-    });
-    
-    const ws = XLSX.utils.json_to_sheet(reportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "تقرير الأداء");
-    XLSX.writeFile(wb, `تقرير_الأداء_${new Date().toLocaleDateString('ar-SA')}.xlsx`);
-}
-
-// Tasks Functions
-function addTask() {
-    const input = document.getElementById('taskInput');
-    if(input.value) {
-        tasks.push({id: Date.now(), text: input.value, done: false});
-        input.value = "";
-        renderTasks();
-        syncToCloud();
-        updateDashboard();
-    }
-}
-
-function renderTasks() {
-    const l = document.getElementById('tasks-list');
-    if (tasks.length === 0) {
-        l.innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;">لا توجد مهام</div>';
-        return;
-    }
-    
-    l.innerHTML = tasks.map(t => `
-        <div class="task-card ${t.done ? 'done' : ''}">
-            <div style="display:flex; align-items:center; gap:10px; flex:1;">
-                <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${t.id})" style="width:20px; height:20px; cursor:pointer;">
-                <span style="${t.done ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${t.text}</span>
-            </div>
-            <button onclick="deleteTask(${t.id})" style="border:none; color:#ef4444; background:none; cursor:pointer; font-size:20px;">🗑️</button>
-        </div>
-    `).join('');
-}
-
-function toggleTask(id) {
-    const task = tasks.find(t => t.id === id);
-    if (task) {
-        task.done = !task.done;
-        renderTasks();
-        syncToCloud();
-        updateDashboard();
-    }
-}
-
-function deleteTask(id) {
-    tasks = tasks.filter(t => t.id !== id);
-    renderTasks();
-    syncToCloud();
-    updateDashboard();
-}
-
-// XML Import
-function handleXML(input) {
-    const reader = new FileReader();
-    reader.readAsText(input.files[0], "windows-1256");
-    reader.onload = async (e) => {
-        const xml = new DOMParser().parseFromString(e.target.result, "text/xml");
-        const newData = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
-        
-        Array.from(xml.getElementsByTagName('teacher')).forEach(t => 
-            newData.teachers[t.getAttribute('id')] = t.getAttribute('name'));
-        Array.from(xml.getElementsByTagName('class')).forEach(c => 
-            newData.classes[c.getAttribute('id')] = c.getAttribute('short'));
-        Array.from(xml.getElementsByTagName('subject')).forEach(s => 
-            newData.subjects[s.getAttribute('id')] = s.getAttribute('name'));
-        Array.from(xml.getElementsByTagName('period')).forEach(p => 
-            newData.periods.push({
-                id: p.getAttribute('period'),
-                s: p.getAttribute('starttime'),
-                e: p.getAttribute('endtime')
-            }));
-        
-        newData.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({
-            d: l.getAttribute('DayID'),
-            p: l.getAttribute('Period'),
-            c: l.getAttribute('ClassID'),
-            t: l.getAttribute('TeacherID'),
-            s: l.getAttribute('SubjectGradeID')
-        }));
-        
-        data = newData;
-        await syncToCloud();
-        closeModal();
-        refresh();
-        updateDashboard();
-        alert('تم استيراد الجدول بنجاح ✅');
+function loadXML(input) {
+    const r = new FileReader(); r.readAsText(input.files[0], "windows-1256");
+    r.onload = (e) => {
+        const parser = new DOMParser(); const xml = parser.parseFromString(e.target.result, "text/xml");
+        const n = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
+        Array.from(xml.getElementsByTagName('teacher')).forEach(t => n.teachers[t.getAttribute('id')] = t.getAttribute('name'));
+        Array.from(xml.getElementsByTagName('class')).forEach(c => n.classes[c.getAttribute('id')] = c.getAttribute('short'));
+        Array.from(xml.getElementsByTagName('period')).forEach(p => n.periods.push({id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')}));
+        n.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({ d: l.getAttribute('DayID'), p: l.getAttribute('Period'), c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID') }));
+        data = n; sync(); location.reload();
     };
 }
-
-// Excel Import/Export
-function importFromExcel(input) {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const wb = XLSX.read(e.target.result, { type: 'binary' });
+function loadJSON(input) { const r = new FileReader(); r.onload = (e) => { phrasesDB = JSON.parse(e.target.result); sync(); location.reload(); }; r.readAsText(input.files[0]); }
+function loadExcel(input) {
+    const r = new FileReader(); r.onload = (e) => {
+        const wb = XLSX.read(e.target.result, {type: 'binary'});
         const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        sheet.forEach(row => {
-            if(row["اسم المعلم"]) {
-                phones[row["اسم المعلم"]] = String(row["رقم الهاتف"] || "");
-            }
-        });
-        await syncToCloud();
-        renderStaff();
-        alert('تم استيراد بيانات المعلمين بنجاح ✅');
+        sheet.forEach(row => { let n = row["اسم المعلم"] || row["المعلم"]; let p = row["رقم الهاتف"] || row["الهاتف"]; if(n) phones[n] = String(p || ""); });
+        sync(); renderStaff(""); closeSettings();
     };
-    reader.readAsBinaryString(input.files[0]);
+    r.readAsBinaryString(input.files[0]);
 }
-
-function exportToExcel() {
-    const teachers = Array.from(new Set([...Object.values(data.teachers), ...Object.keys(phones)])).sort();
-    const list = teachers.map(name => ({
-        "اسم المعلم": name,
-        "رقم الهاتف": phones[name] || ""
-    }));
-    const ws = XLSX.utils.json_to_sheet(list);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "المعلمين");
-    XLSX.writeFile(wb, "المعلمين.xlsx");
-}
-
-// Utility Functions
-function handleGoogleLogin() {
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-}
-
-function filterStaff() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.filter-item').forEach(el => 
-        el.style.display = el.innerText.toLowerCase().includes(q) ? 'block' : 'none');
-}
-
-function sendStaffMsg(n, id) {
-    const ph = (phones[n] || "").replace(/\s+/g, '');
-    const m = document.getElementById(id).value;
-    if(ph && m) window.open(`https://wa.me/${ph}?text=${encodeURIComponent(m)}`);
-}
-
-function updatePhone(name) {
-    const newPhone = prompt(`تحديث رقم ${name}:`, phones[name] || "");
-    if (newPhone !== null) {
-        phones[name] = newPhone;
-        syncToCloud();
-        renderStaff();
-    }
-}
-
-function doSim() {
-    isSim = true;
-    sDay = 1;
-    sTime = data.periods[0]?.s || "08:00";
-    closeModal();
-    refresh();
-    updateDashboard();
-}
-
-function resetTime() {
-    isSim = false;
-    closeModal();
-    refresh();
-    updateDashboard();
-}
-
-function openModal() {
-    document.getElementById('settingsModal').style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('settingsModal').style.display = 'none';
-}
-
-function toM(t) {
-    if(!t) return 0;
-    const [h, m] = t.split(':');
-    return parseInt(h) * 60 + parseInt(m);
-}
-
-function switchTab(t, b) {
-    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    document.getElementById(t).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    b.classList.add('active');
-    
-    if(t === 'view-staff') renderStaff();
-    if(t === 'view-visits') renderVisits();
-    if(t === 'view-dashboard') updateDashboard();
-}
-
-// Auto-refresh
-setInterval(() => {
-    if(currentUser && !isSim) {
-        refresh();
-        updateDashboardTime();
-    }
-}, 30000);
 </script>
-
 </body>
 </html>
