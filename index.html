@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - النسخة الكاملة المصححة</title>
+    <title>منصة القائد - نسخة التقارير المتقدمة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -29,10 +29,8 @@
         .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; font-size: 1rem; margin-bottom: 10px; }
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
 
-        .msg-select { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #cbd5e1; margin-top: 10px; background: #f8fafc; font-weight: 600; }
-
         #reportModal { display: none; position: fixed; inset: 0; background: white; z-index: 2000; overflow-y: auto; padding: 20px; }
-        .report-box { border: 2px solid #000; padding: 20px; direction: rtl; line-height: 1.6; }
+        .report-content { border: 2px solid #000; padding: 30px; direction: rtl; line-height: 1.8; color: #000; }
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 20px; overflow-y: auto; }
         .modal-body { background: white; border-radius: 30px; padding: 30px; max-width: 500px; margin: auto; }
@@ -41,20 +39,21 @@
         .nav-item { text-align: center; color: #94a3b8; background: none; border: none; flex: 1; font-weight: bold; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
 
-        .checkbox-item { transform: scale(1.4); margin-right: 10px; }
+        .score-select { padding: 8px; border-radius: 10px; border: 2px solid var(--primary); width: 60px; font-weight: bold; }
 
         @media print {
             .no-print { display: none !important; }
             #reportModal { display: block !important; position: absolute; top: 0; left: 0; width: 100%; height: auto; z-index: 3000; }
+            .report-content { border: none; padding: 0; }
         }
     </style>
 </head>
 <body style="display:none;">
 
 <div id="login-screen" style="position:fixed; inset:0; background:var(--bg); z-index:3000; display:flex; align-items:center; justify-content:center;">
-    <div style="background:white; padding:40px; border-radius:40px; text-align:center; width:90%; max-width:400px; box-shadow: var(--shadow);">
+    <div style="background:white; padding:40px; border-radius:40px; text-align:center; width:90%; max-width:400px;">
         <h1>منصة القائد ⚡</h1>
-        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800; cursor:pointer;">الدخول عبر جوجل</button>
+        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800; cursor:pointer;">دخول عبر جوجل</button>
     </div>
 </div>
 
@@ -66,9 +65,9 @@
 </div>
 
 <div id="reportModal">
-    <div id="reportContainer" class="report-box"></div>
+    <div id="reportContainer" class="report-content"></div>
     <div class="no-print" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <button class="btn-gen" style="background:#334155;" onclick="window.print()">📥 طباعة التقرير</button>
+        <button class="btn-gen" style="background:#334155;" onclick="window.print()">📥 طباعة / حفظ PDF</button>
         <button class="btn-gen" style="background:#94a3b8;" onclick="closeReport()">إغلاق</button>
     </div>
 </div>
@@ -80,41 +79,40 @@
 
 <div id="view-visits" class="container no-print">
     <div style="background:white; padding:25px; border-radius:30px;">
-        <h3 style="text-align:center;">📝 تقييم زيارة فنية</h3>
-        <input type="text" id="v_teacher" placeholder="اسم المعلم" class="styled-input">
+        <h3 style="text-align:center;">📝 تقييم جديد</h3>
+        <input type="text" id="v_teacher" placeholder="المعلم" class="styled-input">
         <input type="text" id="v_lesson" placeholder="عنوان الدرس" class="styled-input">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <input type="text" id="v_class" placeholder="الصف" class="styled-input">
             <input type="text" id="v_period" placeholder="الحصة" class="styled-input">
         </div>
-        <table style="width:100%; margin-top:15px; border-collapse: collapse;"><tbody id="criteriaTable"></tbody></table>
-        <button class="btn-gen" style="margin-top:20px;" onclick="saveAndShow()">حفظ وتوليد التقرير</button>
+        <table style="width:100%; margin-top:15px;"><tbody id="criteriaTable"></tbody></table>
+        <button class="btn-gen" style="margin-top:20px;" onclick="processVisit()">حفظ وتوليد التقرير</button>
     </div>
 </div>
 
 <div id="view-history" class="container no-print">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:white; padding:15px; border-radius:20px;">
-        <h3 style="margin:0;">📜 سجل الزيارات</h3>
-        <button onclick="shareSelected()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:15px; font-weight:bold;">مشاركة المختار 📤</button>
+        <h3 style="margin:0;">📜 السجل</h3>
+        <button onclick="shareSelected()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:15px;">مشاركة 📤</button>
     </div>
     <div id="history-list"></div>
 </div>
 
 <div id="view-staff" class="container no-print">
-    <input type="text" id="searchStaff" placeholder="🔍 ابحث عن معلم..." onkeyup="renderStaff(this.value)" class="styled-input">
+    <input type="text" id="searchStaff" placeholder="🔍 بحث..." onkeyup="renderStaff(this.value)" class="styled-input">
     <div id="staff-list"></div>
 </div>
 
 <div id="settingsModal" class="modal no-print">
     <div class="modal-body">
         <h2 style="text-align:center;">⚙️ الإعدادات</h2>
-        <button onclick="doRandomSim()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:10px;">🎲 تجربة حصة عشوائية</button>
-        <button onclick="resetTime()" style="width:100%; padding:15px; background:#64748b; color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:20px;">🕒 العودة للوقت الحالي</button>
+        <button onclick="doRandomSim()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:10px;">🎲 محاكاة حصة عشوائية</button>
+        <button onclick="resetTime()" style="width:100%; padding:15px; background:#64748b; color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:20px;">🕒 الوقت الحالي</button>
         <div style="background:#f0fdf4; padding:15px; border-radius:20px;">
             <input type="file" accept=".xml" onchange="loadXML(this)" style="margin-bottom:10px; width:100%;">
             <input type="file" accept=".json" onchange="loadJSON(this)" style="margin-bottom:10px; width:100%;">
-            <input type="file" accept=".xlsx" onchange="loadExcel(this)" style="margin-bottom:15px; width:100%;">
-            <button onclick="exportExcel()" style="width:100%; padding:15px; background:var(--accent); border:none; border-radius:15px; font-weight:800;">💾 تصدير أرقام المعلمين</button>
+            <input type="file" accept=".xlsx" onchange="loadExcel(this)" style="margin-bottom:10px; width:100%;">
         </div>
         <button class="btn-gen" style="background:#f1f5f9; color:black; margin-top:20px;" onclick="closeSettings()">إغلاق</button>
     </div>
@@ -152,192 +150,145 @@ async function init() {
     const doc = await db.collection("users").doc(currentUser.uid).get();
     if(doc.exists) {
         const c = doc.data();
-        phones = c.phones || {}; 
-        data = c.schoolData || data;
-        phrasesDB = c.phrasesDB || []; 
-        visitHistory = c.visitHistory || [];
+        phones = c.phones || {}; data = c.schoolData || data;
+        phrasesDB = c.phrasesDB || []; visitHistory = c.visitHistory || [];
         renderVisitForm(); refresh(); renderHistory(); renderStaff("");
     }
 }
 
-async function sync() { 
-    await db.collection("users").doc(currentUser.uid).set({ 
-        phones, schoolData: data, phrasesDB, visitHistory 
-    }); 
-}
+async function sync() { await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data, phrasesDB, visitHistory }); }
 
-// دالة الحفظ وإظهار التقرير
-function saveAndShow() {
+// معالجة الزيارة وحفظها بكامل التفاصيل
+function processVisit() {
+    const teacher = document.getElementById('v_teacher').value;
+    const lesson = document.getElementById('v_lesson').value;
+    if(!teacher || !lesson) return alert("أكمل البيانات");
+
+    const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({
+        m: s.dataset.m,
+        v: parseInt(s.value) || 0
+    }));
+
+    // 1. استخراج جوانب الإجادة (أعلى 4)
+    const sortedScores = [...scores].sort((a,b) => b.v - a.v);
+    const top4 = sortedScores.slice(0, 4).map(s => {
+        const found = phrasesDB.find(p => p["المعيار / البند"] === s.m && p["الحكم"].includes(`(${s.v})`));
+        return found ? found["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : s.m;
+    });
+
+    // 2. استخراج جوانب التطوير والتوصيات (أقل من 2)
+    const needsImprovement = scores.filter(s => s.v > 0 && s.v <= 2).map(s => {
+        const found = phrasesDB.find(p => p["المعيار / البند"] === s.m && p["الحكم"].includes(`(${s.v})`));
+        return {
+            criteria: s.m,
+            desc: found ? found["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "يحتاج تحسين",
+            recommendation: found ? found["التوصيات"] : "متابعة الأداء"
+        };
+    });
+
     const v = {
         id: Date.now(),
         date: new Date().toLocaleDateString('ar-EG'),
-        teacher: document.getElementById('v_teacher').value,
-        lesson: document.getElementById('v_lesson').value,
+        teacher, lesson,
         class: document.getElementById('v_class').value,
         period: document.getElementById('v_period').value,
-        scores: Array.from(document.querySelectorAll('.score-select')).map(s => ({
-            m: s.dataset.m,
-            v: s.value
-        }))
+        strengths: top4,
+        improvements: needsImprovement,
+        allScores: scores
     };
-    if(!v.teacher || !v.lesson) return alert("يرجى إكمال البيانات الأساسية");
-    
+
     visitHistory.unshift(v);
     sync();
     renderHistory();
     showFullReport(v);
 }
 
-// دالة عرض التقرير المتكامل
 function showFullReport(v) {
-    // جلب التوصيات وجوانب الإجادة من ملف JSON المرفوع بناءً على الدرجات
-    let detailsHtml = "";
-    if(phrasesDB.length > 0) {
-        const selections = v.scores.map(s => phrasesDB.find(p => p["المعيار / البند"] === s.m && p["الحكم"].includes(`(${s.v})`))).filter(x => x);
-        const strengths = selections.filter(s => ["1","2"].includes(v.scores.find(sc=>sc.m==s["المعيار / البند"])?.v));
-        const improvements = selections.filter(s => ["3","4","5"].includes(v.scores.find(sc=>sc.m==s["المعيار / البند"])?.v));
-
-        detailsHtml = `
-            <h4 style="color:green; border-bottom:1px solid #ddd;">✅ جوانب الإجادة:</h4>
-            <ul>${strengths.map(s => `<li>${s["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"]}</li>`).join('') || "<li>لا توجد بيانات</li>"}</ul>
-            <h4 style="color:red; border-bottom:1px solid #ddd;">⚠️ جوانب التطوير والتوصيات:</h4>
-            <ul>${improvements.map(s => `<li><b>${s["المعيار / البند"]}:</b> ${s["التوصيات"]}</li>`).join('') || "<li>مستمر في التميز</li>"}</ul>
-        `;
-    }
-
     const html = `
-        <div style="text-align:center; border-bottom:4px double #000; margin-bottom:15px;">
-            <h2 style="margin:5px;">تقرير زيارة فنية صفية</h2>
-            <p>منصة القائد للإشراف التربوي</p>
+        <div style="text-align:center; border-bottom:3px solid #000; padding-bottom:10px; margin-bottom:20px;">
+            <h1 style="margin:0;">تقرير زيارة إشرافية</h1>
+            <p>سجل القائد الذكي للإدارة التربوية</p>
         </div>
-        <table style="width:100%; border:1px solid #000; margin-bottom:15px; background:#f9f9f9;">
-            <tr><td style="padding:5px;"><b>المعلم:</b> ${v.teacher}</td><td style="padding:5px;"><b>التاريخ:</b> ${v.date}</td></tr>
-            <tr><td style="padding:5px;"><b>الصف:</b> ${v.class}</td><td style="padding:5px;"><b>الحصة:</b> ${v.period}</td></tr>
-            <tr><td colspan="2" style="padding:5px;"><b>عنوان الدرس:</b> ${v.lesson}</td></tr>
+
+        <table style="width:100%; border:1px solid #000; margin-bottom:20px; background:#f9f9f9;">
+            <tr><td style="padding:10px;"><b>اسم المعلم:</b> ${v.teacher}</td><td style="padding:10px;"><b>التاريخ:</b> ${v.date}</td></tr>
+            <tr><td style="padding:10px;"><b>الصف:</b> ${v.class}</td><td style="padding:10px;"><b>الحصة:</b> ${v.period}</td></tr>
+            <tr><td colspan="2" style="padding:10px;"><b>موضوع الدرس:</b> ${v.lesson}</td></tr>
         </table>
-        <h4 style="background:#eee; padding:5px; border:1px solid #000;">📊 التقييمات:</h4>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:15px;">
-            ${v.scores.map(s => `<div style="border:1px solid #eee; padding:5px;">${s.m}: <b>(${s.v})</b></div>`).join('')}
+
+        <h3 style="background:#eee; padding:8px; border-right:5px solid var(--success);">✅ جوانب الإجادة (التميز):</h3>
+        <ol>${v.strengths.map(s => `<li>${s}</li>`).join('')}</ol>
+
+        <h3 style="background:#eee; padding:8px; border-right:5px solid var(--accent);">⚠️ نقاط تحتاج إلى تطوير:</h3>
+        <ul>${v.improvements.map(i => `<li><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>المعلم متمكن في كافة البنود</li>"}</ul>
+
+        <div style="margin-top:30px; padding:20px; border:1px dashed #000; background:#fffcf0;">
+            <p style="font-weight:bold; text-align:center; font-size:1.1rem;">" نتقدم بالشكر الجزيل للمعلم على أدائه المتميز خلال الحصة، ونضع بين يديه التوصيات التالية لمزيد من التطور المهني: "</p>
+            <ol style="margin-top:10px;">
+                ${v.improvements.map(i => `<li>${i.recommendation}</li>`).join('') || "<li>الاستمرار في العطاء المتميز بنفس الوتيرة</li>"}
+            </ol>
         </div>
-        ${detailsHtml}
+
+        <div style="margin-top:40px; display:flex; justify-content:space-around; font-weight:bold;">
+            <p>توقيع المعلم: ....................</p>
+            <p>توقيع المدير: ....................</p>
+        </div>
     `;
     document.getElementById('reportContainer').innerHTML = html;
     document.getElementById('reportModal').style.display = 'block';
 }
 
 function renderHistory() {
-    const list = document.getElementById('history-list');
-    if(!visitHistory.length) { list.innerHTML = "<p style='text-align:center;'>لا توجد زيارات مسجلة</p>"; return; }
-    list.innerHTML = visitHistory.map(v => `
+    document.getElementById('history-list').innerHTML = visitHistory.map(v => `
         <div class="history-item">
-            <input type="checkbox" class="checkbox-item" data-id="${v.id}" style="float:right; margin-top:10px;">
-            <div style="padding:0 35px; cursor:pointer;" onclick='showFullReport(${JSON.stringify(v)})'>
-                <b>${v.teacher}</b><br>
-                <small>${v.date} - ${v.class} - ${v.lesson}</small>
+            <div style="cursor:pointer;" onclick='showFullReport(${JSON.stringify(v)})'>
+                <b>${v.teacher}</b><br><small>${v.date} - ${v.class}</small>
             </div>
-            <button onclick="deleteV(${v.id})" style="position:absolute; left:15px; top:18px; background:none; border:none; color:red; font-size:1.2rem;">🗑️</button>
+            <button onclick="deleteV(${v.id})" style="position:absolute; left:10px; top:15px; color:red; border:none; background:none; font-size:1.2rem;">🗑️</button>
         </div>`).join('');
 }
 
-// نظام الرسائل الذكي
-function sendSmartMessage(teacher, type, info = {}) {
-    const phone = (phones[teacher] || "").replace(/\s+/g, '');
-    if(!phone) return alert("لا يوجد رقم لهذا المعلم.");
-    const msgs = {
-        delay: `أ/ ${teacher} الموقر، نرجو التكرم بالعلم بأن طلاب صف (${info.c}) بانتظاركم في (الحصة ${info.p})، عسى أن يكون المانع خيراً. شاكرين حرصكم.`,
-        office: `تحية طيبة أ/ ${teacher}، يرجى التكرم بالحضور للمكتب عند توفر وقت لديكم لأمر مهني يسير. شكراً لتعاونكم.`,
-        duty: `السلام عليكم أ/ ${teacher}، لوحظ عدم تواجدكم في موقع المناوبة المخصص لكم، يرجى المتابعة للأهمية. وفقكم الله.`,
-        assembly: `أخي أ/ ${teacher}، نؤكد على أهمية التواجد مع الطلاب في ساحة الطابور لتعزيز الانضباط. تقبل تحياتي.`,
-        reserve: `أ/ ${teacher} الموقر، نرجو التكرم بمتابعة حصة الاحتياط المسندة إليكم حالياً لضمان سير اليوم الدراسي. جزيتم خيراً.`
-    };
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgs[type])}`);
+// الوظائف المساعدة الأساسية
+function renderVisitForm() {
+    let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
+    document.getElementById('criteriaTable').innerHTML = list.map(m => `<tr><td style="padding:8px 0;"><b>${m}</b></td><td style="text-align:left;"><select class="score-select" data-m="${m}"><option value="0">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td></tr>`).join('');
 }
+function renderStaff(f) {
+    const teachers = Object.values(data.teachers || {}).filter(n => n.includes(f)).sort();
+    document.getElementById('staff-list').innerHTML = teachers.map(n => `<div class="lesson-card"><b>${n}</b><br><small>${phones[n] || 'بدون هاتف'}</small></div>`).join('');
+}
+function tab(id, b) { document.querySelectorAll('.container').forEach(c=>c.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); b.classList.add('active'); }
+function openSettings() { document.getElementById('settingsModal').style.display='block'; }
+function closeSettings() { document.getElementById('settingsModal').style.display='none'; }
+function closeReport() { document.getElementById('reportModal').style.display='none'; }
+function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+function deleteV(id) { if(confirm("حذف؟")) { visitHistory = visitHistory.filter(v=>v.id!=id); sync(); renderHistory(); } }
 
 function refresh() {
     const now = new Date();
     const d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
     const t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2,'0');
     const p = (data.periods || []).find(p => {
-        const cur = toMin(t), start = toMin(p.s), end = toMin(p.e);
-        return cur >= start && cur <= end;
+        const cur = (h,m)=>parseInt(h)*60+parseInt(m);
+        const [ch,cm] = t.split(':'), [sh,sm] = p.s.split(':'), [eh,em] = p.e.split(':');
+        return cur(ch,cm) >= cur(sh,sm) && cur(ch,cm) <= cur(eh,em);
     });
-    
     const list = document.getElementById('lessons-list');
     if(p && data.lessons) {
         let cur = data.lessons.filter(l => l.d == d && l.p == p.id);
-        list.innerHTML = cur.map(l => {
-            const tName = data.teachers[l.t], cName = data.classes[l.c];
-            return `
-            <div class="lesson-card">
-                <div style="display:flex; align-items:center;">
-                    <div class="class-badge">${cName || '..'}</div>
-                    <div style="flex:1;"><b>${tName}</b><br><small>${data.subjects[l.s] || ''}</small></div>
-                    <button onclick="startV('${tName}','${cName}','${l.p}')" style="background:none; border:none; font-size:1.5rem;">📝</button>
-                </div>
-                <select class="msg-select" onchange="sendSmartMessage('${tName}', this.value, {c:'${cName}', p:'${l.p}'}); this.selectedIndex=0;">
-                    <option value="">تواصل سريع بخصوص الحصة ⚡</option>
-                    <option value="delay">⚠️ استفسار عن تأخر عن الحصة</option>
-                    <option value="office">🏢 طلب حضور للمكتب</option>
-                    <option value="reserve">🔄 متابعة حصة احتياط</option>
-                </select>
-            </div>`;
-        }).join('');
-    } else { list.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8;">خارج أوقات الحصص</div>`; }
+        list.innerHTML = cur.map(l => `<div class="lesson-card"><div style="display:flex; align-items:center;"><div class="class-badge">${data.classes[l.c]||'..'}</div><div style="flex:1;"><b>${data.teachers[l.t]}</b></div><button onclick="startV('${data.teachers[l.t]}','${data.classes[l.c]}','${l.p}')" style="background:none; border:none; font-size:1.5rem;">📝</button></div></div>`).join('');
+    } else { list.innerHTML = "<p style='text-align:center;'>لا توجد حصص حالياً</p>"; }
 }
-
-function renderStaff(f) {
-    const list = document.getElementById('staff-list');
-    const teachers = Object.values(data.teachers || {}).filter(n => n.includes(f)).sort();
-    list.innerHTML = teachers.map(n => `
-        <div class="lesson-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div><b>${n}</b><br><small>${phones[n] || 'بدون رقم'}</small></div>
-                <select class="msg-select" style="width:130px;" onchange="sendSmartMessage('${n}', this.value); this.selectedIndex=0;">
-                    <option value="">تواصل 💬</option>
-                    <option value="office">استدعاء</option>
-                    <option value="duty">مناوبة</option>
-                    <option value="assembly">طابور</option>
-                </select>
-            </div>
-        </div>`).join('');
-}
-
-// وظائف مساعدة
-function toMin(t) { const [h,m] = t.split(':'); return parseInt(h)*60 + parseInt(m); }
+function startV(t,c,p) { tab('view-visits', document.querySelector('[onclick*="view-visits"]')); document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "حصة "+p; }
 function doRandomSim() {
     if(!data.lessons.length) return alert("ارفع الجدول أولاً");
-    isSim = true;
-    const rl = data.lessons[Math.floor(Math.random() * data.lessons.length)];
-    const per = data.periods.find(p => p.id == rl.p);
-    sDay = rl.d; sTime = per ? per.s : "08:00";
-    const days = ["","الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس"];
+    isSim = true; const rl = data.lessons[Math.floor(Math.random()*data.lessons.length)];
+    sDay = rl.d; sTime = data.periods.find(p=>p.id==rl.p)?.s || "08:00";
     document.getElementById('sim-status').style.display='block';
-    document.getElementById('sim-status').innerText = `🎲 محاكاة عشوائية: ${days[sDay]} - الحصة ${rl.p}`;
+    document.getElementById('sim-status').innerText = `🎲 محاكاة: حصة ${rl.p}`;
     refresh(); closeSettings();
 }
 function resetTime() { isSim = false; document.getElementById('sim-status').style.display='none'; refresh(); closeSettings(); }
-function deleteV(id) { if(confirm("حذف الزيارة؟")) { visitHistory = visitHistory.filter(v=>v.id!=id); sync(); renderHistory(); } }
-function shareSelected() {
-    const ids = Array.from(document.querySelectorAll('.checkbox-item:checked')).map(c=>c.dataset.id);
-    if(!ids.length) return alert("اختر زيارات أولاً");
-    let txt = "📋 تقارير الزيارة المختارة:\n\n";
-    visitHistory.filter(v => ids.includes(String(v.id))).forEach(v => {
-        txt += `👤 المعلم: ${v.teacher}\n📅 التاريخ: ${v.date}\n📖 الدرس: ${v.lesson}\n📊 التقييم: ${v.scores.map(s=>s.v).join('-')}\n---\n`;
-    });
-    if(navigator.share) navigator.share({text: txt}); else alert(txt);
-}
-function startV(t,c,p) { tab('view-visits', document.querySelector('[onclick*="view-visits"]')); document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "الحصة "+p; }
-function renderVisitForm() {
-    let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
-    document.getElementById('criteriaTable').innerHTML = list.map(m => `<tr style="border-bottom:1px solid #eee;"><td style="padding:10px 0;"><b>${m}</b></td><td><select class="score-select" data-m="${m}" style="padding:8px; border-radius:10px; border:2px solid var(--primary);"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td></tr>`).join('');
-}
-
-// التنقل والمودال
-function tab(id, b) { document.querySelectorAll('.container').forEach(c=>c.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); b.classList.add('active'); }
-function openSettings() { document.getElementById('settingsModal').style.display='block'; }
-function closeSettings() { document.getElementById('settingsModal').style.display='none'; }
-function closeReport() { document.getElementById('reportModal').style.display='none'; }
-function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
 // رفع الملفات
 function loadXML(input) {
@@ -363,11 +314,6 @@ function loadExcel(input) {
     r.readAsBinaryString(input.files[0]);
 }
 function loadJSON(input) { const r = new FileReader(); r.onload = (e) => { phrasesDB = JSON.parse(e.target.result); sync(); location.reload(); }; r.readAsText(input.files[0]); }
-function exportExcel() {
-    const ws = XLSX.utils.json_to_sheet(Object.entries(phones).map(([n,p])=>({"المعلم":n,"الهاتف":p})));
-    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Phones");
-    XLSX.writeFile(wb, "أرقام_المعلمين.xlsx");
-}
 </script>
 </body>
 </html>
