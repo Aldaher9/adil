@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - النسخة النهائية المصلحة</title>
+    <title>منصة القائد - النسخة المعتمدة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -30,8 +30,6 @@
         .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
 
-        .msg-select { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #cbd5e1; margin-top: 10px; background: #f8fafc; font-weight: 600; color: var(--primary); }
-
         #reportModal { display: none; position: fixed; inset: 0; background: white; z-index: 2000; overflow-y: auto; padding: 20px; }
         .report-content { border: 2px solid #000; padding: 30px; direction: rtl; line-height: 1.8; color: #000; }
         
@@ -44,6 +42,7 @@
 
         .score-select { padding: 8px; border-radius: 10px; border: 2px solid var(--primary); font-weight: bold; }
         .check-box { width: 22px; height: 22px; margin-left: 10px; cursor: pointer; }
+        .msg-select { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #cbd5e1; margin-top: 10px; background: #f8fafc; font-weight: 600; color: var(--primary); }
     </style>
 </head>
 <body style="display:none;">
@@ -51,7 +50,7 @@
 <div id="login-screen" style="position:fixed; inset:0; background:var(--bg); z-index:3000; display:flex; align-items:center; justify-content:center;">
     <div style="background:white; padding:40px; border-radius:40px; text-align:center; width:90%; max-width:400px; box-shadow: var(--shadow);">
         <h1>منصة القائد ⚡</h1>
-        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800; cursor:pointer;">الدخول عبر جوجل</button>
+        <button onclick="handleGoogleLogin()" style="width:100%; padding:20px; background:var(--primary); color:white; border:none; border-radius:20px; font-weight:800;">الدخول عبر جوجل</button>
     </div>
 </div>
 
@@ -156,58 +155,42 @@ async function init() {
 }
 async function sync() { await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data, phrasesDB, visitHistory }); }
 
-// نظام المحاكاة والوقت المحدث
+// منطق الوقت والمحاكاة المصلح
 function refresh() {
     const now = new Date();
     let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
     let t = isSim ? sTime : now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
-    
     const list = document.getElementById('lessons-list');
-    
     const p = (data.periods || []).find(p => {
         const cur = (str) => { const [h, m] = str.split(':'); return parseInt(h)*60 + parseInt(m); };
         const nowV = cur(t);
         return nowV >= cur(p.s) && nowV <= cur(p.e);
     });
-
     if(p && data.lessons) {
         let cur = data.lessons.filter(l => l.d == d && l.p == p.id)
                   .sort((a,b) => (data.classes[a.c] || "").localeCompare(data.classes[b.c] || "", undefined, {numeric: true}));
-        
         if(cur.length > 0) {
             list.innerHTML = cur.map(l => {
                 const tN = data.teachers[l.t], cN = data.classes[l.c];
-                return `<div class="lesson-card">
-                    <div style="display:flex; align-items:center;">
-                        <div class="class-badge">${cN||'..'}</div>
-                        <div style="flex:1;"><b>${tN}</b></div>
-                        <button onclick="startV('${tN}','${cN}','${l.p}')" style="background:none; border:none; font-size:1.5rem;">📝</button>
-                    </div>
-                    <select class="msg-select" onchange="sendWhatsApp('${tN}', this.value, {c:'${cN}', p:'${l.p}'}); this.selectedIndex=0;">
-                        <option value="">تواصل سريع ⚡</option>
-                        <option value="delay">⚠️ استفسار عن تأخر</option>
-                        <option value="office">🏢 طلب حضور للمكتب</option>
-                    </select>
-                </div>`;
+                return `<div class="lesson-card"><div style="display:flex; align-items:center;"><div class="class-badge">${cN||'..'}</div><div style="flex:1;"><b>${tN}</b></div><button onclick="startV('${tN}','${cN}','${l.p}')" style="background:none; border:none; font-size:1.5rem;">📝</button></div></div>`;
             }).join('');
-        } else { list.innerHTML = `<p style='text-align:center; padding:20px;'>لا توجد حصص مجدولة حالياً</p>`; }
-    } else { list.innerHTML = `<p style='text-align:center; padding:40px;'>خارج أوقات الدوام الرسمي أو لم يتم رفع الجدول</p>`; }
+        } else { list.innerHTML = `<p style='text-align:center; padding:20px;'>لا توجد حصص</p>`; }
+    } else { list.innerHTML = `<p style='text-align:center; padding:40px;'>خارج الدوام</p>`; }
 }
 
 function doRandomSim() {
-    if(!data.lessons || data.lessons.length === 0) return alert("يرجى رفع ملف XML أولاً.");
-    isSim = true;
-    const rl = data.lessons[Math.floor(Math.random() * data.lessons.length)];
+    if(!data.lessons || data.lessons.length === 0) return alert("ارفع الجدول");
+    isSim = true; const rl = data.lessons[Math.floor(Math.random() * data.lessons.length)];
     const pd = data.periods.find(p => p.id == rl.p);
     sDay = rl.d; sTime = pd ? pd.s : "08:00";
     document.getElementById('sim-status').style.display = 'block';
-    document.getElementById('sim-status').innerText = `🎲 وضع المحاكاة: يوم ${sDay} | حصة ${rl.p}`;
+    document.getElementById('sim-status').innerText = `🎲 محاكاة: يوم ${sDay} | حصة ${rl.p}`;
     refresh(); closeSettings();
 }
 
 function resetTime() { isSim = false; document.getElementById('sim-status').style.display = 'none'; refresh(); closeSettings(); }
 
-// حفظ الزيارة مع التقرير الاحترافي
+// التقرير الفني المعتمد (أفضل 4 وأسوأ 4 أقل من 2)
 function saveComplexVisit() {
     const t = document.getElementById('v_teacher').value, l = document.getElementById('v_lesson').value;
     if(!t || !l) return alert("يرجى إكمال البيانات");
@@ -215,38 +198,53 @@ function saveComplexVisit() {
     const serialNum = "REF-" + Date.now().toString().slice(-6);
     const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, v: parseInt(s.value) || 2 }));
     
-    const sorted = [...scores].sort((a,b)=>b.v - a.v);
-    const top4 = sorted.slice(0,4).map(s => phrasesDB.find(p=>p["المعيار / البند"]===s.m && p["الحكم"].includes(`(${s.v})`))?.["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] || s.m);
-    
-    const weakItems = scores.filter(s=>s.v > 0 && s.v <= 2).map(s => {
-        const f = phrasesDB.find(p=>p["المعيار / البند"]===s.m && p["الحكم"].includes(`(${s.v})`));
-        return { criteria: s.m, desc: f?.["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] || "يحتاج تحسين", rec: f?.["التوصيات"] || "متابعة الأداء" };
+    // 1. أفضل 4 بنود (جوانب الإجادة)
+    const best4 = [...scores].sort((a,b)=>b.v - a.v).slice(0,4).map(s => {
+        const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
+        return p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : s.m;
     });
 
-    const v = { id: Date.now(), serial: serialNum, date: new Date().toLocaleDateString('ar-EG'), teacher: t, lesson: l, class: document.getElementById('v_class').value, period: document.getElementById('v_period').value, strengths: top4, improvements: weakItems };
+    // 2. أسوأ 4 بنود (جوانب التحسين) - بشرط التقييم أقل من 2
+    const worst4 = [...scores].sort((a,b)=>a.v - b.v)
+                    .filter(s => s.v < 2)
+                    .slice(0,4)
+                    .map(s => {
+                        const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
+                        return {
+                            criteria: s.m,
+                            desc: p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "يحتاج تطوير",
+                            rec: p ? p["التوصيات"] : "متابعة الأداء"
+                        };
+                    });
+
+    const v = { id: Date.now(), serial: serialNum, date: new Date().toLocaleDateString('ar-EG'), teacher: t, lesson: l, class: document.getElementById('v_class').value, period: document.getElementById('v_period').value, strengths: best4, improvements: worst4 };
     visitHistory.unshift(v); sync(); renderHistory(); showFullReport(v);
-    document.getElementById('v_lesson').value = ""; // مسح العنوان لبدء جديد
+    document.getElementById('v_lesson').value = ""; // مسح العنوان
 }
 
 function showFullReport(v) {
     const html = `
-        <div id="pdf-content" style="padding:20px;">
+        <div id="pdf-content">
             <div style="display:flex; justify-content:space-between; border-bottom:3px solid #000; padding-bottom:10px; margin-bottom:20px;">
-                <div><h2 style="margin:0;">تقرير زيارة فنية</h2><p>سجل القائد الذكي</p></div>
+                <div><h2 style="margin:0;">تقرير زيارة فنية</h2><p>منصة القائد</p></div>
                 <div style="text-align:left;"><b>رقم المرجع:</b> ${v.serial}</div>
             </div>
-            <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+            <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:20px;">
                 <tr><td style="border:1px solid #000; padding:8px;"><b>المعلم:</b> ${v.teacher}</td><td style="border:1px solid #000; padding:8px;"><b>التاريخ:</b> ${v.date}</td></tr>
                 <tr><td style="border:1px solid #000; padding:8px;"><b>الصف:</b> ${v.class}</td><td style="border:1px solid #000; padding:8px;"><b>الحصة:</b> ${v.period}</td></tr>
                 <tr><td colspan="2" style="border:1px solid #000; padding:8px;"><b>الموضوع:</b> ${v.lesson}</td></tr>
             </table>
-            <h3 style="background:#f0fdf4; border-right:5px solid #10b981; padding:8px;">✅ جوانب الإجادة:</h3>
+            <h3 style="background:#eee; padding:8px; border-right:5px solid green;">✅ جوانب الإجادة:</h3>
             <ol>${v.strengths.map(s=>`<li>${s}</li>`).join('')}</ol>
-            <h3 style="background:#fef2f2; border-right:5px solid #ef4444; padding:8px;">⚠️ جوانب التحسين:</h3>
+            
+            <h3 style="background:#eee; padding:8px; border-right:5px solid red;">⚠️ جوانب التحسين:</h3>
             <ul>${v.improvements.map(i=>`<li><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد</li>"}</ul>
-            <div style="margin-top:20px; padding:15px; border:1px dashed #000; background:#fff;">
-                <p style="font-weight:bold; text-align:center;">" نتقدم بالشكر الجزيل للمعلم على أدائه الحصة، ونضع بين يديه التوصيات التالية: "</p>
-                <ol>${v.improvements.map(i=>`<li>${i.rec}</li>`).join('') || "<li>الاستمرار في العطاء المتميز</li>"}</ol>
+
+            <h3 style="background:#eee; padding:8px; border-right:5px solid orange;">💡 التوصيات:</h3>
+            <ol>${v.improvements.map(i=>`<li>${i.rec}</li>`).join('') || "<li>الاستمرار في التميز</li>"}</ol>
+            
+            <div style="margin-top:20px; text-align:center; font-style:italic; border-top:1px solid #ccc; padding-top:10px;">
+                " شكر وتقدير للمعلم على جهوده المبذولة في الحصة الدراسية "
             </div>
         </div>
     `;
@@ -257,11 +255,8 @@ function showFullReport(v) {
 // الوظائف المساعدة
 function startV(t,c,p) { 
     tab('view-visits', document.querySelector('[onclick*="view-visits"]')); 
-    document.getElementById('v_teacher').value = t; 
-    document.getElementById('v_class').value = c; 
-    document.getElementById('v_period').value = "حصة "+p;
-    document.getElementById('v_lesson').value = ""; // مسح العنوان
-    document.querySelectorAll('.score-select').forEach(s => s.value = "2"); // تصفير التقييم إلى 2
+    document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "حصة "+p;
+    document.getElementById('v_lesson').value = ""; document.querySelectorAll('.score-select').forEach(s => s.value = "2");
 }
 function downloadPDF() { html2pdf().from(document.getElementById('pdf-content')).save(`تقرير_${Date.now()}.pdf`); }
 function exportSelectedAsPDF() {
@@ -271,40 +266,28 @@ function exportSelectedAsPDF() {
 }
 function deleteSelected() {
     const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
-    if(!ids.length || !confirm("حذف المختار؟")) return;
-    visitHistory = visitHistory.filter(v => !ids.includes(v.id));
-    sync(); renderHistory();
+    if(!ids.length || !confirm("حذف؟")) return;
+    visitHistory = visitHistory.filter(v => !ids.includes(v.id)); sync(); renderHistory();
 }
 function renderVisitForm() {
     let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
     document.getElementById('criteriaTable').innerHTML = list.map(m => `
         <tr style="border-bottom:1px solid #eee;">
             <td style="padding:10px 0;"><b>${m}</b></td>
-            <td style="text-align:left;">
-                <select class="score-select" data-m="${m}">
-                    <option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
-                </select>
-            </td>
+            <td style="text-align:left;"><select class="score-select" data-m="${m}"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td>
         </tr>`).join('');
 }
 function renderHistory() {
     document.getElementById('history-list').innerHTML = visitHistory.map(v => `
-        <div class="history-item">
-            <input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;">
-            <div style="padding:0 40px; cursor:pointer;" onclick='showFullReport(${JSON.stringify(v)})'>
-                <b>${v.teacher}</b> <small>(${v.serial})</small><br><small>${v.date} - ${v.class}</small>
-            </div>
-        </div>`).join('');
+        <div class="history-item"><input type="checkbox" class="check-box multi-select" data-id="${v.id}" style="float:right;"><div style="padding:0 40px; cursor:pointer;" onclick='showFullReport(${JSON.stringify(v)})'><b>${v.teacher}</b> <small>(${v.serial})</small><br><small>${v.date} - ${v.class}</small></div></div>`).join('');
 }
 function renderStaff(f) {
     const teachers = Object.values(data.teachers || {}).filter(n => n.includes(f)).sort();
-    document.getElementById('staff-list').innerHTML = teachers.map(n => `<div class="lesson-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><b>${n}</b><br><small>${phones[n] || ''}</small></div><select class="msg-select" style="width:130px; margin-top:0;" onchange="sendWhatsApp('${n}', this.value); this.selectedIndex=0;"><option value="">تواصل 💬</option><option value="office">استدعاء</option></select></div></div>`).join('');
+    document.getElementById('staff-list').innerHTML = teachers.map(n => `<div class="lesson-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><b>${n}</b><br><small>${phones[n] || ''}</small></div><select class="msg-select" style="width:130px;" onchange="sendWhatsApp('${n}', this.value); this.selectedIndex=0;"><option value="">تواصل 💬</option><option value="office">استدعاء</option></select></div></div>`).join('');
 }
-function sendWhatsApp(teacher, type, info = {}) {
-    const phone = (phones[teacher] || "").replace(/\s+/g, '');
-    if(!phone) return alert("لا يوجد رقم.");
-    const msgs = { delay: `أ/ ${teacher}، طلاب صف (${info.c}) بانتظاركم في (الحصة ${info.p}).`, office: `أ/ ${teacher}، يرجى مراجعة المكتب.` };
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgs[type])}`);
+function sendWhatsApp(teacher, type) {
+    const phone = (phones[teacher] || "").replace(/\s+/g, ''); if(!phone) return alert("لا يوجد رقم.");
+    const msgs = { office: `أ/ ${teacher}، يرجى مراجعة المكتب.` }; window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgs[type])}`);
 }
 function tab(id, b) { document.querySelectorAll('.container').forEach(c=>c.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); b.classList.add('active'); }
 function openSettings() { document.getElementById('settingsModal').style.display='block'; }
@@ -312,7 +295,6 @@ function closeSettings() { document.getElementById('settingsModal').style.displa
 function closeReport() { document.getElementById('reportModal').style.display='none'; }
 function handleGoogleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
-// رفع الملفات
 function loadXML(input) {
     const r = new FileReader(); r.readAsText(input.files[0], "windows-1256");
     r.onload = (e) => {
