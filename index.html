@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - النسخة المعتمدة نهائياً</title>
+    <title>منصة القائد - النسخة المعتمدة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -17,7 +17,6 @@
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; }
         body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 90px; }
         
-        /* الواجهة */
         .header { background: var(--blue-grad); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 18px; border-radius: 14px; cursor: pointer; font-weight: bold; }
@@ -31,7 +30,6 @@
         .styled-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
         .btn-gen { width: 100%; padding: 18px; background: var(--success); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
 
-        /* تنسيق التقرير الرسمي (المطلوب) */
         #reportModal { display: none; position: fixed; inset: 0; background: white; z-index: 2000; overflow-y: auto; padding: 10px; }
         .pdf-page { background: white; padding: 30px; border: 2px solid #000; margin-bottom: 20px; direction: rtl; }
         .report-title-box { border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -70,7 +68,7 @@
 
 <div id="reportModal">
     <div id="allReportsContainer"></div>
-    <div class="no-print" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:20px;">
+    <div class="no-print" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:20px; padding-bottom:50px;">
         <button class="btn-gen" style="background:#334155;" onclick="downloadPDF()">📥 تحميل PDF</button>
         <button class="btn-gen" style="background:#94a3b8;" onclick="closeReport()">إغلاق</button>
     </div>
@@ -162,7 +160,6 @@ async function init() {
 }
 async function sync() { await db.collection("users").doc(currentUser.uid).set({ phones, schoolData: data, phrasesDB, visitHistory }); }
 
-// المحاكاة والوقت
 function refresh() {
     const now = new Date();
     let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
@@ -179,7 +176,7 @@ function refresh() {
 }
 
 function doRandomSim() {
-    if(!data.lessons.length) return alert("ارفع الجدول أولاً");
+    if(!data.lessons.length) return alert("ارفع الجدول");
     isSim = true; const rl = data.lessons[Math.floor(Math.random() * data.lessons.length)];
     sDay = rl.d; sTime = data.periods.find(p=>p.id==rl.p)?.s || "08:00";
     document.getElementById('sim-status').style.display = 'block';
@@ -188,7 +185,7 @@ function doRandomSim() {
 }
 function resetTime() { isSim = false; document.getElementById('sim-status').style.display = 'none'; refresh(); closeSettings(); }
 
-// منطق التقرير المعتمد
+// منطق التقرير المصلح (أسوأ 4 أقل من 2)
 function saveComplexVisit() {
     const t = document.getElementById('v_teacher').value, l = document.getElementById('v_lesson').value;
     if(!t || !l) return alert("أكمل البيانات");
@@ -196,14 +193,16 @@ function saveComplexVisit() {
     const serial = "REF-" + Date.now().toString().slice(-6);
     const scores = Array.from(document.querySelectorAll('.score-select')).map(s => ({ m: s.dataset.m, v: parseInt(s.value) }));
     
+    // 1. جوانب الإجادة (أفضل 4)
     const best4 = [...scores].sort((a,b)=>b.v - a.v).slice(0,4).map(s => {
         const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
         return p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : s.m;
     });
 
-    const worst4 = [...scores].sort((a,b)=>a.v - b.v).filter(s => s.v < 2).slice(0,4).map(s => {
+    // 2. جوانب التحسين (أسوأ 4 بشرط أقل من 2 - أي تقييم 1)
+    const worst4 = scores.filter(s => s.v < 2).sort((a,b)=>a.v - b.v).slice(0,4).map(s => {
         const p = phrasesDB.find(i=>i["المعيار / البند"]===s.m && i["الحكم"].includes(`(${s.v})`));
-        return { criteria: s.m, desc: p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "تطوير", rec: p ? p["التوصيات"] : "متابعة" };
+        return { criteria: s.m, desc: p ? p["الوصف السلوكي لجوانب الإجادة / أولويات التطوير"] : "تحسين الأداء", rec: p ? p["التوصيات"] : "متابعة" };
     });
 
     const v = { id: Date.now(), serial, date: new Date().toLocaleDateString('ar-EG'), teacher: t, lesson: l, class: document.getElementById('v_class').value, period: document.getElementById('v_period').value, strengths: best4, improvements: worst4 };
@@ -227,16 +226,16 @@ function showMultipleReports(reports) {
                     <tr><td colspan="2">موضوع الدرس: ${v.lesson}</td></tr>
                 </table>
                 <div class="section-header strengths-border">✅ جوانب الإجادة:</div>
-                <ol>${v.strengths.map(s=>`<li>${s}</li>`).join('')}</ol>
+                <ol style="margin-top:10px;">${v.strengths.map(s=>`<li>${s}</li>`).join('')}</ol>
                 
                 <div class="section-header improvements-border">⚠️ جوانب التحسين:</div>
-                <ul>${v.improvements.map(i=>`<li><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد</li>"}</ul>
+                <ul style="margin-top:10px;">${v.improvements.map(i=>`<li><b>${i.criteria}:</b> ${i.desc}</li>`).join('') || "<li>لا توجد (جميع البنود محققة للمعايير)</li>"}</ul>
 
                 <div class="section-header recs-border">💡 التوصيات:</div>
-                <ol>${v.improvements.map(i=>`<li>${i.rec}</li>`).join('') || "<li>الاستمرار في الأداء المتميز</li>"}</ol>
+                <ol style="margin-top:10px;">${v.improvements.map(i=>`<li>${i.rec}</li>`).join('') || "<li>الاستمرار في العطاء المتميز</li>"}</ol>
                 
-                <div style="margin-top:30px; text-align:center; font-weight:bold; border-top:1px solid #000; padding-top:10px;">
-                    " شكراً لجهودكم في الميدان التربوي "
+                <div style="margin-top:40px; text-align:center; font-weight:bold; border-top:1px solid #000; padding-top:15px;">
+                    " شكراً لجهودكم المخلصة في الميدان التربوي "
                 </div>
             </div>
         `;
@@ -247,16 +246,15 @@ function showMultipleReports(reports) {
 
 function exportSelectedAsPDF() {
     const ids = Array.from(document.querySelectorAll('.multi-select:checked')).map(c=>parseInt(c.dataset.id));
-    if(!ids.length) return alert("اختر من القائمة");
+    if(!ids.length) return alert("اختر من السجل أولاً");
     showMultipleReports(visitHistory.filter(h => ids.includes(h.id)));
 }
 
 function downloadPDF() {
     const element = document.getElementById('allReportsContainer');
-    html2pdf().from(element).set({ margin: 10, filename: `تقرير_${Date.now()}.pdf`, jsPDF: { format: 'a4', orientation: 'portrait' } }).save();
+    html2pdf().from(element).set({ margin: 10, filename: `تقرير_القائد.pdf`, jsPDF: { format: 'a4', orientation: 'portrait' } }).save();
 }
 
-// الدوال النمطية
 function startV(t,c,p) { tab('view-visits', document.querySelector('[onclick*="view-visits"]')); document.getElementById('v_teacher').value = t; document.getElementById('v_class').value = c; document.getElementById('v_period').value = "حصة "+p; document.getElementById('v_lesson').value = ""; document.querySelectorAll('.score-select').forEach(s => s.value = "2"); }
 function renderVisitForm() {
     let seen = new Set(), list = []; phrasesDB.forEach(i => { let m = i["المعيار / البند"]?.trim(); if(m && !seen.has(m)) { seen.add(m); list.push(m); } });
