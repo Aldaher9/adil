@@ -875,15 +875,51 @@ setInterval(() => {
 // Generate Printed Visit Report
 function generatePrintedVisitReport(visitId) {
     const visit = visits.find(v => v.id === visitId);
-    if (!visit) {
-        alert('الزيارة غير موجودة');
-        return;
-    }
+    const win = window.open('', '_blank');
     
-    if (!visit.criteriaRatings || Object.keys(visit.criteriaRatings).length === 0) {
-        alert('هذه الزيارة لا تحتوي على تقييمات');
-        return;
-    }
+    // تصنيف المعايير (أفضل 3 وأقل 3) كما طلبت في الدليل
+    const sortedCriteria = [...visit.criteriaRatings].sort((a, b) => a.rating - b.rating);
+    const strengths = sortedCriteria.filter(c => c.rating <= 2).slice(0, 3);
+    const improvements = sortedCriteria.filter(c => c.rating > 2).slice(0, 3);
+
+    win.document.write(`
+        <html>
+        <head>
+            <style>
+                body { font-family: 'Tajawal', sans-serif; direction: rtl; padding: 1cm; }
+                .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; }
+                .report-title { background: #f1f5f9; padding: 10px; text-align: center; margin: 20px 0; }
+                .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                .section-title { color: #1e3a5f; border-right: 4px solid #f59e0b; padding-right: 10px; margin-top: 20px; }
+                @media print { .no-print { display: none; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h2>سلطنة عُمان - وزارة التربية والتعليم</h2>
+                <h3>نموذج زيارة إشرافية رقمية</h3>
+            </div>
+            <div class="report-title">تقرير أداء المعلم: ${visit.teacher}</div>
+            <div class="grid">
+                <div>التاريخ: ${new Date(visit.date).toLocaleDateString('ar-SA')}</div>
+                <div>المادة: ${visit.subject} | الفصل: ${visit.class}</div>
+            </div>
+            
+            <h4 class="section-title">✅ جوانب الإجادة</h4>
+            ${strengths.map(s => `<p>• ${s.criterion}: ${s.description}</p>`).join('')}
+            
+            <h4 class="section-title">⚠️ أولويات التطوير</h4>
+            ${improvements.map(i => `<p>• ${i.criterion}: ${i.recommendation}</p>`).join('')}
+            
+            <div style="margin-top: 50px; display: flex; justify-content: space-around;">
+                <div>توقيع المعلم: .................</div>
+                <div>توقيع القائد: .................</div>
+            </div>
+            <br><button class="no-print" onclick="window.print()">إصدار أمر الطباعة</button>
+        </body>
+        </html>
+    `);
+}
     
     // تصنيف التقييمات
     const evaluations = [];
