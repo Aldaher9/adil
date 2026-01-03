@@ -6,7 +6,6 @@
     <title>منصة القائد - نظام الإدارة المتكامل</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
         :root { 
@@ -17,11 +16,11 @@
         }
 
         * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 80px; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
 
         /* شاشة تسجيل الدخول */
         #login-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
             display: flex; align-items: center; justify-content: center; padding: 20px;
         }
         .login-box {
@@ -33,6 +32,7 @@
             border-radius: 12px; cursor: pointer; font-weight: bold; display: flex; 
             align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
         }
+        .google-btn:hover { background: #f1f5f9; border-color: var(--primary); }
 
         /* الهيدر والمحتوى */
         .header { background: var(--blue-grad); color: white; padding: 20px; border-radius: 0 0 25px 25px; position: sticky; top: 0; z-index: 100; }
@@ -40,29 +40,30 @@
         .container.active { display: block; }
 
         /* البطاقات */
-        .card, .staff-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; }
+        .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .stat-card { background: white; padding: 15px; border-radius: 15px; text-align: center; }
+        .stat-card { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: var(--shadow); }
 
-        /* الأزرار */
+        /* الأزرار والتنقل */
         .action-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
-        .nav-item { flex: 1; border: none; background: none; color: #94a3b8; font-size: 11px; cursor: pointer; padding: 10px 0; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; z-index: 1000; padding: 5px 0; }
+        .nav-item { flex: 1; border: none; background: none; color: #94a3b8; font-size: 11px; cursor: pointer; text-align: center; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 2px; }
 
         /* النوافذ */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 90%; max-width: 450px; padding: 25px; border-radius: 20px; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: var(--shadow-lg); }
         
-        @media print { .no-print { display: none !important; } body { padding: 0; } }
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-box">
-            <h1 style="margin-bottom:10px;">منصة القائد ⚡</h1>
-            <p style="color:#64748b; margin-bottom:25px;">سجل دخولك للبدء</p>
+            <h1 style="color: var(--primary); margin-bottom:10px;">منصة القائد ⚡</h1>
+            <p style="color:#64748b; margin-bottom:25px;">نظام الإدارة المدرسية المتكامل</p>
             <button onclick="handleGoogleLogin()" class="google-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
                 <span>الدخول عبر حساب جوجل</span>
@@ -73,12 +74,12 @@
     <div class="header no-print">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-                <div id="welcomeMsg" style="font-size:12px; opacity:0.8;">مرحباً بك</div>
-                <h2 style="font-size:18px;">منصة القائد</h2>
+                <div id="welcomeMsg" style="font-size:12px; opacity:0.8;">👤 مرحباً بك</div>
+                <h2 style="font-size:18px;">منصة القائد الذكية</h2>
             </div>
             <div style="display:flex; gap:10px;">
-                <button onclick="openModal('settingsModal')" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px; border-radius:8px;">⚙️</button>
-                <button onclick="handleLogout()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px; border-radius:8px;">🚪</button>
+                <button onclick="openModal('settingsModal')" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px; border-radius:8px; cursor:pointer;">⚙️</button>
+                <button onclick="handleLogout()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px; border-radius:8px; cursor:pointer;">🚪</button>
             </div>
         </div>
     </div>
@@ -88,54 +89,54 @@
             <div class="card" style="border-right: 5px solid var(--accent);">
                 <div>
                     <div id="dashDate" style="font-size:13px; color:#64748b;">--:--</div>
-                    <div id="dashPeriod" style="font-weight:bold; color:var(--primary);">جاري المزامنة...</div>
+                    <div id="dashPeriod" style="font-weight:bold; color:var(--primary);">جاري تحديث البيانات...</div>
                 </div>
             </div>
             <div class="stats-grid">
-                <div class="stat-card"> <div id="statTeachers" style="font-size:20px; font-weight:800;">0</div> <div style="font-size:12px;">المعلمين</div> </div>
-                <div class="stat-card"> <div id="statVisits" style="font-size:20px; font-weight:800;">0</div> <div style="font-size:12px;">الزيارات</div> </div>
+                <div class="stat-card"> <div id="statTeachers" style="font-size:22px; font-weight:800; color:var(--primary);">0</div> <div style="font-size:12px; color:#64748b;">المعلمين</div> </div>
+                <div class="stat-card"> <div id="statVisits" style="font-size:22px; font-weight:800; color:var(--primary);">0</div> <div style="font-size:12px; color:#64748b;">الزيارات</div> </div>
             </div>
         </div>
 
         <div id="view-visits" class="container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3>الزيارات الإشرافية</h3>
-                <button onclick="printFullReport()" style="background:#475569; color:white; border:none; padding:5px 12px; border-radius:8px; font-size:12px;">🖨️ طباعة</button>
+                <h3>👁️ السجل الإشرافي</h3>
+                <button onclick="printFullReport()" style="background:#475569; color:white; border:none; padding:6px 15px; border-radius:8px; font-size:12px; cursor:pointer;">🖨️ طباعة</button>
             </div>
             <button onclick="openVisitModal()" class="action-btn" style="margin-bottom:15px;">+ تسجيل زيارة جديدة</button>
             <div id="visits-list"></div>
         </div>
 
         <div id="view-staff" class="container">
-            <h3>دليل المعلمين</h3>
+            <h3>👥 دليل المعلمين</h3>
             <div id="staff-list" style="margin-top:15px;"></div>
         </div>
     </div>
 
     <div class="bottom-nav no-print">
-        <button class="nav-item active" onclick="switchTab('view-dashboard', this)"><span>📊</span><br>الرئيسية</button>
-        <button class="nav-item" onclick="switchTab('view-visits', this)"><span>👁️</span><br>الزيارات</button>
-        <button class="nav-item" onclick="switchTab('view-staff', this)"><span>👥</span><br>المعلمين</button>
+        <button class="nav-item active" onclick="switchTab('view-dashboard', this)"><span>📊</span>الرئيسية</button>
+        <button class="nav-item" onclick="switchTab('view-visits', this)"><span>👁️</span>الزيارات</button>
+        <button class="nav-item" onclick="switchTab('view-staff', this)"><span>👥</span>المعلمين</button>
     </div>
 
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h3>الإعدادات</h3>
-            <div style="margin-top:15px;">
-                <label style="font-size:13px;">استيراد زيارات (JSON)</label>
-                <input type="file" accept=".json" onchange="importVisitsJSON(this)" style="width:100%; margin-top:5px;">
+            <h3 style="margin-bottom:15px;">⚙️ الإعدادات</h3>
+            <div style="margin-bottom:15px;">
+                <label style="font-size:13px; display:block; margin-bottom:5px;">استيراد زيارات إشرافية (JSON)</label>
+                <input type="file" id="jsonInput" accept=".json" onchange="importVisitsJSON(this)" style="font-size:12px;">
             </div>
-            <button onclick="closeModal('settingsModal')" class="action-btn" style="background:#eee; color:#333; margin-top:20px;">إغلاق</button>
+            <button onclick="closeModal('settingsModal')" class="action-btn" style="background:#f1f5f9; color:#333;">إغلاق</button>
         </div>
     </div>
 
     <div id="visitModal" class="modal">
         <div class="modal-content">
-            <h3>تسجيل زيارة</h3>
-            <select id="visitTeacher" style="width:100%; padding:10px; margin-top:15px; border-radius:8px; border:1px solid #ddd;"></select>
-            <textarea id="visitNotes" placeholder="الملاحظات..." style="width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px solid #ddd; height:100px;"></textarea>
+            <h3>📝 تسجيل زيارة</h3>
+            <select id="visitTeacher" style="width:100%; padding:12px; margin-top:15px; border-radius:10px; border:1px solid #ddd;"></select>
+            <textarea id="visitNotes" placeholder="اكتب ملاحظاتك وتوصياتك هنا..." style="width:100%; padding:12px; margin-top:12px; border-radius:10px; border:1px solid #ddd; height:100px;"></textarea>
             <button onclick="saveVisit()" class="action-btn">حفظ الزيارة</button>
-            <button onclick="closeModal('visitModal')" class="action-btn" style="background:#eee; color:#333;">إلغاء</button>
+            <button onclick="closeModal('visitModal')" class="action-btn" style="background:#f1f5f9; color:#333;">إلغاء</button>
         </div>
     </div>
 
@@ -144,6 +145,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
+        // --- 1. تكوين Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
             authDomain: "school-9416e.firebaseapp.com",
@@ -161,13 +163,13 @@
         let visits = [];
         let data = { teachers: {} };
 
-        // مراقبة الدخول
+        // --- 2. إدارة الدخول ---
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
                 document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('welcomeMsg').innerText = "مرحباً: " + user.displayName;
-                loadData();
+                document.getElementById('welcomeMsg').innerText = "👤 مرحباً: " + user.displayName;
+                loadUserData();
             } else {
                 document.getElementById('login-screen').style.display = 'flex';
             }
@@ -177,98 +179,128 @@
             try {
                 const provider = new firebase.auth.GoogleAuthProvider();
                 await auth.signInWithPopup(provider);
-            } catch (e) { alert("خطأ في الدخول: " + e.message); }
-        }
-
-        function handleLogout() { auth.signOut().then(() => location.reload()); }
-
-        async function loadData() {
-            const doc = await db.collection("users").doc(currentUser.uid).get();
-            if (doc.exists) {
-                const d = doc.data();
-                visits = d.visits || [];
-                data = d.schoolData || { teachers: {} };
-                renderAll();
+            } catch (error) {
+                console.error(error);
+                alert("فشل تسجيل الدخول. يرجى التأكد من اتصال الإنترنت.");
             }
         }
 
-        async function sync() {
+        function handleLogout() {
+            if(confirm("هل تريد تسجيل الخروج؟")) {
+                auth.signOut().then(() => location.reload());
+            }
+        }
+
+        // --- 3. إدارة البيانات ---
+        async function loadUserData() {
+            try {
+                const doc = await db.collection("users").doc(currentUser.uid).get();
+                if (doc.exists) {
+                    const cloudData = doc.data();
+                    visits = cloudData.visits || [];
+                    data = cloudData.schoolData || { teachers: {} };
+                    renderUI();
+                }
+            } catch (e) { console.error("Error loading:", e); }
+        }
+
+        async function syncData() {
             if (!currentUser) return;
             await db.collection("users").doc(currentUser.uid).set({
-                visits, schoolData: data, updatedAt: new Date()
+                visits, schoolData: data, lastUpdate: new Date()
             }, { merge: true });
         }
 
-        function renderAll() {
-            // تحديث الإحصائيات
+        function renderUI() {
+            // الإحصائيات
             document.getElementById('statTeachers').innerText = Object.keys(data.teachers).length;
             document.getElementById('statVisits').innerText = visits.length;
 
-            // عرض الزيارات
+            // قائمة الزيارات
             const vList = document.getElementById('visits-list');
-            vList.innerHTML = visits.map(v => `
-                <div class="card" style="display:block;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <b>${v.teacher}</b> <small>${new Date(v.date).toLocaleDateString('ar-EG')}</small>
+            vList.innerHTML = visits.length ? visits.map(v => `
+                <div class="card" style="display:block; border-left: 4px solid var(--primary);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b style="color:var(--primary);">${v.teacher}</b>
+                        <small style="color:#94a3b8;">${new Date(v.date).toLocaleDateString('ar-EG')}</small>
                     </div>
-                    <p style="font-size:13px; margin-top:5px; color:#475569;">${v.notes}</p>
+                    <p style="font-size:13px; margin-top:8px; color:#475569;">${v.notes}</p>
                 </div>
-            `).join('');
+            `).join('') : '<p style="text-align:center; color:#94a3b8; padding:20px;">لا توجد زيارات مسجلة</p>';
 
-            // عرض المعلمين
+            // قائمة المعلمين
             const sList = document.getElementById('staff-list');
-            sList.innerHTML = Object.values(data.teachers).map(name => `
-                <div class="card"><span>${name}</span> <span>👤</span></div>
-            `).join('');
+            sList.innerHTML = Object.values(data.teachers).sort().map(name => `
+                <div class="card">
+                    <span>${name}</span>
+                    <span style="color:var(--success);">● متصل</span>
+                </div>
+            `).join('') || '<p style="text-align:center; color:#94a3b8;">يرجى استيراد الجدول أولاً</p>';
         }
 
+        // --- 4. الوظائف الإضافية ---
         function openVisitModal() {
             const sel = document.getElementById('visitTeacher');
-            sel.innerHTML = Object.values(data.teachers).map(t => `<option value="${t}">${t}</option>`).join('');
-            if(Object.keys(data.teachers).length === 0) sel.innerHTML = "<option>لا يوجد معلمين مسجلين</option>";
+            const teacherNames = Object.values(data.teachers);
+            if(teacherNames.length === 0) {
+                alert("لا يوجد معلمين في القاعدة. يرجى رفع ملف الجدول (XML) أولاً.");
+                return;
+            }
+            sel.innerHTML = teacherNames.map(t => `<option value="${t}">${t}</option>`).join('');
             openModal('visitModal');
         }
 
         async function saveVisit() {
             const t = document.getElementById('visitTeacher').value;
             const n = document.getElementById('visitNotes').value;
-            if(!t || !n) return alert("اكمل البيانات");
+            if(!n) return alert("الرجاء كتابة الملاحظات");
+            
             visits.unshift({ teacher: t, notes: n, date: new Date().toISOString() });
-            await sync();
-            renderAll();
+            await syncData();
+            renderUI();
             closeModal('visitModal');
+            document.getElementById('visitNotes').value = "";
         }
 
         function importVisitsJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = async (e) => {
-                const json = JSON.parse(e.target.result);
-                visits = [...json, ...visits];
-                await sync();
-                renderAll();
-                alert("تم استيراد الزيارات");
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if(Array.isArray(json)) {
+                        visits = [...json, ...visits];
+                        await syncData();
+                        renderUI();
+                        alert("تم استيراد " + json.length + " زيارة بنجاح.");
+                        closeModal('settingsModal');
+                    }
+                } catch (err) { alert("الملف غير صالح."); }
             };
-            reader.readAsText(input.files[0]);
+            reader.readAsText(file);
         }
 
         function printFullReport() {
+            if(!visits.length) return alert("لا توجد بيانات للطباعة");
             const w = window.open('', '_blank');
-            let content = `<html dir="rtl"><body><h2 style="text-align:center;">سجل الزيارات الإشرافية</h2><table border="1" style="width:100%; border-collapse:collapse;">
-                <tr><th>التاريخ</th><th>المعلم</th><th>الملاحظات</th></tr>`;
-            visits.forEach(v => {
-                content += `<tr><td>${new Date(v.date).toLocaleDateString('ar-EG')}</td><td>${v.teacher}</td><td>${v.notes}</td></tr>`;
+            let html = `<html dir="rtl"><head><title>تقرير الزيارات</title><style>body{font-family:Arial;padding:30px} table{width:100%;border-collapse:collapse;margin-top:20px} th,td{border:1px solid #ddd;padding:12px;text-align:right} th{background:#f4f4f4}</style></head><body>`;
+            html += `<h2 style="text-align:center">سجل الزيارات الإشرافية</h2>`;
+            html += `<table><tr><th>#</th><th>التاريخ</th><th>المعلم</th><th>الملاحظات</th></tr>`;
+            visits.forEach((v, i) => {
+                html += `<tr><td>${i+1}</td><td>${new Date(v.date).toLocaleDateString('ar-EG')}</td><td>${v.teacher}</td><td>${v.notes}</td></tr>`;
             });
-            content += `</table><script>window.onload=function(){window.print();}</script></body></html>`;
-            w.document.write(content); w.document.close();
+            html += `</table><script>window.onload=function(){window.print();}</script></body></html>`;
+            w.document.write(html); w.document.close();
         }
 
+        // --- 5. أدوات الواجهة ---
         function switchTab(id, btn) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             btn.classList.add('active');
         }
-
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>
