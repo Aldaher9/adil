@@ -1,4 +1,26 @@
 // Global Variables
+const firebaseConfig = {
+  apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
+  authDomain: "school-9416e.firebaseapp.com",
+  projectId: "school-9416e",
+  databaseURL: "https://school-9416e-default-rtdb.firebaseio.com", // تأكد من تفعيل Realtime Database
+  storageBucket: "school-9416e.firebasestorage.app",
+  messagingSenderId: "680872052240",
+  appId: "1:680872052240:web:96d2e544166ab5f8096c95"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// تحديث وظيفة الحفظ لتكون سحابية
+function saveToCloud() {
+    db.ref('school_data').set({
+        data, phones, tasks, visits, visitCriteria,
+        lastUpdated: new Date().toISOString()
+    }).then(() => console.log("تم المزامنة مع Firebase بنجاح"));
+}
+
 let currentUser = { uid: 'demo-user', displayName: 'مدير المدرسة', email: 'principal@school.com' };
 let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
 let phones = {};
