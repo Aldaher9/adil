@@ -3,77 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة القائد الذكية ⚡</title>
+    <title>منصة القائد التعليمية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="header">
-    <div class="header-top">
-        <div>
-            <div id="welcomeMsg" class="user-welcome">👤 مرحباً بالقائد</div>
-            <h1 style="font-size: 1.6rem; font-weight: 800;">منصة القائد الذكية ⚡</h1>
-        </div>
-        <div class="header-actions">
-            <button class="btn-icon" onclick="openModal()">⚙️</button>
-            <button class="btn-icon logout" onclick="handleLogoutFirebase()">🚪</button>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div class="stats-grid">
-        <div class="stat-card"><h3>المعلمون</h3><p id="countTeachers">0</p></div>
-        <div class="stat-card"><h3>الزيارات</h3><p id="countVisits">0</p></div>
-        <div class="stat-card"><h3>المهام</h3><p id="countTasks">0</p></div>
-    </div>
-
-    <div id="view-dashboard" class="view-section active">
-        <div class="live-section">
-            <div class="section-header">
-                <h2>📅 الجدول المدرسي الآن</h2>
-                <div id="liveClock" class="clock-badge">08:00 ص</div>
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <h1 style="margin:0;">منصة القائد ⚡</h1>
+                <span id="userStatus" style="font-size:0.9rem; opacity:0.8;">جاري الاتصال...</span>
             </div>
-            <div id="currentLessonsTable" class="table-container">
+            <div class="header-actions">
+                <div id="clockDisplay" class="clock-box">00:00</div>
+                <button onclick="openSettings()" class="btn-icon">⚙️</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <div id="page-schedule" class="page-section active">
+            <div class="status-bar">
+                <div style="flex:1">
+                    <h2 id="currentPeriodLabel">...</h2>
+                    <span id="simulationBadge" style="display:none;" class="badge-warn">وضع المحاكاة</span>
+                </div>
+                <div class="actions">
+                    <button onclick="refreshSchedule()" class="btn-small">🔄 تحديث</button>
+                </div>
+            </div>
+            
+            <div id="liveClassesContainer" class="classes-grid">
+                <div class="empty-state">لا توجد حصص نشطة حالياً</div>
+            </div>
+        </div>
+
+        <div id="page-visits" class="page-section">
+            <div class="section-header">
+                <h2>سجل الزيارات الإشرافية</h2>
+                <button onclick="startNewVisit()" class="btn-primary">+ زيارة جديدة</button>
+            </div>
+            <div id="visitsLogContainer" class="visits-list">
                 </div>
         </div>
+
+        <div id="page-teachers" class="page-section">
+            <div class="section-header">
+                <h2>قائمة المعلمين</h2>
+                <input type="text" id="searchTeacher" placeholder="بحث..." onkeyup="renderTeachers()">
+            </div>
+            <div id="teachersListContainer" class="teachers-grid">
+                </div>
+        </div>
+
     </div>
 
-    <div id="view-staff" class="view-section">
-        <div class="card">
-            <h2>👨‍🏫 سجل المعلمين</h2>
-            <div id="staffList"></div>
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="showPage('schedule')">📅 الحصص</button>
+        <button class="nav-item" onclick="showPage('visits')">👁️ الزيارات</button>
+        <button class="nav-item" onclick="showPage('teachers')">👨‍🏫 المعلمين</button>
+    </div>
+
+    <div id="visitModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>زيارة إشرافية جديدة</h3>
+                <button onclick="closeModal('visitModal')" class="close-btn">&times;</button>
+            </div>
+            <div class="visit-form">
+                <div class="visit-meta-box">
+                    <div class="form-group">
+                        <label>المعلم:</label>
+                        <input type="text" id="vTeacher" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>المادة:</label>
+                        <input type="text" id="vSubject" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>الصف:</label>
+                        <input type="text" id="vClass" readonly>
+                    </div>
+                    <div class="form-group" style="grid-column: 1/-1;">
+                        <label>عنوان الدرس:</label>
+                        <input type="text" id="vLessonTitle" placeholder="اكتب عنوان الدرس هنا...">
+                    </div>
+                </div>
+
+                <div id="criteriaList" class="criteria-container"></div>
+
+                <div class="form-group">
+                    <label>ملاحظات عامة وتوصيات إضافية:</label>
+                    <textarea id="vGeneralNotes" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button onclick="saveVisit()" class="btn-primary">حفظ وإصدار التقرير 🖨️</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="view-visits" class="view-section">
-        <div class="card">
-            <h2>📝 سجل الزيارات الإشرافية</h2>
-            <div id="visitsList"></div>
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>⚙️ الإعدادات</h3>
+            
+            <div class="setting-group">
+                <label>1. جدول الحصص (XML)</label>
+                <input type="file" id="xmlInput" accept=".xml" onchange="handleXML(this)">
+            </div>
+
+            <div class="setting-group">
+                <label>2. معايير الزيارة (JSON)</label>
+                <input type="file" id="jsonInput" accept=".json" onchange="handleCriteria(this)">
+            </div>
+
+            <div class="setting-group">
+                <label>3. بيانات المعلمين (Excel)</label>
+                <div class="btn-group">
+                    <button onclick="exportTeachersExcel()" class="btn-outline">تنزيل القائمة</button>
+                    <button onclick="document.getElementById('excelInput').click()" class="btn-outline">رفع (مع الهواتف)</button>
+                    <input type="file" id="excelInput" hidden onchange="handlePhoneImport(this)">
+                </div>
+            </div>
+
+            <div class="setting-group" style="background:#fff7ed; padding:10px; border-radius:8px;">
+                <label>🎲 محاكاة الوقت</label>
+                <div style="display:flex; gap:10px;">
+                    <select id="simDay">
+                        <option value="1">الأحد</option>
+                        <option value="2">الاثنين</option>
+                        <option value="3">الثلاثاء</option>
+                        <option value="4">الأربعاء</option>
+                        <option value="5">الخميس</option>
+                    </select>
+                    <input type="time" id="simTime">
+                    <button onclick="toggleSim()" class="btn-small">تفعيل</button>
+                </div>
+            </div>
+
+            <button onclick="closeModal('settingsModal')" class="btn-full">إغلاق</button>
         </div>
     </div>
-</div>
 
-<div class="nav-bar">
-    <div class="nav-item active" onclick="showView('dashboard')">🏠<span>الرئيسة</span></div>
-    <div class="nav-item" onclick="showView('staff')">👨‍🏫<span>المعلمون</span></div>
-    <div class="nav-item" onclick="showView('visits')">📝<span>الزيارات</span></div>
-    <div class="nav-item" onclick="showView('tasks')">✅<span>المهام</span></div>
-</div>
-
-<div id="mainModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <div id="modalBody"></div>
-    </div>
-</div>
-
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="firebase-service.js"></script>
-<script type="module" src="firebase-ui.js"></script>
-<script src="script.js"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="firebase-service.js"></script>
+    <script type="module" src="firebase-ui.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
