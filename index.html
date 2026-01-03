@@ -3,134 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - نظام الإدارة</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    
+    <title>منصة القائد - نسخة الإصلاح</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { 
-            --primary: #0f172a; --accent: #f59e0b; --bg: #f8fafc; --card: #ffffff;
-            --blue-grad: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
-        }
+        :root { --primary: #0f172a; --accent: #f59e0b; --bg: #f1f5f9; }
+        * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); padding-bottom: 70px; }
+        
+        /* شاشة الدخول الاحتياطية */
+        #login-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .login-card { padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
+        
+        /* الهيدر */
+        .header { background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); color: white; padding: 20px; border-radius: 0 0 20px 20px; }
+        .container { padding: 15px; display: none; }
+        .active { display: block; }
 
-        * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: #1e293b; }
-
-        /* شاشة الدخول */
-        #login-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
-        }
-        .login-box {
-            background: white; padding: 40px; border-radius: 25px;
-            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px;
-        }
-        .google-btn {
-            width: 100%; padding: 15px; background: white; border: 2px solid #e2e8f0;
-            border-radius: 12px; cursor: pointer; font-weight: bold; display: flex; 
-            align-items: center; justify-content: center; gap: 10px; font-size: 16px;
-        }
-
-        /* واجهة التطبيق */
-        #app-interface { display: none; }
-        .header { background: var(--blue-grad); color: white; padding: 20px; border-radius: 0 0 25px 25px; }
-        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
-        .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .action-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
+        /* البطاقات */
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        
+        /* القائمة السفلية */
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 60px; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; color: #64748b; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h1 style="margin-bottom:10px;">منصة القائد ⚡</h1>
-            <p style="color:#64748b; margin-bottom:25px;">يرجى تسجيل الدخول للمتابعة</p>
-            <button id="authBtn" onclick="handleLogin()" class="google-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                <span>دخول بحساب جوجل</span>
-            </button>
-            <div id="statusMsg" style="margin-top:15px; font-size:12px; color: #ef4444;"></div>
-        </div>
+<div id="login-screen">
+    <div class="login-card">
+        <h1>منصة القائد ⚡</h1>
+        <p style="margin: 15px 0; color: #64748b;">مرحباً بك، اضغط للدخول المباشر</p>
+        <button onclick="unlockApp()" class="btn" style="background: #10b981;">دخول إلى المنصة</button>
+        <p style="margin-top: 10px; font-size: 11px; color: #94a3b8;">سيتم حفظ بياناتك على هذا المتصفح تلقائياً</p>
+    </div>
+</div>
+
+<div id="app" style="display:none;">
+    <div class="header">
+        <h2>منصة القائد</h2>
+        <div id="userLabel" style="font-size: 12px; opacity: 0.8;">👤 مدير المدرسة</div>
     </div>
 
-    <div id="app-interface">
-        <div class="header">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <div id="userEmail" style="font-size:12px; opacity:0.8;"></div>
-                    <h2 style="font-size:18px;">لوحة التحكم</h2>
-                </div>
-                <button onclick="handleLogout()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 15px; border-radius:8px; cursor:pointer;">خروج 🚪</button>
-            </div>
+    <div id="tab1" class="container active">
+        <h3>📊 الإحصائيات</h3>
+        <div class="card" style="margin-top:15px;">
+            <p>عدد المعلمين: <b id="tCount">0</b></p>
+            <p>عدد الزيارات: <b id="vCount">0</b></p>
         </div>
+        <button onclick="openSettings()" class="btn">⚙️ الإعدادات واستيراد البيانات</button>
+    </div>
 
-        <div class="container">
+    <div id="tab2" class="container">
+        <h3>👁️ الزيارات الإشرافية</h3>
+        <button onclick="addVisit()" class="btn" style="background:var(--accent);">+ إضافة زيارة</button>
+        <div id="visitsList" style="margin-top:15px;"></div>
+    </div>
+
+    <div id="tab3" class="container">
+        <h3>👥 دليل المعلمين</h3>
+        <div id="staffList" style="margin-top:15px;"></div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-item active" onclick="showTab('tab1', this)"><span>📊</span>الرئيسية</div>
+        <div class="nav-item" onclick="showTab('tab2', this)"><span>👁️</span>الزيارات</div>
+        <div class="nav-item" onclick="showTab('tab3', this)"><span>👥</span>المعلمين</div>
+    </nav>
+</div>
+
+<script>
+    // بيانات افتراضية
+    let state = {
+        teachers: {},
+        visits: []
+    };
+
+    // تحميل البيانات عند الفتح
+    function init() {
+        const saved = localStorage.getItem('school_data');
+        if (saved) {
+            state = JSON.parse(saved);
+            render();
+        }
+    }
+
+    function unlockApp() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        init();
+    }
+
+    function showTab(id, el) {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+    }
+
+    function render() {
+        document.getElementById('tCount').innerText = Object.keys(state.teachers).length;
+        document.getElementById('vCount').innerText = state.visits.length;
+
+        // رندر المعلمين
+        const sList = document.getElementById('staffList');
+        sList.innerHTML = Object.values(state.teachers).map(t => `<div class="card">${t}</div>`).join('') 
+                         || '<p style="text-align:center;">لا يوجد معلمين. استورد الملف من الإعدادات.</p>';
+
+        // رندر الزيارات
+        const vList = document.getElementById('visitsList');
+        vList.innerHTML = state.visits.map(v => `
             <div class="card">
-                <h3>أهلاً بك في المنصة</h3>
-                <p style="margin-top:10px; color:#64748b;">تم تسجيل الدخول بنجاح. يمكنك الآن البدء بإدارة الجدول والزيارات.</p>
+                <b>${v.teacher}</b><br>
+                <small>${v.date}</small><br>
+                <p>${v.notes}</p>
             </div>
-            </div>
-    </div>
+        `).join('');
+    }
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    function addVisit() {
+        const t = prompt("اسم المعلم:");
+        const n = prompt("الملاحظات:");
+        if(t && n) {
+            state.visits.unshift({ teacher: t, notes: n, date: new Date().toLocaleDateString() });
+            save();
+        }
+    }
 
-    <script>
-        // تكوين Firebase الخاص بك
-        const firebaseConfig = {
-            apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
-            authDomain: "school-9416e.firebaseapp.com",
-            projectId: "school-9416e",
-            storageBucket: "school-9416e.appspot.com",
-            messagingSenderId: "680872052240",
-            appId: "1:680872052240:web:96d2e544166ab5f8096c95"
+    function openSettings() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const reader = new FileReader();
+            reader.onload = f => {
+                const data = JSON.parse(f.target.result);
+                // إذا كان الملف القادم يحتوي على المعلمين
+                if(data.teachers) state.teachers = data.teachers;
+                // إذا كان يحتوي على زيارات
+                if(Array.isArray(data)) state.visits = [...data, ...state.visits];
+                save();
+                alert("تم التحديث بنجاح");
+            };
+            reader.readAsText(e.target.files[0]);
         };
+        input.click();
+    }
 
-        // تشغيل Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        
-        const auth = firebase.auth();
-
-        // 1. مراقبة حالة الدخول (تلقائياً)
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log("Logged in:", user.email);
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-interface').style.display = 'block';
-                document.getElementById('userEmail').innerText = "👤 " + user.email;
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('app-interface').style.display = 'none';
-            }
-        });
-
-        // 2. معالجة نتائج "Redirect" عند العودة للصفحة
-        auth.getRedirectResult().then((result) => {
-            if (result.user) {
-                console.log("Redirect success");
-            }
-        }).catch((error) => {
-            console.error("Redirect error:", error);
-            document.getElementById('statusMsg').innerText = "حدث خطأ: " + error.message;
-        });
-
-        // 3. وظيفة زر تسجيل الدخول (استخدام Redirect)
-        function handleLogin() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            document.getElementById('authBtn').innerText = "جاري التوجيه...";
-            // هذه الطريقة ستقوم بفتح صفحة جوجل في نفس التبويب لتجنب حظر النوافذ المنبثقة
-            auth.signInWithRedirect(provider);
-        }
-
-        // 4. تسجيل الخروج
-        function handleLogout() {
-            auth.signOut().then(() => {
-                location.reload();
-            });
-        }
-    </script>
+    function save() {
+        localStorage.setItem('school_data', JSON.stringify(state));
+        render();
+    }
+</script>
 </body>
 </html>
