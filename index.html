@@ -680,6 +680,9 @@ let visitsChart = null;
 
 // Auth State Observer
 auth.onAuthStateChanged(user => {
+    // تأكد من أن الـ body مرئي
+    document.body.style.display = "block"; 
+    
     if (user) {
         currentUser = user;
         showMainApp();
@@ -699,9 +702,15 @@ function showLoginScreen() {
 
 // Show Main App
 function showMainApp() {
+    // إخفاء شاشة الدخول
     document.getElementById('login-screen').style.display = 'none';
+    
+    // إظهار العناصر الأساسية
     document.getElementById('mainHeader').style.display = 'block';
     document.getElementById('mainNav').style.display = 'flex';
+    
+    // إظهار الحاوية النشطة فقط (الرئيسية)
+    document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
     document.getElementById('view-dashboard').style.display = 'block';
     
     document.getElementById('welcomeMsg').textContent = '👤 نرحب بالقائد ' + (currentUser.displayName || '');
@@ -717,10 +726,11 @@ async function handleGoogleLogin() {
     
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
+        // استخدام signInWithPopup كما في النسخة القديمة الناجحة
         await auth.signInWithPopup(provider);
     } catch (error) {
         console.error('Login error:', error);
-        alert('خطأ في تسجيل الدخول: ' + error.message);
+        alert('حدث خطأ أثناء تسجيل الدخول، تأكد من اتصالك بالإنترنت');
         loginBtn.disabled = false;
         loginText.textContent = 'الدخول عبر جوجل';
     }
@@ -800,5 +810,6 @@ function updateDashboard() {
 // Update Dashboard Time
 function updateDashboardTime() {
     const now = new Date();
-    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    let d = days
+    const t = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+    if(document.getElementById('dashDate')) document.getElementById('dashDate').innerText = t;
+}
