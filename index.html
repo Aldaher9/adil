@@ -39,8 +39,8 @@
         #login-screen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: 2000;
+            background: var(--bg);
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -52,55 +52,40 @@
             padding: 40px;
             border-radius: 30px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow);
             width: 100%;
             max-width: 400px;
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .login-box h1 {
             color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 2rem;
-        }
-
-        .login-box p {
-            color: #64748b;
             margin-bottom: 30px;
         }
 
         .google-btn {
             width: 100%;
-            padding: 18px;
+            padding: 15px;
             background: white;
-            border: 2px solid #e2e8f0;
+            border: 2px solid #f1f5f9;
             border-radius: 15px;
             cursor: pointer;
-            font-weight: 700;
-            font-size: 1rem;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             transition: all 0.3s ease;
         }
 
         .google-btn:hover {
             border-color: var(--primary);
-            background: #f8fafc;
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+        }
+
+        .google-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         /* Header */
@@ -120,16 +105,6 @@
             font-weight: 500;
             opacity: 0.8;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.5);
         }
 
         .header-top {
@@ -169,25 +144,6 @@
         .logout-btn {
             background: rgba(239, 68, 68, 0.2);
             border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-        }
-
-        /* Loading Spinner */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         /* Container */
@@ -273,6 +229,62 @@
             font-weight: 600;
         }
 
+        /* Lesson Cards */
+        .lesson-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f1f5f9;
+        }
+
+        .class-badge {
+            background: var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* Staff Cards */
+        .staff-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .msg-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            display: block;
+            margin-top: 8px;
+            text-decoration: none;
+            text-align: center;
+        }
+
         /* Visit Cards */
         .visit-card {
             background: white;
@@ -281,6 +293,49 @@
             margin-bottom: 15px;
             box-shadow: var(--shadow);
             border-right: 4px solid var(--primary);
+        }
+
+        .visit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .visit-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .visit-meta span {
+            background: #f8fafc;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .visit-detail {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Task Cards */
+        .task-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
         }
 
         /* Modals */
@@ -329,11 +384,6 @@
             cursor: pointer;
             flex: 1;
             padding: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item:hover {
-            color: var(--primary);
         }
 
         .nav-item.active {
@@ -345,61 +395,6 @@
             display: block;
             font-size: 20px;
             margin-bottom: 2px;
-        }
-
-        /* Sync Status */
-        .sync-status {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            font-size: 12px;
-            font-weight: 600;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            animation: slideInRight 0.3s ease;
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .sync-success {
-            color: var(--success);
-        }
-
-        .sync-error {
-            color: var(--danger);
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background: #1e293b;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
         }
 
         /* Forms */
@@ -421,7 +416,6 @@
             border: 2px solid #e2e8f0;
             border-radius: 10px;
             font-size: 14px;
-            transition: border-color 0.3s ease;
         }
 
         .form-control:focus {
@@ -429,7 +423,31 @@
             border-color: var(--primary);
         }
 
-        /* Responsive */
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .edit-phone-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
         @media (max-width: 640px) {
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -442,32 +460,17 @@
 <!-- Login Screen -->
 <div id="login-screen">
     <div class="login-box">
-        <h1>⚡ منصة القائد</h1>
-        <p>نظام إدارة متكامل لمتابعة أداء المعلمين</p>
-        <button class="google-btn" onclick="handleGoogleLogin()">
-            <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            <span id="loginBtnText">تسجيل الدخول عبر جوجل</span>
+        <h1>منصة القائد ⚡</h1>
+        <button class="google-btn" onclick="handleGoogleLogin()" id="loginBtn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+            <span id="loginText">الدخول عبر جوجل</span>
         </button>
     </div>
 </div>
 
-<!-- Sync Status Indicator -->
-<div id="syncStatus" class="sync-status" style="display: none;">
-    <div class="loading"></div>
-    <span id="syncText">جاري المزامنة...</span>
-</div>
-
 <!-- Header -->
 <div class="header" style="display: none;" id="mainHeader">
-    <div class="user-welcome" id="welcomeMsg">
-        <img id="userAvatar" class="user-avatar" src="" alt="">
-        <span id="userName">مرحباً بالقائد</span>
-    </div>
+    <div class="user-welcome" id="welcomeMsg">👤 نرحب بالقائد...</div>
     <div class="header-top">
         <h1>منصة القائد ⚡</h1>
         <div class="header-actions">
@@ -498,9 +501,9 @@
             <div class="stat-label">الزيارات هذا الأسبوع</div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon">📈</div>
-            <div class="stat-value" id="statAvg">0</div>
-            <div class="stat-label">متوسط التقييم</div>
+            <div class="stat-icon">📝</div>
+            <div class="stat-value" id="statTasks">0</div>
+            <div class="stat-label">المهام النشطة</div>
         </div>
     </div>
 
@@ -508,6 +511,32 @@
         <h4>📈 إحصائيات الزيارات الإشرافية</h4>
         <canvas id="visitsChart"></canvas>
     </div>
+
+    <div class="status-card">
+        <div>
+            <div id="dashDate">--:--</div>
+            <div id="dashPeriod" style="font-weight:800; font-size:1.1rem; color: #0f172a;">جاري المزامنة..</div>
+        </div>
+        <div id="dashSimBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold;">وضع المحاكاة</div>
+    </div>
+</div>
+
+<!-- Schedule View -->
+<div id="view-schedule" class="container" style="display: none;">
+    <div class="status-card">
+        <div>
+            <div id="infoDate">--:--</div>
+            <div id="infoPeriod" style="font-weight:800; font-size:1.1rem; color: #0f172a;">جاري المزامنة..</div>
+        </div>
+        <div id="simBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold;">وضع المحاكاة</div>
+    </div>
+    <div id="lessons-list"></div>
+</div>
+
+<!-- Staff View -->
+<div id="view-staff" class="container" style="display: none;">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:15px; border-radius:12px; border:2px solid #ddd; margin-bottom:15px;">
+    <div id="staff-list"></div>
 </div>
 
 <!-- Visits View -->
@@ -516,8 +545,48 @@
         <h3 style="margin:0;">👁️ الزيارات الإشرافية</h3>
         <button onclick="openVisitModal()" class="btn-primary">+ زيارة جديدة</button>
     </div>
-    
     <div id="visits-list"></div>
+</div>
+
+<!-- Agenda View -->
+<div id="view-agenda" class="container" style="display: none;">
+    <h3 style="margin-top:0;">📝 أجندة المهام</h3>
+    <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <input type="text" id="taskInput" style="flex:1; padding:12px; border-radius:12px; border:2px solid #ddd;" placeholder="اكتب مهمة جديدة...">
+        <button onclick="addTask()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:700;">إضافة</button>
+    </div>
+    <div id="tasks-list"></div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <h3>⚙️ إعدادات المنصة</h3>
+        
+        <p style="font-size:12px; font-weight:bold;">1. ملف الجدول (XML)</p>
+        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
+        
+        <p style="font-size:12px; font-weight:bold;">2. بيانات المعلمين (Excel)</p>
+        <div class="grid-2" style="margin-bottom:15px;">
+            <button onclick="exportToExcel()" style="padding:10px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:700;">📥 تصدير</button>
+            <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white; border:none; border-radius:10px; font-weight:700;">📤 استيراد</button>
+            <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
+        </div>
+        
+        <p style="font-size:12px; font-weight:bold;">3. استمارة الزيارات (JSON)</p>
+        <div style="margin-bottom:15px;">
+            <button onclick="document.getElementById('jsonFile').click()" style="width:100%; padding:10px; background:#8b5cf6; color:white; border:none; border-radius:10px; font-weight:700;">📤 استيراد استمارة التقييم</button>
+            <input type="file" id="jsonFile" accept=".json" style="display:none" onchange="importVisitCriteria(this)">
+        </div>
+        
+        <p style="font-size:12px; font-weight:bold;">4. التحكم بالوقت</p>
+        <div class="grid-2" style="margin-bottom:15px;">
+            <button onclick="doSim()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:700;">🎲 محاكاة</button>
+            <button onclick="resetTime()" style="padding:10px; background:#64748b; color:white; border:none; border-radius:10px; font-weight:700;">🕐 الآن</button>
+        </div>
+        
+        <button onclick="closeModal()" style="width:100%; margin-top:25px; padding:12px; background:#f1f5f9; border:none; border-radius:12px; font-weight:700;">إغلاق</button>
+    </div>
 </div>
 
 <!-- Visit Modal -->
@@ -527,7 +596,7 @@
         
         <div class="form-group">
             <label>اسم المعلم *</label>
-            <input type="text" id="visitTeacher" class="form-control" placeholder="أدخل اسم المعلم">
+            <select id="visitTeacher" class="form-control"></select>
         </div>
         
         <div class="form-group">
@@ -552,28 +621,10 @@
             <textarea id="visitNotes" class="form-control" rows="3" placeholder="أي ملاحظات أخرى..."></textarea>
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+        <div class="grid-2" style="margin-top:20px;">
             <button onclick="saveVisit()" class="btn-primary">💾 حفظ الزيارة</button>
-            <button onclick="closeVisitModal()" style="padding:12px; background:#94a3b8; color:white; border:none; border-radius:10px;">إلغاء</button>
+            <button onclick="closeVisitModal()" style="padding:12px; background:#94a3b8; color:white; border:none; border-radius:10px; font-weight:700;">إلغاء</button>
         </div>
-    </div>
-</div>
-
-<!-- Settings Modal -->
-<div id="settingsModal" class="modal">
-    <div class="modal-content">
-        <h3>⚙️ إعدادات المنصة</h3>
-        
-        <p style="font-size:12px; font-weight:bold;">1. ملف الجدول (XML)</p>
-        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
-        
-        <p style="font-size:12px; font-weight:bold;">2. استمارة الزيارات (JSON)</p>
-        <div style="margin-bottom:15px;">
-            <button onclick="document.getElementById('jsonFile').click()" style="width:100%; padding:10px; background:#8b5cf6; color:white; border:none; border-radius:10px;">📤 استيراد استمارة التقييم</button>
-            <input type="file" id="jsonFile" accept=".json" style="display:none" onchange="importVisitCriteria(this)">
-        </div>
-        
-        <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; background:#94a3b8; color:white; border:none; border-radius:10px;">إغلاق</button>
     </div>
 </div>
 
@@ -582,8 +633,17 @@
     <button class="nav-item active" onclick="switchTab('view-dashboard', this)">
         <span>📊</span> الرئيسية
     </button>
+    <button class="nav-item" onclick="switchTab('view-schedule', this)">
+        <span>📅</span> الحصص
+    </button>
+    <button class="nav-item" onclick="switchTab('view-staff', this)">
+        <span>👥</span> المعلمين
+    </button>
     <button class="nav-item" onclick="switchTab('view-visits', this)">
         <span>👁️</span> الزيارات
+    </button>
+    <button class="nav-item" onclick="switchTab('view-agenda', this)">
+        <span>📝</span> الأجندة
     </button>
 </div>
 
@@ -609,9 +669,13 @@ const db = firebase.firestore();
 
 // Global Variables
 let currentUser = null;
+let phones = {};
 let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
+let tasks = [];
 let visits = [];
 let visitCriteria = [];
+let isSim = false;
+let sDay, sTime;
 let visitsChart = null;
 
 // Auth State Observer
@@ -625,7 +689,7 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// Show/Hide Screens
+// Show Login Screen
 function showLoginScreen() {
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('mainHeader').style.display = 'none';
@@ -633,23 +697,23 @@ function showLoginScreen() {
     document.getElementById('view-dashboard').style.display = 'none';
 }
 
+// Show Main App
 function showMainApp() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('mainHeader').style.display = 'block';
     document.getElementById('mainNav').style.display = 'flex';
     document.getElementById('view-dashboard').style.display = 'block';
     
-    // Update user info
-    document.getElementById('userName').textContent = currentUser.displayName || 'القائد';
-    if (currentUser.photoURL) {
-        document.getElementById('userAvatar').src = currentUser.photoURL;
-    }
+    document.getElementById('welcomeMsg').textContent = '👤 نرحب بالقائد ' + (currentUser.displayName || '');
 }
 
 // Google Login
 async function handleGoogleLogin() {
-    const loginBtn = document.getElementById('loginBtnText');
-    loginBtn.innerHTML = '<div class="loading"></div> جاري تسجيل الدخول...';
+    const loginBtn = document.getElementById('loginBtn');
+    const loginText = document.getElementById('loginText');
+    
+    loginBtn.disabled = true;
+    loginText.textContent = 'جاري تسجيل الدخول...';
     
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -657,7 +721,8 @@ async function handleGoogleLogin() {
     } catch (error) {
         console.error('Login error:', error);
         alert('خطأ في تسجيل الدخول: ' + error.message);
-        loginBtn.textContent = 'تسجيل الدخول عبر جوجل';
+        loginBtn.disabled = false;
+        loginText.textContent = 'الدخول عبر جوجل';
     }
 }
 
@@ -666,6 +731,7 @@ async function handleLogout() {
     if (confirm('هل تريد تسجيل الخروج؟')) {
         try {
             await auth.signOut();
+            location.reload();
         } catch (error) {
             console.error('Logout error:', error);
             alert('خطأ في تسجيل الخروج');
@@ -673,65 +739,46 @@ async function handleLogout() {
     }
 }
 
-// Load User Data from Firestore
+// Load User Data
 async function loadUserData() {
-    showSyncStatus('جاري تحميل البيانات...');
-    
     try {
         const doc = await db.collection('users').doc(currentUser.uid).get();
         
         if (doc.exists) {
-            const userData = doc.data();
-            data = userData.schoolData || data;
-            visits = userData.visits || [];
-            visitCriteria = userData.visitCriteria || [];
+            const cloud = doc.data();
+            phones = cloud.phones || {};
+            data = cloud.schoolData || data;
+            tasks = cloud.tasks || [];
+            visits = cloud.visits || [];
+            visitCriteria = cloud.visitCriteria || [];
         }
         
         updateDashboard();
+        refresh();
+        renderStaff();
+        renderTasks();
         renderVisits();
-        
-        showSyncStatus('تم التحميل بنجاح ✓', 'success');
     } catch (error) {
         console.error('Load error:', error);
-        showSyncStatus('خطأ في التحميل ✗', 'error');
+        alert('خطأ في تحميل البيانات');
     }
 }
 
-// Save User Data to Firestore
-async function saveUserData() {
-    showSyncStatus('جاري الحفظ...');
+// Sync to Cloud
+async function syncToCloud() {
+    if (!currentUser) return;
     
     try {
         await db.collection('users').doc(currentUser.uid).set({
+            phones,
             schoolData: data,
-            visits: visits,
-            visitCriteria: visitCriteria,
-            lastUpdate: new Date().toISOString()
+            tasks,
+            visits,
+            visitCriteria,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        
-        showSyncStatus('تم الحفظ بنجاح ✓', 'success');
     } catch (error) {
-        console.error('Save error:', error);
-        showSyncStatus('خطأ في الحفظ ✗', 'error');
-    }
-}
-
-// Sync Status Indicator
-function showSyncStatus(message, type = '') {
-    const statusEl = document.getElementById('syncStatus');
-    const textEl = document.getElementById('syncText');
-    
-    statusEl.style.display = 'flex';
-    textEl.textContent = message;
-    
-    statusEl.className = 'sync-status';
-    if (type === 'success') statusEl.classList.add('sync-success');
-    if (type === 'error') statusEl.classList.add('sync-error');
-    
-    if (type) {
-        setTimeout(() => {
-            statusEl.style.display = 'none';
-        }, 3000);
+        console.error('Sync error:', error);
     }
 }
 
@@ -739,29 +786,19 @@ function showSyncStatus(message, type = '') {
 function updateDashboard() {
     document.getElementById('statTeachers').textContent = Object.keys(data.teachers).length;
     document.getElementById('statClasses').textContent = Object.keys(data.classes).length;
+    document.getElementById('statTasks').textContent = tasks.filter(t => !t.done).length;
     
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     const weekVisits = visits.filter(v => new Date(v.date) >= weekAgo);
     document.getElementById('statVisits').textContent = weekVisits.length;
     
-    // Calculate average rating
-    if (visits.length > 0) {
-        const totalRating = visits.reduce((sum, v) => {
-            const ratings = v.criteriaRatings || {};
-            const ratingValues = Object.values(ratings).map(r => {
-                const match = r.match(/\((\d+)\)/);
-                return match ? parseInt(match[1]) : 3;
-            });
-            return sum + (ratingValues.reduce((a, b) => a + b, 0) / ratingValues.length);
-        }, 0);
-        const avgRating = (totalRating / visits.length).toFixed(1);
-        document.getElementById('statAvg').textContent = avgRating;
-    }
-    
     updateVisitsChart();
+    updateDashboardTime();
 }
 
-// Update Visits Chart
-function updateVisitsChart() {
-    const ctx = document.getElementByI
+// Update Dashboard Time
+function updateDashboardTime() {
+    const now = new Date();
+    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    let d = days
