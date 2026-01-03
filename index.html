@@ -10,7 +10,115 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root { 
+            --primary: #0f172a; 
+            --accent: #f59e0b; 
+            --success: #10b981; 
+            --danger: #ef4444;
+            --bg: #f8fafc; 
+            --card: #ffffff; 
+            --text: #1e293b;
+            --blue-grad: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * { font-family: 'Tajawal', sans-serif !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
+        body { background: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; display: none; /* يتم إظهاره عبر JS */ }
+
+        /* شاشة تسجيل الدخول */
+        #login-screen {
+            position: fixed; inset: 0; background: var(--bg); z-index: 1000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 25px;
+            text-align: center; box-shadow: var(--shadow); width: 100%; max-width: 400px;
+        }
+        .google-btn {
+            width: 100%; padding: 15px; background: white; border: 2px solid #e2e8f0;
+            border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: 0.3s;
+        }
+        .google-btn:hover { border-color: var(--primary); background: #f8fafc; }
+
+        /* الهيدر */
+        .header {
+            background: var(--blue-grad); color: white; padding: 20px;
+            border-radius: 0 0 25px 25px; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+            position: sticky; top: 0; z-index: 50;
+        }
+        .header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .user-welcome { font-size: 0.85rem; opacity: 0.9; margin-bottom: 5px; }
+        .header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            padding: 6px 12px; border-radius: 8px; font-size: 13px; cursor: pointer;
+        }
+
+        /* المحتوى */
+        .container { padding: 20px; display: none; animation: fadeIn 0.4s ease; }
+        .container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .status-card {
+            background: var(--card); padding: 15px; border-radius: 16px;
+            box-shadow: var(--shadow); margin-bottom: 20px; border-right: 5px solid var(--accent);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .badge-sim { background: #fee2e2; color: var(--danger); padding: 5px 10px; border-radius: 8px; font-weight: bold; font-size: 12px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-card { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: var(--shadow); }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .stat-label { font-size: 0.8rem; color: #64748b; }
+
+        .lesson-card, .staff-card {
+            background: var(--card); border-radius: 14px; padding: 15px; margin-bottom: 12px;
+            box-shadow: var(--shadow); border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;
+        }
+        .class-badge { background: var(--primary); color: white; padding: 8px 12px; border-radius: 10px; font-weight: bold; font-size: 14px; }
+        .msg-btn { background: var(--success); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        /* العناصر العامة */
+        .form-control {
+            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px;
+            font-size: 14px; margin-top: 5px; transition: 0.3s;
+        }
+        .form-control:focus { border-color: var(--primary); }
+        .form-group { margin-bottom: 15px; }
+
+        .action-btn {
+            border: none; padding: 12px; border-radius: 10px; color: white;
+            font-weight: bold; cursor: pointer; width: 100%; text-align: center;
+            background: var(--primary); margin-top: 10px; font-size: 14px;
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* القائمة السفلية */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: white;
+            display: flex; justify-content: space-around; padding: 10px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 90;
+            border-top: 1px solid #eee; display: none;
+        }
+        .nav-item { border: none; background: none; color: #94a3b8; font-size: 10px; cursor: pointer; flex: 1; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 2px; }
+        .nav-item.active { color: var(--primary); font-weight: 800; }
+
+        /* النوافذ المنبثقة */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 90%; max-width: 450px; padding: 25px; border-radius: 20px; max-height: 90vh; overflow-y: auto; }
+
+        /* طباعة */
+        @media print {
+            body { background: white; padding: 0; display: block !important; }
+            .no-print, .bottom-nav, .header-actions, .action-btn, #login-screen { display: none !important; }
+        }
+    </style>
 </head>
 <body>
 
@@ -167,6 +275,394 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     
-    <script src="script.js"></script>
+    <script>
+        // --- 1. إعدادات Firebase ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
+          authDomain: "school-9416e.firebaseapp.com",
+          projectId: "school-9416e",
+          storageBucket: "school-9416e.firebasestorage.app",
+          messagingSenderId: "680872052240",
+          appId: "1:680872052240:web:96d2e544166ab5f8096c95"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- 2. المتغيرات العامة ---
+        let currentUser = null;
+        let data = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
+        let phones = {};
+        let tasks = [];
+        let visits = [];
+        let isSim = false, sDay = 1, sTime = "08:00";
+
+        // --- 3. إدارة المصادقة (Auth) ---
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('login-screen').style.display = 'none';
+                document.body.style.display = 'block';
+                document.getElementById('mainNav').style.display = 'flex';
+                document.getElementById('welcomeMsg').innerText = "👤 مرحباً: " + (user.displayName || "القائد");
+                loadUserData();
+            } else {
+                document.body.style.display = 'block'; 
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('mainNav').style.display = 'none';
+            }
+        });
+
+        async function handleGoogleLogin() {
+            const btn = document.getElementById('loginBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = "جاري الاتصال...";
+            
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                await auth.signInWithPopup(provider);
+                // التوجيه تلقائي
+            } catch (error) {
+                console.error(error);
+                alert("حدث خطأ في تسجيل الدخول: " + error.message);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+                auth.signOut().then(() => location.reload());
+            }
+        }
+
+        // --- 4. إدارة البيانات (Sync) ---
+        async function loadUserData() {
+            try {
+                const doc = await db.collection("users").doc(currentUser.uid).get();
+                if(doc.exists) {
+                    const cloud = doc.data();
+                    data = cloud.schoolData || data;
+                    phones = cloud.phones || {};
+                    tasks = cloud.tasks || [];
+                    visits = cloud.visits || [];
+                    refreshUI();
+                }
+            } catch (e) { console.log("New user or load error"); }
+        }
+
+        async function syncToCloud() {
+            if(!currentUser) return;
+            await db.collection("users").doc(currentUser.uid).set({
+                schoolData: data,
+                phones: phones,
+                tasks: tasks,
+                visits: visits,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        function refreshUI() {
+            refreshSchedule();
+            updateDashboard();
+            renderStaff();
+            renderTasks();
+            renderVisits();
+        }
+
+        // --- 5. المنطق (Logic) ---
+        function updateDashboard() {
+            document.getElementById('statTeachers').innerText = Object.keys(data.teachers || {}).length;
+            document.getElementById('statClasses').innerText = Object.keys(data.classes || {}).length;
+            document.getElementById('statVisits').innerText = visits.length;
+            document.getElementById('statTasks').innerText = tasks.length;
+        }
+
+        function refreshSchedule() {
+            const now = new Date();
+            const d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
+            const t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+            
+            document.getElementById('dashDate').innerText = t;
+            document.getElementById('simBadge').style.display = isSim ? "block" : "none";
+
+            const p = (data.periods || []).find(period => {
+                const cur = toM(t), s = toM(period.s), e = toM(period.e);
+                return cur >= s && cur <= e;
+            });
+
+            const list = document.getElementById('lessons-list');
+            let infoText = "خارج الدوام";
+
+            if (p && data.lessons) {
+                infoText = "الحصة: " + p.id;
+                const currentLessons = data.lessons.filter(l => l.d == d && l.p == p.id);
+                
+                if (currentLessons.length > 0) {
+                    list.innerHTML = currentLessons.map(l => {
+                        const teacherName = data.teachers[l.t] || "غير محدد";
+                        const className = data.classes[l.c] || "..";
+                        const phone = (phones[teacherName] || "").replace(/\s+/g, '');
+                        const msg = `السلام عليكم أستاذ ${teacherName}، نرجو التواجد في حصة ${className}.`;
+                        
+                        return `
+                        <div class="lesson-card">
+                            <div class="class-badge">${className}</div>
+                            <div style="flex:1; padding-right:15px;">
+                                <div style="font-weight:bold;">${teacherName}</div>
+                                <div style="font-size:12px; color:#64748b;">${data.subjects[l.s] || ''}</div>
+                            </div>
+                            <button onclick="window.open('https://wa.me/${phone}?text=${encodeURIComponent(msg)}')" class="msg-btn">💬</button>
+                        </div>`;
+                    }).join('');
+                } else {
+                    list.innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8;">لا توجد حصص مسجلة لهذه الفترة</div>`;
+                }
+            } else {
+                list.innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8;">لا توجد حصص نشطة الآن</div>`;
+            }
+            document.getElementById('dashPeriod').innerText = infoText;
+        }
+
+        function renderStaff() {
+            const list = document.getElementById('staff-list');
+            const allTeachers = Object.values(data.teachers || {}).sort();
+            
+            list.innerHTML = allTeachers.map(name => {
+                const ph = phones[name] || "";
+                return `
+                <div class="staff-card filter-item">
+                    <div>
+                        <div style="font-weight:bold;">${name}</div>
+                        <div style="font-size:12px; color:#64748b;">${ph || 'لا يوجد رقم'}</div>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="updatePhone('${name}')" style="border:none; background:#f1f5f9; padding:5px; border-radius:5px;">✏️</button>
+                        <a href="tel:${ph}" style="text-decoration:none; font-size:20px;">📞</a>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function updatePhone(name) {
+            const p = prompt(`أدخل رقم هاتف: ${name}`, phones[name] || "");
+            if(p !== null) { phones[name] = p; renderStaff(); syncToCloud(); }
+        }
+
+        function filterStaff() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.filter-item').forEach(el => {
+                el.style.display = el.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+            });
+        }
+
+        // --- 6. الزيارات والطباعة ---
+        function renderVisits() {
+            const list = document.getElementById('visits-list');
+            list.innerHTML = visits.map(v => `
+                <div class="staff-card" style="display:block;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <b>${v.teacher}</b>
+                        <span style="font-size:12px; color:#64748b;">${new Date(v.date).toLocaleDateString('ar-EG')}</span>
+                    </div>
+                    <div style="font-size:13px; color:#334155;">${v.notes}</div>
+                </div>
+            `).join('');
+        }
+
+        function openVisitModal() {
+            const sel = document.getElementById('visitTeacher');
+            sel.innerHTML = Object.values(data.teachers).map(t => `<option value="${t}">${t}</option>`).join('');
+            openModal('visitModal');
+        }
+
+        function saveVisit() {
+            const t = document.getElementById('visitTeacher').value;
+            const n = document.getElementById('visitNotes').value;
+            if(t && n) {
+                visits.unshift({ teacher: t, notes: n, date: new Date().toISOString() });
+                syncToCloud();
+                renderVisits();
+                updateDashboard();
+                closeModal('visitModal');
+                document.getElementById('visitNotes').value = "";
+            }
+        }
+
+        function printFullReport() {
+            if (visits.length === 0) return alert("لا توجد زيارات لطباعتها");
+
+            const printWindow = window.open('', '_blank');
+            let html = `
+            <html dir="rtl">
+            <head>
+                <title>سجل الزيارات الإشرافية</title>
+                <style>
+                    body { font-family: 'Tajawal', sans-serif; padding: 20px; }
+                    h2 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #999; padding: 10px; text-align: right; }
+                    th { background-color: #f3f4f6; }
+                    tr:nth-child(even) { background-color: #f9fafb; }
+                </style>
+            </head>
+            <body>
+                <h2>سجل الزيارات الإشرافية</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="15%">التاريخ</th>
+                            <th width="25%">المعلم</th>
+                            <th>الملاحظات / التوصيات</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            visits.forEach((v, i) => {
+                html += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${new Date(v.date).toLocaleDateString('ar-EG')}</td>
+                        <td>${v.teacher}</td>
+                        <td>${v.notes}</td>
+                    </tr>`;
+            });
+
+            html += `</tbody></table>
+            <script>window.onload = function() { window.print(); }</script>
+            </body></html>`;
+            
+            printWindow.document.write(html);
+            printWindow.document.close();
+        }
+
+        function importVisitsJSON(input) {
+            const file = input.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if(Array.isArray(json)) {
+                        visits = [...json, ...visits];
+                        await syncToCloud();
+                        renderVisits();
+                        updateDashboard();
+                        alert(`تم استيراد ${json.length} زيارة بنجاح!`);
+                        closeModal('settingsModal');
+                    } else {
+                        alert("صيغة الملف غير صحيحة. يجب أن يكون JSON Array.");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("ملف JSON غير صالح.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- 7. الأجندة و المهام ---
+        function addTask() {
+            const inp = document.getElementById('taskInput');
+            if(inp.value.trim()) {
+                tasks.push({ id: Date.now(), text: inp.value.trim(), done: false });
+                inp.value = "";
+                renderTasks();
+                syncToCloud();
+                updateDashboard();
+            }
+        }
+        function renderTasks() {
+            document.getElementById('tasks-list').innerHTML = tasks.map(t => `
+                <div class="lesson-card" style="padding:10px;">
+                    <span style="${t.done ? 'text-decoration:line-through;opacity:0.6' : ''}">${t.text}</span>
+                    <button onclick="removeTask(${t.id})" style="border:none; background:none; color:red;">✕</button>
+                </div>
+            `).join('');
+        }
+        function removeTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            renderTasks(); syncToCloud(); updateDashboard();
+        }
+
+        // --- 8. استيراد الملفات (XML/Excel) ---
+        function handleXML(input) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(e.target.result, "text/xml");
+                
+                let newData = { teachers: {}, classes: {}, subjects: {}, lessons: [], periods: [] };
+                
+                Array.from(xml.getElementsByTagName('teacher')).forEach(t => newData.teachers[t.getAttribute('id')] = t.getAttribute('name'));
+                Array.from(xml.getElementsByTagName('class')).forEach(c => newData.classes[c.getAttribute('id')] = c.getAttribute('short'));
+                Array.from(xml.getElementsByTagName('subject')).forEach(s => newData.subjects[s.getAttribute('id')] = s.getAttribute('name'));
+                Array.from(xml.getElementsByTagName('period')).forEach(p => newData.periods.push({
+                    id: p.getAttribute('period'), s: p.getAttribute('starttime'), e: p.getAttribute('endtime')
+                }));
+                
+                Array.from(xml.getElementsByTagName('TimeTableSchedule')).forEach(l => {
+                    newData.lessons.push({
+                        d: l.getAttribute('DayID'), p: l.getAttribute('Period'), 
+                        c: l.getAttribute('ClassID'), t: l.getAttribute('TeacherID'), s: l.getAttribute('SubjectGradeID')
+                    });
+                });
+
+                data = newData;
+                await syncToCloud();
+                refreshUI();
+                alert("تم استيراد الجدول بنجاح");
+                closeModal('settingsModal');
+            };
+            reader.readAsText(input.files[0]);
+        }
+
+        function importFromExcel(input) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const wb = XLSX.read(e.target.result, { type: 'binary' });
+                const sheet = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                sheet.forEach(row => {
+                    const name = row['اسم المعلم'] || row['Name'];
+                    const phone = row['رقم الهاتف'] || row['Phone'];
+                    if(name) phones[name] = String(phone || "");
+                });
+                await syncToCloud();
+                renderStaff();
+                alert("تم تحديث بيانات المعلمين");
+            };
+            reader.readAsBinaryString(input.files[0]);
+        }
+
+        function exportToExcel() {
+            const rows = Object.keys(data.teachers || {}).map(id => {
+                const name = data.teachers[id];
+                return { "اسم المعلم": name, "رقم الهاتف": phones[name] || "" };
+            });
+            const ws = XLSX.utils.json_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "المعلمين");
+            XLSX.writeFile(wb, "Staff_Data.xlsx");
+        }
+
+        // --- أدوات مساعدة ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function switchTab(id, btn) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        function toM(t) { const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
+        function doSim() { isSim = true; sDay = 1; sTime = "08:00"; closeModal('settingsModal'); refreshSchedule(); }
+        function resetTime() { isSim = false; closeModal('settingsModal'); refreshSchedule(); }
+
+        setInterval(() => { if(currentUser && !isSim) refreshSchedule(); }, 60000);
+    </script>
 </body>
 </html>
