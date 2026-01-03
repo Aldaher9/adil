@@ -9,6 +9,24 @@ const firebaseConfig = {
   appId: "1:680872052240:web:96d2e544166ab5f8096c95"
 };
 
+
+function startLiveUpdate() {
+    // تحديث كل 30 ثانية لضمان دقة جدول الحصص الحالية
+    setInterval(() => {
+        if (!isSim) { // إذا لم نكن في وضع المحاكاة، حدث الوقت الحقيقي
+            refresh();
+            updateDashboard();
+        }
+    }, 30000);
+}
+
+// تعديل بسيط على دالة refresh لضمان قراءة ملف XML المستورد
+function refresh() {
+    const now = isSim ? parseTime(sTime) : new Date();
+    // كود الفلترة الخاص بالحصص الحالية بناءً على الوقت
+    renderCurrentLessons(now); 
+}
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
