@@ -2,160 +2,251 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة القائد - نسخة الإصلاح</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة القائد - نظام الإدارة المتكامل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        :root { --primary: #0f172a; --accent: #f59e0b; --bg: #f1f5f9; }
-        * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); padding-bottom: 70px; }
-        
-        /* شاشة الدخول الاحتياطية */
-        #login-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .login-card { padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
-        
-        /* الهيدر */
-        .header { background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); color: white; padding: 20px; border-radius: 0 0 20px 20px; }
-        .container { padding: 15px; display: none; }
-        .active { display: block; }
-
-        /* البطاقات */
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        
-        /* القائمة السفلية */
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 60px; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; color: #64748b; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body style="display: block;">
 
-<div id="login-screen">
-    <div class="login-card">
+<!-- Login Screen -->
+<div id="login-screen" style="position:fixed; inset:0; background:#f1f5f9; z-index:1000; display:none; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:white; padding:40px; border-radius:30px; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.1); width:100%; max-width:400px;">
+        <h1 style="color:#0f172a; margin-bottom: 20px;">منصة القائد ⚡</h1>
+        <button onclick="skipLogin()" style="width:100%; padding:15px; background:#10b981; color:white; border:none; border-radius:15px; cursor:pointer; font-weight:bold;">
+            دخول مباشر 🚀
+        </button>
+    </div>
+</div>
+
+<!-- Header -->
+<div class="header">
+    <div class="user-welcome" id="welcomeMsg">👤 نرحب بالقائد</div>
+    <div class="header-top">
         <h1>منصة القائد ⚡</h1>
-        <p style="margin: 15px 0; color: #64748b;">مرحباً بك، اضغط للدخول المباشر</p>
-        <button onclick="unlockApp()" class="btn" style="background: #10b981;">دخول إلى المنصة</button>
-        <p style="margin-top: 10px; font-size: 11px; color: #94a3b8;">سيتم حفظ بياناتك على هذا المتصفح تلقائياً</p>
-    </div>
-</div>
-
-<div id="app" style="display:none;">
-    <div class="header">
-        <h2>منصة القائد</h2>
-        <div id="userLabel" style="font-size: 12px; opacity: 0.8;">👤 مدير المدرسة</div>
-    </div>
-
-    <div id="tab1" class="container active">
-        <h3>📊 الإحصائيات</h3>
-        <div class="card" style="margin-top:15px;">
-            <p>عدد المعلمين: <b id="tCount">0</b></p>
-            <p>عدد الزيارات: <b id="vCount">0</b></p>
+        <div class="header-actions">
+            <button class="header-btn" onclick="openModal()">⚙️ ضبط</button>
+            <button class="header-btn logout-btn" onclick="handleLogout()">🚪 خروج</button>
         </div>
-        <button onclick="openSettings()" class="btn">⚙️ الإعدادات واستيراد البيانات</button>
     </div>
-
-    <div id="tab2" class="container">
-        <h3>👁️ الزيارات الإشرافية</h3>
-        <button onclick="addVisit()" class="btn" style="background:var(--accent);">+ إضافة زيارة</button>
-        <div id="visitsList" style="margin-top:15px;"></div>
-    </div>
-
-    <div id="tab3" class="container">
-        <h3>👥 دليل المعلمين</h3>
-        <div id="staffList" style="margin-top:15px;"></div>
-    </div>
-
-    <nav class="nav">
-        <div class="nav-item active" onclick="showTab('tab1', this)"><span>📊</span>الرئيسية</div>
-        <div class="nav-item" onclick="showTab('tab2', this)"><span>👁️</span>الزيارات</div>
-        <div class="nav-item" onclick="showTab('tab3', this)"><span>👥</span>المعلمين</div>
-    </nav>
 </div>
 
-<script>
-    // بيانات افتراضية
-    let state = {
-        teachers: {},
-        visits: []
-    };
+<!-- Dashboard View -->
+<div id="view-dashboard" class="container active">
+    <h3 style="margin-top:0;">📊 لوحة المعلومات</h3>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value" id="statTeachers">0</div>
+            <div class="stat-label">عدد المعلمين</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value" id="statClasses">0</div>
+            <div class="stat-label">عدد الفصول</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👁️</div>
+            <div class="stat-value" id="statVisits">0</div>
+            <div class="stat-label">الزيارات هذا الأسبوع</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value" id="statTasks">0</div>
+            <div class="stat-label">المهام النشطة</div>
+        </div>
+    </div>
 
-    // تحميل البيانات عند الفتح
-    function init() {
-        const saved = localStorage.getItem('school_data');
-        if (saved) {
-            state = JSON.parse(saved);
-            render();
-        }
-    }
+    <div class="card">
+        <h4>📈 إحصائيات الزيارات الإشرافية</h4>
+        <canvas id="visitsChart"></canvas>
+    </div>
 
-    function unlockApp() {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        init();
-    }
-
-    function showTab(id, el) {
-        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        el.classList.add('active');
-    }
-
-    function render() {
-        document.getElementById('tCount').innerText = Object.keys(state.teachers).length;
-        document.getElementById('vCount').innerText = state.visits.length;
-
-        // رندر المعلمين
-        const sList = document.getElementById('staffList');
-        sList.innerHTML = Object.values(state.teachers).map(t => `<div class="card">${t}</div>`).join('') 
-                         || '<p style="text-align:center;">لا يوجد معلمين. استورد الملف من الإعدادات.</p>';
-
-        // رندر الزيارات
-        const vList = document.getElementById('visitsList');
-        vList.innerHTML = state.visits.map(v => `
-            <div class="card">
-                <b>${v.teacher}</b><br>
-                <small>${v.date}</small><br>
-                <p>${v.notes}</p>
+    <div class="card">
+        <h4>⏰ الحصة الحالية</h4>
+        <div class="status-card">
+            <div>
+                <div id="dashDate">--:--</div>
+                <div id="dashPeriod" style="font-weight:800; font-size:1.1rem; color: #0f172a;">جاري المزامنة..</div>
             </div>
-        `).join('');
-    }
+            <div id="dashSimBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold;">وضع المحاكاة</div>
+        </div>
+    </div>
+</div>
 
-    function addVisit() {
-        const t = prompt("اسم المعلم:");
-        const n = prompt("الملاحظات:");
-        if(t && n) {
-            state.visits.unshift({ teacher: t, notes: n, date: new Date().toLocaleDateString() });
-            save();
-        }
-    }
+<!-- Schedule View -->
+<div id="view-schedule" class="container">
+    <div class="status-card">
+        <div>
+            <div id="infoDate">--:--</div>
+            <div id="infoPeriod" style="font-weight:800; font-size:1.1rem; color: #0f172a;">جاري المزامنة..</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <div id="simBadge" style="display:none; background:#fee2e2; color:#ef4444; padding:5px 10px; border-radius:10px; font-weight:bold;">وضع المحاكاة</div>
+            <button onclick="exitSimMode()" id="exitSimBtn" style="display:none; padding:5px 10px; background:#10b981; color:white; border:none; border-radius:10px; cursor:pointer; font-size:12px; font-weight:bold;">↩️ الوقت الحقيقي</button>
+        </div>
+    </div>
+    <div id="lessons-list"></div>
+</div>
 
-    function openSettings() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = e => {
-            const reader = new FileReader();
-            reader.onload = f => {
-                const data = JSON.parse(f.target.result);
-                // إذا كان الملف القادم يحتوي على المعلمين
-                if(data.teachers) state.teachers = data.teachers;
-                // إذا كان يحتوي على زيارات
-                if(Array.isArray(data)) state.visits = [...data, ...state.visits];
-                save();
-                alert("تم التحديث بنجاح");
-            };
-            reader.readAsText(e.target.files[0]);
-        };
-        input.click();
-    }
+<!-- Staff View -->
+<div id="view-staff" class="container">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث عن معلم..." onkeyup="filterStaff()" style="width:100%; padding:15px; border-radius:12px; border:2px solid #ddd; margin-bottom:15px;">
+    <div id="staff-list"></div>
+</div>
 
-    function save() {
-        localStorage.setItem('school_data', JSON.stringify(state));
-        render();
-    }
-</script>
+<!-- Visits View -->
+<div id="view-visits" class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin:0;">👁️ الزيارات الإشرافية</h3>
+        <button onclick="openVisitModal()" class="btn-primary">+ زيارة جديدة</button>
+    </div>
+    
+    <div class="filter-section">
+        <select id="visitFilter" onchange="filterVisits()" class="filter-select">
+            <option value="all">جميع الزيارات</option>
+            <option value="today">اليوم</option>
+            <option value="week">هذا الأسبوع</option>
+            <option value="month">هذا الشهر</option>
+        </select>
+    </div>
+    
+    <div id="visits-list"></div>
+</div>
+
+<!-- Reports View -->
+<div id="view-reports" class="container">
+    <h3 style="margin-top:0;">📋 التقارير</h3>
+    
+    <div class="report-options">
+        <div class="card report-card" onclick="generateTeacherReport()">
+            <div class="report-icon">👥</div>
+            <h4>تقرير المعلمين</h4>
+            <p>تقرير شامل عن جميع المعلمين وأرقامهم</p>
+        </div>
+        
+        <div class="card report-card" onclick="generateVisitsReport()">
+            <div class="report-icon">👁️</div>
+            <h4>تقرير الزيارات</h4>
+            <p>ملخص الزيارات الإشرافية والتقييمات</p>
+        </div>
+        
+        <div class="card report-card" onclick="generateScheduleReport()">
+            <div class="report-icon">📅</div>
+            <h4>تقرير الجدول</h4>
+            <p>تحليل توزيع الحصص والمواد</p>
+        </div>
+        
+        <div class="card report-card" onclick="generateDetailedVisitReport()">
+            <div class="report-icon">📊</div>
+            <h4>تقرير الزيارات التفصيلي</h4>
+            <p>تقرير مفصل بناءً على الاستمارة المعتمدة</p>
+        </div>
+    </div>
+</div>
+
+<!-- Agenda View -->
+<div id="view-agenda" class="container">
+    <h3 style="margin-top:0;">📝 أجندة المهام</h3>
+    <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <input type="text" id="taskInput" style="flex:1; padding:12px; border-radius:12px; border:2px solid #ddd;" placeholder="اكتب مهمة جديدة...">
+        <button onclick="addTask()" class="btn-primary">إضافة</button>
+    </div>
+    <div id="tasks-list"></div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('view-dashboard', this)">
+        <span>📊</span> الرئيسية
+    </button>
+    <button class="nav-item" onclick="switchTab('view-schedule', this)">
+        <span>📅</span> الحصص
+    </button>
+    <button class="nav-item" onclick="switchTab('view-staff', this)">
+        <span>👥</span> المعلمين
+    </button>
+    <button class="nav-item" onclick="switchTab('view-visits', this)">
+        <span>👁️</span> الزيارات
+    </button>
+    <button class="nav-item" onclick="switchTab('view-reports', this)">
+        <span>📋</span> التقارير
+    </button>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <h3>⚙️ إعدادات المنصة</h3>
+        
+        <p style="font-size:12px; font-weight:bold;">1. ملف الجدول (XML)</p>
+        <input type="file" id="xmlFile" accept=".xml" onchange="handleXML(this)" style="width:100%; margin-bottom:15px;">
+        
+        <p style="font-size:12px; font-weight:bold;">2. بيانات المعلمين (Excel)</p>
+        <div class="grid-2" style="margin-bottom:15px;">
+            <button onclick="exportToExcel()" style="padding:10px; background:#10b981; color:white; border:none; border-radius:10px;">📥 تصدير</button>
+            <button onclick="document.getElementById('excelFile').click()" style="padding:10px; background:#3b82f6; color:white; border:none; border-radius:10px;">📤 استيراد</button>
+            <input type="file" id="excelFile" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
+        </div>
+        
+        <p style="font-size:12px; font-weight:bold;">3. استمارة الزيارات (JSON)</p>
+        <div style="margin-bottom:15px;">
+            <button onclick="document.getElementById('jsonFile').click()" style="width:100%; padding:10px; background:#8b5cf6; color:white; border:none; border-radius:10px;">📤 استيراد استمارة التقييم</button>
+            <input type="file" id="jsonFile" accept=".json" style="display:none" onchange="importVisitCriteria(this)">
+        </div>
+        
+        <p style="font-size:12px; font-weight:bold;">4. محاكاة الحصص</p>
+        <div style="margin-bottom:15px;">
+            <button onclick="startRandomSimulation()" style="width:100%; padding:10px; background:#f59e0b; color:white; border:none; border-radius:10px; font-weight:bold;">🎲 محاكاة حصة عشوائية</button>
+        </div>
+        
+        <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; background:#94a3b8; color:white; border:none; border-radius:10px;">إغلاق</button>
+    </div>
+</div>
+
+<!-- Visit Modal -->
+<div id="visitModal" class="modal">
+    <div class="modal-content" style="max-width:600px; max-height:85vh; overflow-y:auto;">
+        <h3>👁️ زيارة إشرافية جديدة</h3>
+        
+        <div class="form-group">
+            <label>اسم المعلم *</label>
+            <select id="visitTeacher" class="form-control"></select>
+        </div>
+        
+        <div class="form-group">
+            <label>التاريخ والوقت *</label>
+            <input type="datetime-local" id="visitDate" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label>الفصل</label>
+            <input type="text" id="visitClass" class="form-control" placeholder="مثال: 3/1">
+        </div>
+        
+        <div class="form-group">
+            <label>المادة</label>
+            <input type="text" id="visitSubject" class="form-control" placeholder="مثال: الرياضيات">
+        </div>
+        
+        <div id="criteriaContainer"></div>
+        
+        <div class="form-group">
+            <label>ملاحظات إضافية</label>
+            <textarea id="visitNotes" class="form-control" rows="3" placeholder="أي ملاحظات أخرى..."></textarea>
+        </div>
+        
+        <div class="grid-2" style="margin-top:20px;">
+            <button onclick="saveVisit()" class="btn-primary">💾 حفظ الزيارة</button>
+            <button onclick="closeVisitModal()" style="padding:12px; background:#94a3b8; color:white; border:none; border-radius:10px;">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>

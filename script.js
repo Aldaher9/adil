@@ -488,6 +488,7 @@ function renderVisits() {
             ${v.notes ? `<div class="visit-detail"><strong>📝 ملاحظات:</strong> ${v.notes}</div>` : ''}
             
             <div style="margin-top:10px; display:flex; gap:10px;">
+                <button onclick="generatePrintedVisitReport(${v.id})" style="flex:1; padding:8px; background:#10b981; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">🖨️ تقرير مطبوع</button>
                 <button onclick="deleteVisit(${v.id})" style="flex:1; padding:8px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">🗑️ حذف</button>
             </div>
         </div>`;
@@ -830,3 +831,928 @@ setInterval(() => {
         updateDashboardTime();
     }
 }, 30000);
+
+// Generate Printed Visit Report
+function generatePrintedVisitReport(visitId) {
+    const visit = visits.find(v => v.id === visitId);
+    if (!visit) {
+        alert('الزيارة غير موجودة');
+        return;
+    }
+    
+    if (!visit.criteriaRatings || Object.keys(visit.criteriaRatings).length === 0) {
+        alert('هذه الزيارة لا تحتوي على تقييمات');
+        return;
+    }
+    
+    // تصنيف التقييمات
+    const evaluations = [];
+    Object.entries(visit.criteriaRatings).forEach(([criterion, rating]) => {
+        const criterionData = visitCriteria.find(c => 
+            c['المعيار / البند'] === criterion && c['الحكم'] === rating
+        );
+        
+        if (criterionData) {
+            const ratingNum = parseInt(rating.match(/\((\d+)\)/)[1]);
+            evaluations.push({
+                criterion: criterion,
+                rating: rating,
+                ratingNum: ratingNum,
+                description: criterionData['الوصف السلوكي لجوانب الإجادة / أولويات التطوير'] || '',
+                recommendation: criterionData['التوصيات'] || ''
+            });
+        }
+    });
+    
+    // ترتيب حسب التقييم
+    evaluations.sort((a, b) => a.ratingNum - b.ratingNum);
+    
+    // أفضل 3 تقييمات (جوانب الإجادة: 1 و 2)
+    const excellencePoints = evaluations.filter(e => e.ratingNum <= 2).slice(0, 3);
+    
+    // أسوأ 3 تقييمات (جوانب التحسين: 3 و 4 و 5)
+    const improvementPoints = evaluations.filter(e => e.ratingNum >= 3).slice(0, 3);
+    
+    // إنشاء HTML للتقرير
+    const reportHTML = `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير زيارة إشرافية - ${visit.teacher}</title>
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        body {
+            font-family: 'Tajawal', 'Arial', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #0f172a;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #0f172a;
+            font-size: 28px;
+            margin: 10px 0;
+            font-weight: 800;
+        }
+        
+        .header h2 {
+            color: #64748b;
+            font-size: 18px;
+            margin: 5px 0;
+            font-weight: 600;
+        }
+        
+        .info-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-right: 5px solid #0f172a;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .info-label {
+            font-weight: 700;
+            color: #0f172a;
+            min-width: 120px;
+        }
+        
+        .info-value {
+            color: #475569;
+            flex: 1;
+        }
+        
+        .greeting {
+            background: #f0fdf4;
+            border-right: 5px solid #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 2;
+            color: #166534;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            background: #0f172a;
+            color: white;
+            padding: 12px 20px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .excellence-section .section-title {
+            background: #10b981;
+        }
+        
+        .improvement-section .section-title {
+            background: #f59e0b;
+        }
+        
+        .recommendations-section .section-title {
+            background: #3b82f6;
+        }
+        
+        .point {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .point-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .point-criterion {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .point-rating {
+            font-size: 16px;
+            font-weight: 700;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .excellence-section .point-rating {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .improvement-section .point-rating {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .point-description {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.9;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .recommendation-item {
+            background: #eff6ff;
+            border-right: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .recommendation-title {
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .recommendation-text {
+            color: #475569;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .notes-section {
+            background: #fefce8;
+            border: 2px solid #fde047;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .notes-title {
+            font-weight: 700;
+            color: #854d0e;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .notes-text {
+            color: #713f12;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding: 0 50px;
+        }
+        
+        .signature-box {
+            text-align: center;
+        }
+        
+        .signature-label {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .signature-line {
+            border-top: 2px solid #0f172a;
+            width: 200px;
+            margin: 0 auto;
+        }
+        
+        .print-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .print-button:hover {
+            background: #059669;
+        }
+        
+        .close-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .close-button:hover {
+            background: #dc2626;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">🖨️ طباعة التقرير</button>
+    <button class="close-button no-print" onclick="window.close()">✖️ إغلاق</button>
+
+    <div class="header">
+        <h2>سلطنة عُمان</h2>
+        <h2>وزارة التربية والتعليم</h2>
+        <h1>تقرير زيارة إشرافية</h1>
+    </div>
+    
+    <div class="info-section">
+        <div class="info-row">
+            <span class="info-label">اسم المعلم:</span>
+            <span class="info-value">${visit.teacher}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">التاريخ:</span>
+            <span class="info-value">${new Date(visit.date).toLocaleDateString('ar-SA', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">الوقت:</span>
+            <span class="info-value">${new Date(visit.date).toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit'})}</span>
+        </div>
+        ${visit.class ? `<div class="info-row">
+            <span class="info-label">الفصل:</span>
+            <span class="info-value">${visit.class}</span>
+        </div>` : ''}
+        ${visit.subject ? `<div class="info-row">
+            <span class="info-label">المادة:</span>
+            <span class="info-value">${visit.subject}</span>
+        </div>` : ''}
+    </div>
+    
+    <div class="greeting">
+        أتوجه بالشكر والتقدير للأستاذ/ة <strong>${visit.teacher}</strong> على الجهود المبذولة في تقديم هذه الحصة، وعلى حرصه/ها المستمر على تطوير العملية التعليمية وتحقيق أفضل النتائج للطلبة. وفيما يلي أبرز الملاحظات من الزيارة الصفية:
+    </div>
+    
+    ${excellencePoints.length > 0 ? `
+    <div class="section excellence-section">
+        <div class="section-title">✨ جوانب الإجادة</div>
+        ${excellencePoints.map((point, index) => `
+            <div class="point">
+                <div class="point-header">
+                    <span class="point-criterion">${index + 1}. ${point.criterion}</span>
+                    <span class="point-rating">${point.rating}</span>
+                </div>
+                <div class="point-description">
+                    ${point.description}
+                </div>
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${improvementPoints.length > 0 ? `
+    <div class="section improvement-section">
+        <div class="section-title">📈 أولويات التطوير</div>
+        ${improvementPoints.map((point, index) => `
+            <div class="point">
+                <div class="point-header">
+                    <span class="point-criterion">${index + 1}. ${point.criterion}</span>
+                    <span class="point-rating">${point.rating}</span>
+                </div>
+                <div class="point-description">
+                    ${point.description}
+                </div>
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${improvementPoints.length > 0 ? `
+    <div class="section recommendations-section">
+        <div class="section-title">💡 التوصيات والمقترحات</div>
+        ${improvementPoints.map((point, index) => `
+            <div class="recommendation-item">
+                <div class="recommendation-title">${index + 1}. ${point.criterion}</div>
+                <div class="recommendation-text">${point.recommendation}</div>
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${visit.notes ? `
+    <div class="notes-section">
+        <div class="notes-title">📝 ملاحظات إضافية من المدير</div>
+        <div class="notes-text">${visit.notes}</div>
+    </div>
+    ` : ''}
+    
+    <div class="signature-section">
+        <div class="signature-box">
+            <div class="signature-label">مدير المدرسة</div>
+            <div class="signature-line"></div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-label">المعلم/ة</div>
+            <div class="signature-line"></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>تم إنشاء هذا التقرير بواسطة منصة القائد</p>
+        <p>التاريخ: ${new Date().toLocaleDateString('ar-SA')}</p>
+    </div>
+</body>
+</html>
+    `;
+    
+    // فتح التقرير في نافذة جديدة
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(reportHTML);
+    printWindow.document.close();
+}
+
+// تحديث renderVisits لإضافة زر التقرير المطبوع
+const originalRenderVisits = renderVisits;
+renderVisits = function() {
+    const list = document.getElementById('visits-list');
+    const sortedVisits = [...visits].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (sortedVisits.length === 0) {
+        list.innerHTML = '<div style="text-align:center; padding:50px; color:#94a3b8;">لا توجد زيارات مسجلة</div>';
+        return;
+    }
+    
+    list.innerHTML = sortedVisits.map(v => {
+        const dateObj = new Date(v.date);
+        const dateStr = dateObj.toLocaleDateString('ar-SA');
+        const timeStr = dateObj.toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit'});
+        
+        // عرض التقييمات
+        let ratingsHtml = '';
+        if (v.criteriaRatings && Object.keys(v.criteriaRatings).length > 0) {
+            ratingsHtml = '<div style="margin-top:10px;">';
+            Object.entries(v.criteriaRatings).forEach(([criterion, rating]) => {
+                ratingsHtml += `<div class="visit-detail"><strong>${criterion}:</strong> ${rating}</div>`;
+            });
+            ratingsHtml += '</div>';
+        }
+        
+        return `<div class="visit-card">
+            <div class="visit-header">
+                <div>
+                    <h4>${v.teacher}</h4>
+                    <div class="visit-meta">
+                        <span>📅 ${dateStr}</span>
+                        <span>🕐 ${timeStr}</span>
+                        ${v.class ? `<span>📚 ${v.class}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+            
+            ${v.subject ? `<div class="visit-detail"><strong>المادة:</strong> ${v.subject}</div>` : ''}
+            ${ratingsHtml}
+            ${v.notes ? `<div class="visit-detail"><strong>📝 ملاحظات:</strong> ${v.notes}</div>` : ''}
+            
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <button onclick="generatePrintedVisitReport(${v.id})" style="flex:1; padding:8px; background:#10b981; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">🖨️ تقرير مطبوع</button>
+                <button onclick="deleteVisit(${v.id})" style="flex:1; padding:8px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer;">🗑️ حذف</button>
+            </div>
+        </div>`;
+    }).join('');
+};
+
+
+// Generate Printed Visit Report
+function generatePrintedVisitReport(visitId) {
+    const visit = visits.find(v => v.id === visitId);
+    if (!visit) {
+        alert('الزيارة غير موجودة');
+        return;
+    }
+    
+    if (!visit.criteriaRatings || Object.keys(visit.criteriaRatings).length === 0) {
+        alert('هذه الزيارة لا تحتوي على تقييمات');
+        return;
+    }
+    
+    // تصنيف التقييمات
+    const evaluations = [];
+    Object.entries(visit.criteriaRatings).forEach(([criterion, rating]) => {
+        const criterionData = visitCriteria.find(c => 
+            c['المعيار / البند'] === criterion && c['الحكم'] === rating
+        );
+        
+        if (criterionData) {
+            const ratingNum = parseInt(rating.match(/\((\d+)\)/)[1]);
+            evaluations.push({
+                criterion: criterion,
+                rating: rating,
+                ratingNum: ratingNum,
+                description: criterionData['الوصف السلوكي لجوانب الإجادة / أولويات التطوير'] || '',
+                recommendation: criterionData['التوصيات'] || ''
+            });
+        }
+    });
+    
+    // ترتيب حسب التقييم
+    evaluations.sort((a, b) => a.ratingNum - b.ratingNum);
+    
+    // أفضل 3 تقييمات (جوانب الإجادة: 1 و 2)
+    const excellencePoints = evaluations.filter(e => e.ratingNum <= 2).slice(0, 3);
+    
+    // أسوأ 3 تقييمات (جوانب التحسين: 3 و 4 و 5)
+    const improvementPoints = evaluations.filter(e => e.ratingNum >= 3).slice(0, 3);
+    
+    // إنشاء HTML للتقرير
+    const reportHTML = `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير زيارة إشرافية - ${visit.teacher}</title>
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        body {
+            font-family: 'Tajawal', 'Arial', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #0f172a;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #0f172a;
+            font-size: 28px;
+            margin: 10px 0;
+            font-weight: 800;
+        }
+        
+        .header h2 {
+            color: #64748b;
+            font-size: 18px;
+            margin: 5px 0;
+            font-weight: 600;
+        }
+        
+        .info-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-right: 5px solid #0f172a;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .info-label {
+            font-weight: 700;
+            color: #0f172a;
+            min-width: 120px;
+        }
+        
+        .info-value {
+            color: #475569;
+            flex: 1;
+        }
+        
+        .greeting {
+            background: #f0fdf4;
+            border-right: 5px solid #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 2;
+            color: #166534;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            background: #0f172a;
+            color: white;
+            padding: 12px 20px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .excellence-section .section-title {
+            background: #10b981;
+        }
+        
+        .improvement-section .section-title {
+            background: #f59e0b;
+        }
+        
+        .recommendations-section .section-title {
+            background: #3b82f6;
+        }
+        
+        .point {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .point-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .point-criterion {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .point-rating {
+            font-size: 16px;
+            font-weight: 700;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .excellence-section .point-rating {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .improvement-section .point-rating {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .point-description {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.9;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .recommendation-item {
+            background: #eff6ff;
+            border-right: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .recommendation-title {
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .recommendation-text {
+            color: #475569;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .notes-section {
+            background: #fefce8;
+            border: 2px solid #fde047;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .notes-title {
+            font-weight: 700;
+            color: #854d0e;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .notes-text {
+            color: #713f12;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding: 0 50px;
+        }
+        
+        .signature-box {
+            text-align: center;
+        }
+        
+        .signature-label {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .signature-line {
+            border-top: 2px solid #0f172a;
+            width: 200px;
+            margin: 0 auto;
+        }
+        
+        .print-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .print-button:hover {
+            background: #059669;
+        }
+        
+        .close-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .close-button:hover {
+            background: #dc2626;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">🖨️ طباعة التقرير</button>
+    <button class="close-button no-print" onclick="window.close()">✖️ إغلاق</button>
+
+    <div class="header">
+        <h2>سلطنة عُمان</h2>
+        <h2>وزارة التربية والتعليم</h2>
+        <h1>تقرير زيارة إشرافية</h1>
+    </div>
+    
+    <div class="info-section">
+        <div class="info-row">
+            <span class="info-label">اسم المعلم:</span>
+            <span class="info-value">${visit.teacher}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">التاريخ:</span>
+            <span class="info-value">${new Date(visit.date).toLocaleDateString('ar-SA', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">الوقت:</span>
+            <span class="info-value">${new Date(visit.date).toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit'})}</span>
+        </div>
+        ${visit.class ? `<div class="info-row">
+            <span class="info-label">الفصل:</span>
+            <span class="info-value">${visit.class}</span>
+        </div>` : ''}
+        ${visit.subject ? `<div class="info-row">
+            <span class="info-label">المادة:</span>
+            <span class="info-value">${visit.subject}</span>
+        </div>` : ''}
+    </div>
+    
+    <div class="greeting">
+        أتوجه بالشكر والتقدير للأستاذ/ة <strong>${visit.teacher}</strong> على الجهود المبذولة في تقديم هذه الحصة، وعلى حرصه/ها المستمر على تطوير العملية التعليمية وتحقيق أفضل النتائج للطلبة. وفيما يلي أبرز الملاحظات من الزيارة الصفية:
+    </div>
+    
+    ${excellencePoints.length > 0 ? `
+    <div class="section excellence-section">
+        <div class="section-title">✨ جوانب الإجادة</div>
+        ${excellencePoints.map((point, index) => `
+            <div class="point">
+                <div class="point-header">
+                    <span class="point-criterion">${index + 1}. ${point.criterion}</span>
+                    <span class="point-rating">${point.rating}</span>
+                </div>
+                <div class="point-description">
+                    ${point.description}
+                </div>
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${improvementPoints.length > 0 ? `
+    <div class="section improvement-section">
+        <div class="section-title">📈 أولويات التطوير</div>
+        ${improvementPoints.map((point, index) => `
+            <div class="point">
+                <div class="point-header">
+                    <span class="point-criterion">${index + 1}. ${point.criterion}</span>
+                    <span class="point-rating">${point.rating}</span>
+                </div>
+                <div class="point-description">
+                    ${point.description}
+                </div>
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${improvementPoints.length > 0 ? `
+    <div class="section recommendations-section">
+        <div class="section-title">💡 التوصيات والمقترحات</div>
+        ${improvementPoints.map((point, index) => `
+            <div class="recommendation-item">
+                <div class="recommendation-title">${index + 1}. ${point.criterion}</div>
+                <div class="recommendation-text">${point.recommendation}</div>
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${visit.notes ? `
+    <div class="notes-section">
+        <div class="notes-title">📝 ملاحظات إضافية من المدير</div>
+        <div class="notes-text">${visit.notes}</div>
+    </div>
+    ` : ''}
+    
+    <div class="signature-section">
+        <div class="signature-box">
+            <div class="signature-label">مدير المدرسة</div>
+            <div class="signature-line"></div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-label">المعلم/ة</div>
+            <div class="signature-line"></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>تم إنشاء هذا التقرير بواسطة منصة القائد</p>
+        <p>التاريخ: ${new Date().toLocaleDateString('ar-SA')}</p>
+    </div>
+</body>
+</html>
+    `;
+    
+    // فتح التقرير في نافذة جديدة
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(reportHTML);
+    printWindow.document.close();
+}
