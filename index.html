@@ -1,47 +1,34 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة القائد ⚡</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 0; overflow-x: hidden; }
-        #root:empty::before {
-            content: "جاري تشغيل منصة القائد... ⚡";
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #10b981;
-            background: #f8fafc;
-        }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
-    <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.3.1",
-    "react-dom": "https://esm.sh/react-dom@18.3.1",
-    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
-    "react-router-dom": "https://esm.sh/react-router-dom@6.26.2",
-    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+<meta charset="UTF-8">
+<title>منصة القائد - إدارة الحصص</title>
+<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
-<script type="module" src="/index.tsx"></script>
+<div id="app">
+<header>
+<h1>منصة القائد الذكية</h1>
+<p>إدارة ومتابعة حصص المعلمين</p>
+</header>
+
+<section class="controls">
+<input type="file" id="fileInput" accept=".csv">
+<button onclick="loadSchedule()">استيراد جدول الحصص</button>
+<button onclick="simulateNow()">محاكاة الحصة الحالية</button>
+</section>
+
+<section id="current" class="card">
+<h2>الحصة الحالية</h2>
+<div id="currentLesson">—</div>
+</section>
+
+<section class="card">
+<h2>جدول اليوم</h2>
+<table id="scheduleTable"></table>
+</section>
+</div>
+
+<script src="js/app.js"></script>
 </body>
 </html>
