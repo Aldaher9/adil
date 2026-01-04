@@ -2,16 +2,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { VisitReport, SupervisionItem } from "../types.ts";
 
-// نستخدم قيمة افتراضية أو نطلبها من المستخدم لاحقاً
-const API_KEY = ""; 
-
 export const generateAIReport = async (
   report: Partial<VisitReport>,
   formItems: SupervisionItem[],
   teacherSubject: string
 ) => {
+  // استخدام المفتاح من المتغيرات المحقونة تلقائياً
+  const API_KEY = process.env.API_KEY || "";
+
   if (!API_KEY) {
-    console.warn("AI API Key is missing");
+    console.error("Gemini API Key is missing. Please ensure it's configured.");
     return null;
   }
 
@@ -26,7 +26,15 @@ export const generateAIReport = async (
     })
     .join("\n");
 
-  const prompt = `أنت خبير تربوي وموجه فني. قم بتحليل بيانات الزيارة الصفية التالية لإنشاء تقرير مهني للمادة ${teacherSubject} وعنوان الدرس ${report.lessonTitle}. البيانات: ${ratingsContext}`;
+  const prompt = `أنت خبير تربوي وموجه فني. قم بتحليل بيانات الزيارة الصفية التالية لإنشاء تقرير مهني للمادة ${teacherSubject} وعنوان الدرس ${report.lessonTitle}.
+  البيانات الحالية للتقييم:
+  ${ratingsContext}
+  
+  المطلوب:
+  1. ذكر أفضل 3 جوانب إجادة.
+  2. ذكر أسوأ 4 جوانب تحتاج لتحسين (إذا كانت الدرجة أقل من متميز).
+  3. تقديم توصيات عملية مرتبطة بعنوان الدرس.
+  4. كتابة خلاصة عامة.`;
 
   try {
     const response = await ai.models.generateContent({
