@@ -45,9 +45,21 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // Initialize Gemini
-// Note: In a real environment, allow user to set key or use process.env.API_KEY if available. 
-// For this demo, we assume process.env.API_KEY is available as per instructions.
-const genAI = new GoogleGenAI({ apiKey: process.env.API_KEY || "YOUR_API_KEY_HERE" });
+// Fix: Handle process.env safely for browser environments
+const getApiKey = () => {
+  // In a real build environment, process.env is replaced by the bundler.
+  // In a browser script tag environment, accessing process might throw an error.
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
+    }
+  } catch (e) {
+    // Ignore error if process is not defined
+  }
+  return "YOUR_API_KEY_HERE"; // Replace this with your actual Gemini API Key if testing locally without env vars
+};
+
+const genAI = new GoogleGenAI({ apiKey: getApiKey() });
 
 // --- Types & Interfaces ---
 
@@ -208,7 +220,7 @@ const Dashboard: React.FC = () => {
         window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     } catch (error) {
         console.error("AI Error", error);
-        alert("حدث خطأ أثناء توليد الرسالة، يرجى المحاولة يدوياً");
+        alert("حدث خطأ أثناء توليد الرسالة. يرجى التأكد من مفتاح API أو المحاولة يدوياً.");
     } finally {
         setLoadingAI(null);
     }
