@@ -1,5 +1,5 @@
 
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -14,18 +14,23 @@ const firebaseConfig = {
   measurementId: "G-5EBTV0MV83"
 };
 
-const app = initializeApp(firebaseConfig);
+// التأكد من تهيئة التطبيق مرة واحدة فقط وتجنب الأخطاء المتكررة
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
+// تخصيص لغة تسجيل الدخول للعربية
+auth.languageCode = 'ar';
+
 export const loginWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
-  } catch (error) {
-    console.error("Firebase Login Error:", error);
+  } catch (error: any) {
+    console.error("خطأ تسجيل الدخول:", error);
     throw error;
   }
 };

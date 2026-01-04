@@ -6,20 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>منصة القائد ⚡</title>
     
-    <!-- منع انهيار المكتبات التي تبحث عن متغيرات البيئة -->
     <script>
+      // تأمين متغيرات البيئة لمنع انهيار المكتبات
       window.process = { env: { API_KEY: "" } };
+      
+      // معالج أخطاء متقدم يظهر الأخطاء المخفية في الكونسول
       window.onerror = function(msg, url, lineNo, columnNo, error) {
+        console.error("خطأ تقني:", msg, "في:", url, "سطر:", lineNo);
         const errorDiv = document.getElementById('error-display');
         if (errorDiv) {
           errorDiv.style.display = 'block';
-          errorDiv.innerHTML += `<p class="p-2 border-b border-rose-100">خطأ: ${msg} <br><small>${url}:${lineNo}</small></p>`;
+          errorDiv.innerHTML += `<div class="p-2 border-b border-rose-200 text-xs font-mono">
+            <strong>خطأ:</strong> ${msg}<br>
+            <small>${url}:${lineNo}</small>
+          </div>`;
         }
         return false;
       };
     </script>
 
-    <!-- تحميل Tailwind و Babel للترجمة الفورية -->
+    <!-- تحميل الأدوات الأساسية -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
@@ -27,7 +33,10 @@
     
     <style>
       body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; }
-      #error-display { display: none; position: fixed; top: 0; left: 0; right: 0; background: #fff1f2; color: #be123c; z-index: 9999; padding: 20px; font-family: monospace; border-bottom: 4px solid #be123c; max-height: 50vh; overflow: auto; }
+      #error-display { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #fff1f2; color: #be123c; z-index: 9999; padding: 15px; border-top: 4px solid #be123c; max-height: 40vh; overflow: auto; }
+      .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 
     <script type="importmap">
@@ -52,21 +61,22 @@
   <link rel="stylesheet" href="/index.css">
 </head>
   <body>
-    <!-- هذا الجزء سيظهر فقط في حال وجود خطأ برمج يمنع التشغيل -->
+    <!-- شاشة إظهار الأخطاء في حال حدوثها -->
     <div id="error-display">
-      <h2 style="font-weight: bold; margin-bottom: 10px;">حدث خطأ أثناء تحميل المنصة:</h2>
+      <h3 class="font-bold mb-2">تنبيه المطور (حدث خطأ في التشغيل):</h3>
     </div>
 
     <div id="root">
-      <div class="flex items-center justify-center h-screen">
+      <div class="flex items-center justify-center h-screen bg-slate-50">
         <div class="text-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p class="text-slate-500 font-bold">جاري تشغيل محرك المنصة...</p>
+          <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600 mx-auto mb-6"></div>
+          <h2 class="text-2xl font-black text-slate-800 mb-2">منصة القائد</h2>
+          <p class="text-slate-500 font-bold animate-pulse">جاري تشغيل محرك المنصة الذكي...</p>
         </div>
       </div>
     </div>
 
-    <!-- تشغيل الكود باستخدام Babel مع تحديد نوع الملف يدوياً لضمان الترجمة -->
+    <!-- تشغيل الكود الرئيسي -->
     <script type="text/babel" data-type="module" data-presets="react,typescript">
       import "./index.tsx";
     </script>
