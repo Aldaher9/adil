@@ -2,40 +2,34 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>تقرير الزيارة الإشرافية</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة القائد ⚡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
 </head>
 <body>
-
-<h1>تقرير الزيارة الإشرافية</h1>
-
-<div id="visitReport">
-
-  <div class="report-card">
-    <h3>بيانات الحصة</h3>
-    <p id="lessonInfo"></p>
-  </div>
-
-  <div id="evaluationCards"></div>
-
-  <div class="report-card success">
-    <h3>جوانب الإجادة</h3>
-    <ul id="strengthsList"></ul>
-  </div>
-
-  <div class="report-card warning">
-    <h3>جوانب التحسين</h3>
-    <ul id="improvementsList"></ul>
-  </div>
-
-  <div class="report-card info">
-    <h3>التوصيات</h3>
-    <p id="recommendationsText"></p>
-  </div>
-
-</div>
-
-<script src="script.js"></script>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
