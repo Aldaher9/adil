@@ -1,34 +1,1188 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>منصة القائد - إدارة الحصص</title>
-<link rel="stylesheet" href="css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منصة القائد - نظام المتابعة الذكية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #0d2b4d;
+            --accent: #e67e22;
+            --accent-light: #f39c12;
+            --success: #25d366;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #e1e8ed;
+        }
+        
+        * {
+            font-family: 'Tajawal', sans-serif;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 15px;
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        /* تحسين الهيدر */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        
+        .header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* تحسين زر الإعدادات */
+        .settings-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border: none;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 26px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .settings-btn:hover {
+            transform: translateY(-3px) rotate(30deg);
+            box-shadow: 0 10px 25px rgba(230, 126, 34, 0.6);
+        }
+        
+        /* تحسين شريط الحالة */
+        .status-bar {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border-right: 8px solid var(--accent);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .status-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .period-display {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .time-display {
+            font-size: 16px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .time-display::before {
+            content: '⏱️';
+            font-size: 18px;
+        }
+        
+        /* تحسين شريط التقدم */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--accent));
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        /* تحسين النافذة المنبثقة */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 25px;
+            width: 95%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: var(--danger);
+        }
+        
+        /* تحسين الأزرار */
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-upload {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-sim {
+            background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+            color: white;
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+        }
+        
+        .btn-import {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+        
+        .btn-reset {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        
+        .btn-close {
+            background: var(--border);
+            color: var(--text);
+            margin-top: 10px;
+        }
+        
+        /* تحسين الجدول */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+        
+        th {
+            padding: 20px 15px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            text-align: center;
+            border: none;
+            position: relative;
+        }
+        
+        th:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        tbody tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+            transform: scale(1.002);
+        }
+        
+        td {
+            padding: 20px 15px;
+            text-align: center;
+            font-size: 15px;
+            border: none;
+        }
+        
+        .class-badge {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            min-width: 80px;
+        }
+        
+        .teacher-name {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 16px;
+        }
+        
+        .wa-link {
+            background: linear-gradient(135deg, var(--success) 0%, #1da851 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+        
+        .wa-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+        }
+        
+        .no-data {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 18px;
+        }
+        
+        .no-data i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            opacity: 0.5;
+        }
+        
+        /* حقل رفع الملفات */
+        .file-upload {
+            background: var(--bg);
+            border: 2px dashed var(--border);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--info);
+            background: rgba(52, 152, 219, 0.05);
+        }
+        
+        .file-upload label {
+            display: block;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .file-upload input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+        }
+        
+        /* الإشعارات */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 10001;
+            opacity: 0;
+            transition: all 0.5s ease;
+            border-right: 6px solid var(--success);
+            max-width: 90%;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .notification.error {
+            border-right-color: var(--danger);
+        }
+        
+        .notification.warning {
+            border-right-color: var(--warning);
+        }
+        
+        /* أنيميشن */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* التجاوب مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                margin: 5% auto;
+                padding: 20px;
+                width: 98%;
+            }
+            
+            th, td {
+                padding: 15px 10px;
+                font-size: 14px;
+            }
+            
+            .wa-link {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+        
+        /* تحسين شريط التحميل */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10002;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .loading.show {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* تحسين شريط البحث والترتيب */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .search-box {
+            flex: 1;
+            max-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--info);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+        
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .sort-options select {
+            padding: 12px 20px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            font-size: 15px;
+            background: white;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .sort-options select:focus {
+            border-color: var(--info);
+            outline: none;
+        }
+    </style>
 </head>
 <body>
-<div id="app">
-<header>
-<h1>منصة القائد الذكية</h1>
-<p>إدارة ومتابعة حصص المعلمين</p>
-</header>
 
-<section class="controls">
-<input type="file" id="fileInput" accept=".csv">
-<button onclick="loadSchedule()">استيراد جدول الحصص</button>
-<button onclick="simulateNow()">محاكاة الحصة الحالية</button>
-</section>
-
-<section id="current" class="card">
-<h2>الحصة الحالية</h2>
-<div id="currentLesson">—</div>
-</section>
-
-<section class="card">
-<h2>جدول اليوم</h2>
-<table id="scheduleTable"></table>
-</section>
+<!-- شريط التحميل -->
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div style="color: white; font-size: 18px; font-weight: 600;">جاري التحميل...</div>
 </div>
 
-<script src="js/app.js"></script>
+<!-- الإشعارات -->
+<div class="notification" id="notification"></div>
+
+<!-- الهيدر المحسن -->
+<div class="header">
+    <h2>🏫 منصة القائد - نظام المتابعة الذكية</h2>
+    <div class="header-info">
+        <div class="badge" id="teacherCount">0 معلم</div>
+        <div class="badge" id="classCount">0 صف</div>
+        <div class="badge" id="activePeriod">حصة نشطة: 0</div>
+    </div>
+    <button class="settings-btn pulse" onclick="openSettings()">⚙️</button>
+</div>
+
+<!-- شريط الحالة المحسن -->
+<div class="status-bar">
+    <div class="status-info">
+        <div id="info" class="time-display">--</div>
+        <div id="txtPeriod" class="period-display">بانتظار تحميل البيانات...</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="periodProgress"></div>
+        </div>
+    </div>
+    <div id="lastUpdate" style="color: var(--text-light); font-size: 14px;">
+        آخر تحديث: --
+    </div>
+</div>
+
+<!-- عناصر التحكم في الجدول -->
+<div class="table-controls" id="tableControls" style="display: none;">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="ابحث عن معلم أو صف..." onkeyup="filterTable()">
+    </div>
+    <div class="sort-options">
+        <select id="sortSelect" onchange="sortTable()">
+            <option value="class">ترتيب حسب الصف</option>
+            <option value="teacher">ترتيب حسب المعلم</option>
+            <option value="time">ترتيب حسب الوقت</option>
+        </select>
+    </div>
+</div>
+
+<!-- الجدول المحسن -->
+<div class="table-container">
+    <table id="mainTable">
+        <thead>
+            <tr>
+                <th>الصف</th>
+                <th>المادة</th>
+                <th>المعلم</th>
+                <th>التواصل</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td colspan="4" class="no-data">
+                    <i>📋</i>
+                    اضغط على زر ⚙️ لرفع ملف الجدول المدرسي (XML)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- النافذة المنبثقة المحسنة -->
+<div class="modal-overlay" id="myModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">⚙️ إعدادات النظام</h3>
+            <button class="close-modal" onclick="closeSettings()">✖</button>
+        </div>
+        
+        <div class="file-upload" onclick="document.getElementById('xmlFile').click()">
+            <label>📁 رفع ملف الجدول المدرسي (XML)</label>
+            <p style="color: var(--text-light); font-size: 14px; margin: 10px 0;">
+                يرجى اختيار ملف XML المستخرج من نظام الإدارة المدرسية
+            </p>
+            <input type="file" id="xmlFile" accept=".xml" style="display: none" onchange="handleXML(this)">
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-sim" onclick="doSim()">
+                🎲 تجربة محاكاة
+                <span style="font-size: 12px; opacity: 0.8;">(اختبار النظام)</span>
+            </button>
+            
+            <button class="btn btn-export" onclick="doExport()">
+                📊 تصدير البيانات
+                <span style="font-size: 12px; opacity: 0.8;">(CSV)</span>
+            </button>
+            
+            <button class="btn btn-import" onclick="document.getElementById('csvFile').click()">
+                📥 استيراد أرقام
+                <span style="font-size: 12px; opacity: 0.8;">(CSV)</span>
+            </button>
+            
+            <button class="btn btn-reset" onclick="doReset()">
+                🗑️ مسح شامل
+                <span style="font-size: 12px; opacity: 0.8;">(إعادة ضبط)</span>
+            </button>
+        </div>
+        
+        <div style="background: var(--bg); padding: 15px; border-radius: 10px; margin: 20px 0;">
+            <h4 style="margin-bottom: 10px; color: var(--primary);">📊 إحصائيات النظام</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                <div>عدد المعلمين: <span id="statsTeachers">0</span></div>
+                <div>عدد الصفوف: <span id="statsClasses">0</span></div>
+                <div>عدد الحصص: <span id="statsLessons">0</span></div>
+                <div>عدد المواد: <span id="statsSubjects">0</span></div>
+            </div>
+        </div>
+        
+        <button class="btn btn-close" onclick="closeSettings()">
+            إغلاق الإعدادات ✖
+        </button>
+        
+        <input type="file" id="csvFile" accept=".csv" style="display: none" onchange="handleCSV(this)">
+    </div>
+</div>
+
+<script>
+// البيانات الأساسية
+let phones = {};
+let data = {
+    teachers: {},
+    classes: {},
+    subjects: {},
+    lessons: [],
+    periods: []
+};
+let isSim = false;
+let sDay, sTime;
+let currentSort = 'class';
+let searchQuery = '';
+
+// دالة العرض التلقائي للتحديثات
+function updateStatistics() {
+    const teacherCount = Object.keys(data.teachers).length;
+    const classCount = Object.keys(data.classes).length;
+    const subjectCount = Object.keys(data.subjects).length;
+    const lessonCount = data.lessons.length;
+    
+    document.getElementById('teacherCount').textContent = `${teacherCount} معلم`;
+    document.getElementById('classCount').textContent = `${classCount} صف`;
+    document.getElementById('statsTeachers').textContent = teacherCount;
+    document.getElementById('statsClasses').textContent = classCount;
+    document.getElementById('statsLessons').textContent = lessonCount;
+    document.getElementById('statsSubjects').textContent = subjectCount;
+}
+
+// إظهار الإشعارات
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// إظهار/إخفاء شاشة التحميل
+function showLoading(show) {
+    document.getElementById('loading').style.display = show ? 'flex' : 'none';
+}
+
+// فتح وإغلاق الإعدادات
+function openSettings() {
+    document.getElementById('myModal').style.display = 'block';
+    updateStatistics();
+}
+
+function closeSettings() {
+    document.getElementById('myModal').style.display = 'none';
+}
+
+// تحميل البيانات المحفوظة
+window.onload = function() {
+    const st = localStorage.getItem('schoolData');
+    const ph = localStorage.getItem('teacherPhones');
+    
+    if (ph) {
+        phones = JSON.parse(ph);
+        showNotification('تم تحميل أرقام المعلمين المحفوظة', 'success');
+    }
+    
+    if (st) {
+        data = JSON.parse(st);
+        updateStatistics();
+        refresh();
+        showNotification('تم تحميل الجدول المدرسي المحفوظ', 'success');
+        setInterval(refresh, 60000); // تحديث كل دقيقة
+    }
+    
+    document.getElementById('lastUpdate').textContent = `آخر تحديث: ${new Date().toLocaleTimeString('ar-SA')}`;
+};
+
+// معالجة ملف XML
+function handleXML(input) {
+    if (!input.files[0]) return;
+    
+    showLoading(true);
+    const reader = new FileReader();
+    reader.readAsText(input.files[0], "windows-1256");
+    
+    reader.onload = function(e) {
+        try {
+            const xml = new DOMParser().parseFromString(e.target.result, "text/xml");
+            
+            // تفريغ البيانات القديمة
+            data.teachers = {};
+            data.classes = {};
+            data.subjects = {};
+            data.periods = [];
+            data.lessons = [];
+            
+            // تحميل المعلمين
+            Array.from(xml.getElementsByTagName('teacher')).forEach(t => {
+                data.teachers[t.getAttribute('id')] = t.getAttribute('name');
+            });
+            
+            // تحميل الصفوف
+            Array.from(xml.getElementsByTagName('class')).forEach(c => {
+                data.classes[c.getAttribute('id')] = c.getAttribute('short');
+            });
+            
+            // تحميل المواد
+            Array.from(xml.getElementsByTagName('subject')).forEach(s => {
+                data.subjects[s.getAttribute('id')] = s.getAttribute('name');
+            });
+            
+            // تحميل الحصص
+            Array.from(xml.getElementsByTagName('period')).forEach(p => {
+                data.periods.push({
+                    id: p.getAttribute('period'),
+                    s: p.getAttribute('starttime'),
+                    e: p.getAttribute('endtime')
+                });
+            });
+            
+            // تحميل الجدول
+            data.lessons = Array.from(xml.getElementsByTagName('TimeTableSchedule')).map(l => ({
+                d: l.getAttribute('DayID'),
+                p: l.getAttribute('Period'),
+                c: l.getAttribute('ClassID'),
+                t: l.getAttribute('TeacherID'),
+                s: l.getAttribute('SubjectGradeID')
+            }));
+            
+            // حفظ في التخزين المحلي
+            localStorage.setItem('schoolData', JSON.stringify(data));
+            
+            showLoading(false);
+            closeSettings();
+            refresh();
+            showNotification('تم تحميل الجدول المدرسي بنجاح!', 'success');
+            
+            document.getElementById('tableControls').style.display = 'flex';
+            
+        } catch (error) {
+            showLoading(false);
+            showNotification('خطأ في قراءة الملف. تأكد من صيغة XML', 'error');
+            console.error(error);
+        }
+    };
+    
+    reader.onerror = function() {
+        showLoading(false);
+        showNotification('خطأ في قراءة الملف', 'error');
+    };
+}
+
+// تصدير البيانات
+function doExport() {
+    try {
+        let csv = "\ufeffاسم المعلم,رقم الهاتف,الصف,المادة\n";
+        
+        // تجميع بيانات كل معلم
+        const teacherData = {};
+        data.lessons.forEach(lesson => {
+            const teacherName = data.teachers[lesson.t];
+            const className = data.classes[lesson.c] || 'غير معروف';
+            const subjectName = data.subjects[lesson.s] || 'غير معروف';
+            
+            if (!teacherData[teacherName]) {
+                teacherData[teacherName] = {
+                    phone: phones[teacherName] || '',
+                    classes: new Set(),
+                    subjects: new Set()
+                };
+            }
+            
+            teacherData[teacherName].classes.add(className);
+            teacherData[teacherName].subjects.add(subjectName);
+        });
+        
+        // إنشاء CSV
+        for (let teacherName in teacherData) {
+            const phone = teacherData[teacherName].phone;
+            const classes = Array.from(teacherData[teacherName].classes).join('; ');
+            const subjects = Array.from(teacherData[teacherName].subjects).join('; ');
+            csv += `"${teacherName}","${phone}","${classes}","${subjects}"\n`;
+        }
+        
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `school_data_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        
+        showNotification('تم تصدير البيانات بنجاح', 'success');
+    } catch (error) {
+        showNotification('خطأ في تصدير البيانات', 'error');
+        console.error(error);
+    }
+}
+
+// استيراد CSV
+function handleCSV(input) {
+    if (!input.files[0]) return;
+    
+    showLoading(true);
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const rows = e.target.result.split('\n');
+            let imported = 0;
+            
+            rows.forEach((row, i) => {
+                if (i === 0) return; // تخطي العناوين
+                
+                const cells = row.split(',').map(x => x.replace(/"/g, '').trim());
+                if (cells[0] && cells[1]) {
+                    phones[cells[0]] = cells[1];
+                    imported++;
+                }
+            });
+            
+            localStorage.setItem('teacherPhones', JSON.stringify(phones));
+            showLoading(false);
+            closeSettings();
+            refresh();
+            showNotification(`تم استيراد ${imported} رقم هاتف`, 'success');
+            
+        } catch (error) {
+            showLoading(false);
+            showNotification('خطأ في قراءة ملف CSV', 'error');
+            console.error(error);
+        }
+    };
+    
+    reader.readAsText(input.files[0], "UTF-8");
+}
+
+// محاكاة النظام
+function doSim() {
+    isSim = true;
+    sDay = Math.floor(Math.random() * 5) + 1; // 1-5 أيام الأسبوع
+    const randomPeriod = data.periods[Math.floor(Math.random() * data.periods.length)];
+    sTime = randomPeriod.s;
+    
+    showNotification(`المحاكاة: اليوم ${sDay} - الوقت ${sTime}`, 'warning');
+    closeSettings();
+    refresh();
+}
+
+// إعادة الضبط
+function doReset() {
+    if (confirm("⚠️ هل أنت متأكد من مسح جميع البيانات؟\n\nهذا الإجراء لا يمكن التراجع عنه.")) {
+        showLoading(true);
+        setTimeout(() => {
+            localStorage.clear();
+            location.reload();
+        }, 1000);
+    }
+}
+
+// البحث في الجدول
+function filterTable() {
+    searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    refresh();
+}
+
+// ترتيب الجدول
+function sortTable() {
+    currentSort = document.getElementById('sortSelect').value;
+    refresh();
+}
+
+// التحديث الرئيسي
+function refresh() {
+    const now = new Date();
+    const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    
+    let d = isSim ? sDay : (now.getDay() === 0 ? 1 : now.getDay() + 1);
+    let t = isSim ? sTime : now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+    
+    const dayName = days[isSim ? (sDay == 1 ? 0 : sDay - 1) : now.getDay()];
+    document.getElementById('info').innerHTML = `<strong>${dayName}</strong> | ${t}`;
+    
+    const p = data.periods.find(p => {
+        const cur = toM(t);
+        const s = toM(p.s);
+        const e = toM(p.e);
+        return cur >= s && cur <= e;
+    });
+    
+    const tbody = document.getElementById('tableBody');
+    document.getElementById('lastUpdate').textContent = `آخر تحديث: ${now.toLocaleTimeString('ar-SA')}`;
+    
+    if (p && data.lessons.length > 0) {
+        document.getElementById('txtPeriod').innerText = `الحصة: ${p.id} | ${p.s} - ${p.e}`;
+        document.getElementById('activePeriod').textContent = `حصة نشطة: ${p.id}`;
+        
+        // حساب تقدم الحصة
+        const curTime = toM(t);
+        const startTime = toM(p.s);
+        const endTime = toM(p.e);
+        const totalDuration = endTime - startTime;
+        const elapsed = curTime - startTime;
+        const progress = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+        document.getElementById('periodProgress').style.width = `${progress}%`;
+        
+        // تصفية الدروس للحصة الحالية
+        let currentLessons = data.lessons.filter(l => l.d == d && l.p == p.id);
+        
+        // تطبيق البحث
+        if (searchQuery) {
+            currentLessons = currentLessons.filter(l => {
+                const teacherName = data.teachers[l.t] || '';
+                const className = data.classes[l.c] || '';
+                const subjectName = data.subjects[l.s] || '';
+                
+                return teacherName.toLowerCase().includes(searchQuery) ||
+                       className.toLowerCase().includes(searchQuery) ||
+                       subjectName.toLowerCase().includes(searchQuery);
+            });
+        }
+        
+        // تطبيق الترتيب
+        currentLessons.sort((a, b) => {
+            switch (currentSort) {
+                case 'teacher':
+                    return (data.teachers[a.t] || '').localeCompare(data.teachers[b.t] || '');
+                case 'time':
+                    return a.p - b.p;
+                case 'class':
+                default:
+                    return (data.classes[a.c] || '').localeCompare(data.classes[b.c] || '');
+            }
+        });
+        
+        if (currentLessons.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="no-data">
+                        <i>🔍</i>
+                        لا توجد حصص مطابقة للبحث
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = currentLessons.map(l => {
+                const teacherName = data.teachers[l.t] || 'غير معروف';
+                const className = data.classes[l.c] || 'غير معروف';
+                const subjectName = data.subjects[l.s] || 'غير معروف';
+                const phone = phones[teacherName] || '';
+                
+                const msg = `الأستاذ/ ${teacherName}\nنذكركم بحصتكم:\nالحصة: ${p.id}\nالصف: ${className}\nالمادة: ${subjectName}\nالوقت: ${p.s} - ${p.e}`;
+                
+                return `
+                <tr>
+                    <td><span class="class-badge">${className}</span></td>
+                    <td style="color: var(--primary); font-weight: 600;">${subjectName}</td>
+                    <td class="teacher-name">${teacherName}</td>
+                    <td>
+                        ${phone ? 
+                            `<a href="https://wa.me/${phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-link">
+                                💬 واتساب
+                            </a>` : 
+                            '<span style="color: var(--text-light);">---</span>'
+                        }
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+        
+    } else {
+        document.getElementById('txtPeriod').innerText = "خارج أوقات الدوام";
+        document.getElementById('activePeriod').textContent = "لا توجد حصة نشطة";
+        document.getElementById('periodProgress').style.width = "0%";
+        
+        if (data.lessons.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="no-data">
+                        <i>📋</i>
+                        اضغط على زر ⚙️ لرفع ملف الجدول المدرسي (XML)
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="no-data">
+                        <i>⏰</i>
+                        لا توجد حصص نشطة في الوقت الحالي
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    
+    updateStatistics();
+}
+
+// تحويل الوقت إلى دقائق
+function toM(time) {
+    const [h, m] = time.split(':').map(Number);
+    return (h || 0) * 60 + (m || 0);
+}
+
+// منع النافذة المنبثقة من الإغلاق عند النقر خارجها
+document.getElementById('myModal').onclick = function(e) {
+    if (e.target === this) {
+        closeSettings();
+    }
+};
+
+// إضافة اختصارات لوحة المفاتيح
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSettings();
+    if (e.key === 'F1') {
+        e.preventDefault();
+        openSettings();
+    }
+    if (e.key === 'F5' && e.ctrlKey) {
+        e.preventDefault();
+        refresh();
+        showNotification('تم تحديث البيانات', 'info');
+    }
+});
+</script>
 </body>
 </html>
