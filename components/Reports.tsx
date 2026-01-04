@@ -1,51 +1,70 @@
 
 import React from 'react';
-import { Visit, Teacher } from '../types';
+import { Visit, Teacher } from '../types.ts';
 
 interface Props {
   visits: Visit[];
   teachers: Teacher[];
 }
 
+// Fix: Add default export and full component implementation for Reports
 const Reports: React.FC<Props> = ({ visits, teachers }) => {
+  const ratingDistribution = visits.reduce((acc, v) => {
+    Object.values(v.ratings).forEach(r => {
+      acc[r] = (acc[r] || 0) + 1;
+    });
+    return acc;
+  }, {} as Record<string, number>);
+
+  const stats = [
+    { label: 'إجمالي التقييمات', value: Object.values(ratingDistribution).reduce((a, b) => a + b, 0), color: 'bg-indigo-500' },
+    { label: 'متميز', value: ratingDistribution['متميز (1)'] || 0, color: 'bg-emerald-500' },
+    { label: 'يحتاج تدخل', value: ratingDistribution['يحتاج إلى تدخل (5)'] || 0, color: 'bg-rose-500' },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-extrabold text-slate-900">التقارير التحليلية</h2>
-          <p className="text-slate-500">تحليل بيانات الأداء والزيارات على مستوى المدرسة.</p>
-        </div>
+    <div className="space-y-8 animate-in fade-in duration-500 text-right" dir="rtl">
+      <h2 className="text-3xl font-black text-slate-900">التقارير والإحصاء 📋</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {stats.map((s, i) => (
+          <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm text-center">
+             <div className="text-4xl font-black text-slate-900 mb-2">{s.value}</div>
+             <div className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center justify-center gap-2">
+               <span className={`w-2 h-2 rounded-full ${s.color}`}></span>
+               {s.label}
+             </div>
+          </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-          <div className="text-3xl mb-4">📈</div>
-          <h3 className="text-xl font-black text-slate-900">ملخص الزيارات</h3>
-          <p className="text-sm text-slate-500 mb-6">تقرير مفصل يوضح إحصائيات الزيارات لكل معلم.</p>
-          <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
-            تصدير إلى Excel
-          </button>
+      <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <h3 className="text-xl font-black mb-8">تحليل الأداء العام</h3>
+        <div className="space-y-6">
+          {Object.entries(ratingDistribution).map(([rating, count], idx) => {
+            const total = Object.values(ratingDistribution).reduce((a, b) => a + b, 0);
+            const percentage = total > 0 ? (count / total) * 100 : 0;
+            return (
+              <div key={idx} className="space-y-2">
+                <div className="flex justify-between text-xs font-black text-slate-600 uppercase">
+                  <span>{rating}</span>
+                  <span>{Math.round(percentage)}%</span>
+                </div>
+                <div className="h-4 bg-slate-50 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-emerald-500 transition-all duration-1000" 
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+            );
+          })}
+          {Object.keys(ratingDistribution).length === 0 && (
+            <div className="py-10 text-center text-slate-300 font-bold italic">
+              بانتظار تسجيل أولى الزيارات لعرض البيانات
+            </div>
+          )}
         </div>
-
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-          <div className="text-3xl mb-4">👥</div>
-          <h3 className="text-xl font-black text-slate-900">دليل المعلمين</h3>
-          <p className="text-sm text-slate-500 mb-6">قائمة بجميع بيانات التواصل والمواد الدراسية.</p>
-          <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
-             تصدير بصيغة PDF
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-emerald-900 text-white p-10 rounded-3xl overflow-hidden relative">
-        <div className="relative z-10">
-           <h3 className="text-2xl font-black mb-2">تقارير ذكية قريباً 🤖</h3>
-           <p className="text-emerald-200 max-w-md">
-             سيتم قريباً دمج الذكاء الاصطناعي لتحليل نقاط القوة والضعف تلقائياً وتقديم توصيات مخصصة لكل معلم بناءً على نتائج الزيارات.
-           </p>
-        </div>
-        <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-800 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 right-0 text-9xl opacity-10">🪄</div>
       </div>
     </div>
   );

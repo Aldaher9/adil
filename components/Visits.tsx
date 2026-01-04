@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Visit, Teacher } from '../types';
-import { CRITERIA_DATA } from '../constants';
+import { Visit, Teacher } from '../types.ts';
+import { CRITERIA_DATA } from '../constants.tsx';
 import { Link } from 'react-router-dom';
 
 interface Props {
@@ -10,160 +10,158 @@ interface Props {
   teachers: Teacher[];
 }
 
+// Fix: Add default export and full component implementation for Visits
 const Visits: React.FC<Props> = ({ visits, setVisits, teachers }) => {
   const [showAdd, setShowAdd] = useState(false);
-  const [newVisit, setNewVisit] = useState<Partial<Visit>>({
-    teacherId: '',
-    class: '',
-    subject: '',
-    notes: '',
-    ratings: {}
-  });
+  const [selectedTeacherId, setSelectedTeacherId] = useState('');
+  const [visitClass, setVisitClass] = useState('');
+  const [visitDate, setVisitDate] = useState(new Date().toISOString().split('T')[0]);
+  const [ratings, setRatings] = useState<Record<string, string>>({});
 
-  // Group criteria by their standard name
-  const criteriaGroups = Array.from(new Set(CRITERIA_DATA.map(c => c["المعيار / البند"])));
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const teacher = teachers.find(t => t.id === selectedTeacherId);
+    if (!teacher || !visitClass) return;
 
-  const saveVisit = () => {
-    if (!newVisit.teacherId) return;
-    const teacher = teachers.find(t => t.id === newVisit.teacherId);
-    const visit: Visit = {
+    const newVisit: Visit = {
       id: Date.now().toString(),
-      teacherId: newVisit.teacherId,
-      teacherName: teacher?.name || 'غير معروف',
-      date: new Date().toISOString(),
-      class: newVisit.class || '',
-      subject: newVisit.subject || '',
-      ratings: newVisit.ratings as Record<string, string>,
-      notes: newVisit.notes || ''
+      teacherId: teacher.id,
+      teacherName: teacher.name,
+      date: visitDate,
+      class: visitClass,
+      subject: teacher.subject || 'عام',
+      ratings: ratings,
+      notes: ''
     };
-    setVisits([...visits, visit]);
+
+    setVisits([...visits, newVisit]);
     setShowAdd(false);
-    setNewVisit({ teacherId: '', class: '', subject: '', notes: '', ratings: {} });
+    setRatings({});
+    setSelectedTeacherId('');
+  };
+
+  const updateRating = (criterion: string, rating: string) => {
+    setRatings(prev => ({ ...prev, [criterion]: rating }));
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-extrabold text-slate-900">الزيارات الإشرافية</h2>
-          <p className="text-slate-500">متابعة الأداء التعليمي وتوثيق جودة التدريس.</p>
-        </div>
+    <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-right" dir="rtl">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-black text-slate-900">الزيارات الإشرافية 👁️</h2>
         <button 
-          onClick={() => setShowAdd(true)}
-          className="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-bold shadow-lg flex items-center gap-2"
+          onClick={() => setShowAdd(!showAdd)}
+          className="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all"
         >
-          <span>👁️</span> تسجيل زيارة جديدة
+          {showAdd ? 'إلغاء' : 'تسجيل زيارة جديدة +'}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
-        {visits.length > 0 ? visits.slice().reverse().map(visit => (
-          <div key={visit.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-xl border border-slate-100">📝</div>
-              <div>
-                <h3 className="font-black text-slate-900">{visit.teacherName}</h3>
-                <div className="text-xs font-bold text-slate-400">
-                  {new Date(visit.date).toLocaleDateString('ar-SA')} • {visit.class} • {visit.subject}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 self-end md:self-center">
-              <Link 
-                to={`/print-visit/${visit.id}`} 
-                target="_blank"
-                className="bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl text-xs font-black hover:bg-emerald-100 transition-colors"
-              >
-                🖨️ تقرير مطبوع
-              </Link>
-              <button 
-                onClick={() => setVisits(visits.filter(v => v.id !== visit.id))}
-                className="bg-red-50 text-red-500 px-4 py-2 rounded-xl text-xs font-black hover:bg-red-100 transition-colors"
-              >
-                🗑️ حذف
-              </button>
-            </div>
-          </div>
-        )) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
-             <div className="text-5xl mb-4 grayscale">📄</div>
-             <p className="text-slate-400 font-bold">لا توجد زيارات مسجلة حتى الآن.</p>
-          </div>
-        )}
-      </div>
-
       {showAdd && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
-            <h3 className="text-2xl font-black text-slate-900 mb-6">استمارة الزيارة الإشرافية</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">المعلم</label>
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl animate-in zoom-in-95 duration-300">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-black text-slate-400 uppercase mr-2">المعلم</label>
                 <select 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold"
-                  value={newVisit.teacherId}
-                  onChange={e => setNewVisit({...newVisit, teacherId: e.target.value})}
+                  value={selectedTeacherId} 
+                  onChange={e => setSelectedTeacherId(e.target.value)}
+                  className="p-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-sm"
                 >
-                  <option value="">اختر المعلم...</option>
+                  <option value="">اختر معلماً...</option>
                   {teachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               </div>
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">الفصل</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-black text-slate-400 uppercase mr-2">الصف</label>
                 <input 
-                  type="text" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold"
-                  placeholder="3/1"
-                  value={newVisit.class}
-                  onChange={e => setNewVisit({...newVisit, class: e.target.value})}
+                  value={visitClass} 
+                  onChange={e => setVisitClass(e.target.value)}
+                  placeholder="مثال: 10/1"
+                  className="p-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-sm text-right"
                 />
               </div>
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">المادة</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-black text-slate-400 uppercase mr-2">التاريخ</label>
                 <input 
-                  type="text" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold"
-                  placeholder="الرياضيات"
-                  value={newVisit.subject}
-                  onChange={e => setNewVisit({...newVisit, subject: e.target.value})}
+                  type="date"
+                  value={visitDate} 
+                  onChange={e => setVisitDate(e.target.value)}
+                  className="p-4 bg-slate-50 rounded-2xl border-none outline-none font-bold text-sm text-right"
                 />
               </div>
             </div>
 
-            <div className="space-y-6">
-              <h4 className="text-sm font-black text-slate-800 border-b pb-2">تقييم المعايير (13 معيار)</h4>
-              {criteriaGroups.map((group, i) => (
-                <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                  <div className="text-sm font-black text-slate-900 mb-2">{group}</div>
-                  <div className="flex flex-wrap gap-2">
-                    {["متميز (1)", "جيد (2)", "ملائم (3)", "غير ملائم (4)", "يحتاج إلى تدخل (5)"].map(rating => {
-                      const isActive = newVisit.ratings?.[group] === rating;
-                      return (
-                        <button 
-                          key={rating}
-                          onClick={() => {
-                            const ratings = { ...(newVisit.ratings || {}), [group]: rating };
-                            setNewVisit({...newVisit, ratings});
-                          }}
-                          className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border ${isActive ? 'bg-emerald-500 text-white border-emerald-400' : 'bg-white text-slate-600 border-slate-200'}`}
+            <div className="space-y-4">
+              <h3 className="text-lg font-black text-slate-800">معايير التقييم</h3>
+              <div className="grid grid-cols-1 gap-4">
+                {CRITERIA_DATA.map((criterion, idx) => (
+                  <div key={idx} className="p-6 bg-slate-50 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="font-black text-slate-900">{criterion["المعيار / البند"]}</div>
+                      <div className="text-xs text-slate-400 font-medium">{criterion["وصف المعيار"]}</div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 justify-end">
+                      {["متميز (1)", "جيد (2)", "ملائم (3)", "غير ملائم (4)", "يحتاج إلى تدخل (5)"].map(r => (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => updateRating(criterion["المعيار / البند"], r)}
+                          className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${ratings[criterion["المعيار / البند"]] === r ? 'bg-emerald-500 text-white shadow-md' : 'bg-white text-slate-400 hover:bg-slate-100'}`}
                         >
-                          {rating}
+                          {r}
                         </button>
-                      );
-                    })}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-slate-100 grid grid-cols-2 gap-4">
-              <button onClick={() => setShowAdd(false)} className="bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold">إلغاء</button>
-              <button onClick={saveVisit} className="bg-emerald-500 text-white py-4 rounded-2xl font-bold shadow-lg">حفظ التقرير</button>
-            </div>
-          </div>
+            <button className="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black text-lg shadow-2xl hover:bg-emerald-600 transition-all">
+              حفظ الزيارة وإصدار التقرير 💾
+            </button>
+          </form>
         </div>
       )}
+
+      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <table className="w-full text-right">
+          <thead>
+            <tr className="bg-slate-50 border-b border-slate-100">
+              <th className="p-6 text-xs font-black text-slate-400 uppercase">المعلم</th>
+              <th className="p-6 text-xs font-black text-slate-400 uppercase text-center">المادة</th>
+              <th className="p-6 text-xs font-black text-slate-400 uppercase text-center">التاريخ</th>
+              <th className="p-6 text-xs font-black text-slate-400 uppercase text-center">التقرير</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-50">
+            {visits.map(v => (
+              <tr key={v.id} className="hover:bg-slate-50/50 transition-colors">
+                <td className="p-6">
+                  <div className="font-black text-slate-900">{v.teacherName}</div>
+                  <div className="text-[10px] text-slate-400 font-bold uppercase">{v.class}</div>
+                </td>
+                <td className="p-6 text-center font-bold text-slate-600 text-sm">{v.subject}</td>
+                <td className="p-6 text-center font-bold text-slate-600 text-sm">{new Date(v.date).toLocaleDateString('ar-SA')}</td>
+                <td className="p-6 text-center">
+                  <Link 
+                    to={`/print-visit/${v.id}`} 
+                    target="_blank"
+                    className="inline-flex items-center justify-center w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                  >
+                    📄
+                  </Link>
+                </td>
+              </tr>
+            ))}
+            {visits.length === 0 && (
+              <tr>
+                <td colSpan={4} className="p-20 text-center text-slate-300 font-black italic">لا توجد زيارات مسجلة حتى الآن</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
