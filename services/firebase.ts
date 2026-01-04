@@ -1,4 +1,5 @@
 
+// Fix: Use standard modular imports for Firebase v9+ and ensure correct initialization pattern
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -14,15 +15,15 @@ const firebaseConfig = {
   measurementId: "G-5EBTV0MV83"
 };
 
-// التأكد من تهيئة التطبيق مرة واحدة فقط وتجنب الأخطاء المتكررة
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Fix: Prevent redundant initialization error in development environments
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
+// تصدير الخدمات مع التأكد من جاهزيتها
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
-// تخصيص لغة تسجيل الدخول للعربية
 auth.languageCode = 'ar';
 
 export const loginWithGoogle = async () => {
@@ -30,7 +31,7 @@ export const loginWithGoogle = async () => {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
   } catch (error: any) {
-    console.error("خطأ تسجيل الدخول:", error);
+    console.error("Firebase Login Error:", error);
     throw error;
   }
 };

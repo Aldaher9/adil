@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, loginWithGoogle, logout } from './services/firebase.ts';
@@ -9,7 +8,8 @@ import {
   Eye, 
   Settings as SettingsIcon, 
   LogOut,
-  User as UserIcon
+  User as UserIcon,
+  ShieldCheck
 } from 'lucide-react';
 import Dashboard from './components/Dashboard.tsx';
 import CurrentClasses from './components/CurrentClasses.tsx';
@@ -36,21 +36,35 @@ const App: React.FC = () => {
   const [selectedVisitData, setSelectedVisitData] = useState<Partial<VisitReport> | null>(null);
 
   useEffect(() => {
+    // محاولة الاتصال بـ Firebase ولكن مع مهلة زمنية لعدم تعليق الموقع
     const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
+      if (u) setUser(u);
+      setLoading(false);
+    }, (error) => {
+      console.warn("Auth status error, safe to ignore for demo:", error);
       setLoading(false);
     });
     
     const savedData = localStorage.getItem('school_data');
     if (savedData) {
-      const parsed = JSON.parse(savedData);
-      setSchoolData(parsed.schoolData || schoolData);
-      setTeachers(parsed.teachers || []);
-      setVisits(parsed.visits || []);
-      setSupervisionForm(parsed.supervisionForm || []);
+      try {
+        const parsed = JSON.parse(savedData);
+        setSchoolData(parsed.schoolData || schoolData);
+        setTeachers(parsed.teachers || []);
+        setVisits(parsed.visits || []);
+        setSupervisionForm(parsed.supervisionForm || []);
+      } catch (e) {
+        console.error("Error loading local data", e);
+      }
     }
 
-    return () => unsubscribe();
+    // إذا استغرق التحميل أكثر من 3 ثوانٍ، افتح المجال للدخول التجريبي
+    const timeout = setTimeout(() => setLoading(false), 3000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const persistData = (updates: any) => {
@@ -63,8 +77,16 @@ const App: React.FC = () => {
       await loginWithGoogle();
     } catch (err) {
       console.error(err);
-      alert("فشل تسجيل الدخول. تأكد من إعداد نطاق GitHub في Firebase Console.");
+      alert("فشل تسجيل الدخول التلقائي. يمكنك استخدام 'الدخول التجريبي المباشر'.");
     }
+  };
+
+  const skipLogin = () => {
+    setUser({ 
+      displayName: 'مدير المدرسة (تجريبي)', 
+      email: 'admin@school.edu', 
+      uid: 'demo-user-id' 
+    } as User);
   };
 
   const renderView = () => {
@@ -125,8 +147,9 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      <div className="flex flex-col items-center justify-center h-screen bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+        <p className="text-slate-500 font-bold">جاري تهيئة النظام...</p>
       </div>
     );
   }
@@ -137,23 +160,37 @@ const App: React.FC = () => {
         <div className="bg-white p-10 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200">
           <div className="mb-6 flex justify-center">
             <div className="p-4 bg-indigo-50 rounded-2xl">
-              <LayoutDashboard size={48} className="text-indigo-600" />
+              <ShieldCheck size={48} className="text-indigo-600" />
             </div>
           </div>
           <h1 className="text-3xl font-black text-slate-900 mb-2">منصة القائد</h1>
-          <p className="text-slate-500 mb-8 font-medium">نظام الإدارة المدرسية المتكامل والذكي</p>
-          <button 
-            onClick={handleLogin}
-            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 py-4 px-6 rounded-2xl hover:bg-slate-50 transition-all group active:scale-95"
-          >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6" />
-            <span className="font-bold text-slate-700">تسجيل الدخول عبر جوجل</span>
-          </button>
-          <div className="mt-8 pt-6 border-t border-slate-100">
-             <button onClick={() => setUser({ displayName: 'مدير تجريبي', email: 'demo@school.com', uid: 'demo' } as User)} className="text-indigo-600 font-bold hover:underline">
-               الدخول كضيف (للتجربة)
-             </button>
+          <p className="text-slate-500 mb-8 font-medium">نظام الإدارة المدرسية المتكامل</p>
+          
+          <div className="space-y-4">
+            <button 
+              onClick={handleLogin}
+              className="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 py-4 px-6 rounded-2xl hover:bg-slate-50 transition-all group active:scale-95"
+            >
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6" />
+              <span className="font-bold text-slate-700">دخول رسمي (Google)</span>
+            </button>
+
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
+              <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-slate-400 font-bold">أو</span></div>
+            </div>
+
+            <button 
+              onClick={skipLogin}
+              className="w-full bg-indigo-600 text-white py-4 px-6 rounded-2xl font-black shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-95"
+            >
+              دخول مباشر (تخطي التسجيل)
+            </button>
           </div>
+          
+          <p className="mt-8 text-xs text-slate-400 font-medium">
+            ملاحظة: عند الدخول المباشر سيتم حفظ البيانات في متصفحك الحالي فقط.
+          </p>
         </div>
       </div>
     );
@@ -203,7 +240,10 @@ const App: React.FC = () => {
             </div>
           </div>
           <button 
-            onClick={() => logout()}
+            onClick={() => {
+              if (user.uid === 'demo-user-id') setUser(null);
+              else logout();
+            }}
             className="w-full flex items-center gap-4 py-3 px-5 rounded-2xl text-rose-400 hover:bg-rose-500/10 transition-all font-bold"
           >
             <LogOut size={22} />

@@ -2,20 +2,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { VisitReport, SupervisionItem } from "../types.ts";
 
+/**
+ * Generates an analytical report for school supervision using Gemini AI
+ */
 export const generateAIReport = async (
   report: Partial<VisitReport>,
   formItems: SupervisionItem[],
   teacherSubject: string
 ) => {
-  // استخدام المفتاح من المتغيرات المحقونة تلقائياً
-  const API_KEY = process.env.API_KEY || "";
-
-  if (!API_KEY) {
-    console.error("Gemini API Key is missing. Please ensure it's configured.");
-    return null;
-  }
-
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
+  // Use the API key directly from process.env.API_KEY as per mandatory guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const ratingsContext = Object.entries(report.ratings || {})
     .map(([id, rating]) => {
@@ -37,10 +33,14 @@ export const generateAIReport = async (
   4. كتابة خلاصة عامة.`;
 
   try {
+    // Calling generateContent with the model name and prompt directly
+    // Using gemini-3-pro-preview for complex pedagogical analysis and reporting
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3-pro-preview",
       contents: prompt,
       config: {
+        // Pedagogical analysis benefits from reasoning budget for higher quality insights
+        thinkingConfig: { thinkingBudget: 4000 },
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -50,12 +50,16 @@ export const generateAIReport = async (
             recommendations: { type: Type.STRING },
             summary: { type: Type.STRING }
           },
-          required: ["strengths", "improvements", "recommendations", "summary"]
+          required: ["strengths", "improvements", "recommendations", "summary"],
+          // Fix: Explicitly defining property ordering for structured output consistency
+          propertyOrdering: ["strengths", "improvements", "recommendations", "summary"]
         }
       }
     });
 
-    return JSON.parse(response.text || "{}");
+    // Access text directly from the property (not a method call)
+    const jsonStr = response.text;
+    return jsonStr ? JSON.parse(jsonStr) : null;
   } catch (error) {
     console.error("AI Generation Error:", error);
     return null;
