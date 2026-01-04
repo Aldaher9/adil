@@ -1,71 +1,75 @@
+// ===== الوقت الحالي =====
+function showTime(){
+  document.getElementById('currentTime').innerHTML =
+    new Date().toLocaleString('ar-EG');
+}
+showTime();
+setInterval(showTime,1000);
 
-const reportData = {
-  teacher: "أحمد بن سالم",
-  className: "7/أ",
-  subject: "الرياضيات",
-  lessonTitle: "المعادلات الخطية",
-  evaluations: [
-    {
-      title: "التخطيط",
-      items: [
-        { title: "وضوح الأهداف", description: "أهداف واضحة ومناسبة لمستوى الطلبة" },
-        { title: "تنظيم المحتوى", description: "تسلسل منطقي للمفاهيم" }
-      ]
-    },
-    {
-      title: "تنفيذ الدرس",
-      items: [
-        { title: "تنويع الاستراتيجيات", description: "استخدام أساليب نشطة" },
-        { title: "إدارة الصف", description: "انضباط عالٍ وتفاعل إيجابي" }
-      ]
-    }
-  ],
-  strengths: [
-    "تمكن علمي واضح من المادة",
-    "تفاعل إيجابي مع الطلبة",
-    "تنويع استراتيجيات التدريس"
-  ],
-  improvements: [
-    "زيادة استخدام التقويم البنائي",
-    "إشراك جميع الطلبة في الأنشطة",
-    "توظيف الوسائل التقنية بشكل أوسع"
-  ],
-  recommendations:
-    "نشكر المعلم على أدائه الجيد في تنفيذ الحصة، ونوصي بالاستمرار في تنويع استراتيجيات التدريس مع تعزيز استخدام أساليب التقويم البنائي."
-};
-
-function renderVisitReport(data) {
-
-  document.getElementById("lessonInfo").innerHTML = `
-    <strong>المعلم:</strong> ${data.teacher}<br>
-    <strong>الصف:</strong> ${data.className}<br>
-    <strong>المادة:</strong> ${data.subject}<br>
-    <strong>عنوان الدرس:</strong> ${data.lessonTitle}
-  `;
-
-  const container = document.getElementById("evaluationCards");
-  container.innerHTML = "";
-
-  data.evaluations.forEach(domain => {
-    const card = document.createElement("div");
-    card.className = "report-card";
-    card.innerHTML = `
-      <h3>${domain.title}</h3>
-      <ul>
-        ${domain.items.map(i => `<li>${i.title} – ${i.description}</li>`).join("")}
-      </ul>
-    `;
-    container.appendChild(card);
-  });
-
-  document.getElementById("strengthsList").innerHTML =
-    data.strengths.map(s => `<li>${s}</li>`).join("");
-
-  document.getElementById("improvementsList").innerHTML =
-    data.improvements.map(i => `<li>${i}</li>`).join("");
-
-  document.getElementById("recommendationsText").innerText =
-    data.recommendations;
+// ===== أدوات الوقت =====
+function toMinutes(t){
+  if(!t) return null;
+  const [h,m]=t.split(':').map(Number);
+  return h*60+m;
 }
 
-renderVisitReport(reportData);
+// ===== البيانات =====
+let timetable=[];
+
+// ===== استيراد الجدول =====
+document.getElementById('timetableFile').addEventListener('change',e=>{
+  const file=e.target.files[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+  reader.onload=function(evt){
+    const data=new Uint8Array(evt.target.result);
+    const wb=XLSX.read(data,{type:'array'});
+    const sheet=wb.Sheets[wb.SheetNames[0]];
+    const rows=XLSX.utils.sheet_to_json(sheet);
+
+    timetable=rows.map(r=>({
+      day:(r['اليوم']||r['day']||'').trim(),
+      className:(r['الصف']||r['class']||'').trim(),
+      subject:(r['المادة']||r['subject']||'').trim(),
+      teacher:(r['المعلم']||r['teacher']||'').trim(),
+      from:(r['من']||r['from']||''),
+      to:(r['إلى']||r['to']||'')
+    })).filter(l=>l.teacher && l.from && l.to);
+
+    localStorage.setItem('timetable',JSON.stringify(timetable));
+    alert('تم استيراد الجدول بنجاح');
+    showCurrentLesson();
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+// ===== الحصة الحالية =====
+function showCurrentLesson(){
+  timetable=JSON.parse(localStorage.getItem('timetable')||'[]');
+  const now=new Date();
+  const nowMin=now.getHours()*60+now.getMinutes();
+  const today=now.toLocaleDateString('ar-EG',{weekday:'long'});
+
+  const lesson=timetable.find(l=>{
+    return l.day.includes(today) &&
+      nowMin>=toMinutes(l.from) &&
+      nowMin<=toMinutes(l.to);
+  });
+
+  const box=document.getElementById('currentLessonBox');
+  if(!lesson){
+    box.innerHTML='🟢 لا توجد حصة حالية الآن';
+    return;
+  }
+
+  box.innerHTML=`
+    <b>الصف:</b> ${lesson.className}<br>
+    <b>المادة:</b> ${lesson.subject}<br>
+    <b>المعلم:</b> ${lesson.teacher}<br>
+    <b>الوقت:</b> ${lesson.from} - ${lesson.to}
+  `;
+}
+
+showCurrentLesson();
+setInterval(showCurrentLesson,60000);

@@ -1,33 +1,15 @@
-
 body{
-  font-family: Tahoma, sans-serif;
-  background:#f4f6f8;
-  margin:0;
-  padding:30px;
+  padding:25px;
+  font-family:'Tajawal', sans-serif;
+  background:#f7f8fc;
 }
-
-h1{
-  margin-bottom:30px;
+.title{
+  color:#5C6AC4;
 }
-
-.report-card{
-  background:#ffffff;
-  border-radius:12px;
+.card{
+  background:#fff;
   padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.06);
-  border-right:6px solid #2c7be5;
+  border-radius:10px;
+  margin-top:15px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
-
-.report-card h3{
-  margin-top:0;
-  font-size:18px;
-}
-
-.report-card ul{
-  padding-right:20px;
-}
-
-.report-card.success{border-right-color:#2ecc71;}
-.report-card.warning{border-right-color:#f39c12;}
-.report-card.info{border-right-color:#3498db;}
