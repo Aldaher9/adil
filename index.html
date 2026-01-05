@@ -391,15 +391,33 @@
                     if(l) active.push({ t, className: l.className });
                 });
                 
-                // Sort classes numerically
-                active.sort((a,b) => a.className.localeCompare(b.className, 'ar', {numeric:true}));
+                // Sort classes numerically (Smallest to Largest)
+                active.sort((a, b) => {
+                    // Extract the first number found in the string
+                    const getNum = (str) => {
+                        const match = str.match(/\d+/);
+                        return match ? parseInt(match[0]) : 0;
+                    };
+                    const numA = getNum(a.className);
+                    const numB = getNum(b.className);
+
+                    // If numbers are different, sort by number (5 < 10)
+                    if (numA !== numB) {
+                        return numA - numB;
+                    }
+                    
+                    // Fallback to standard string compare for same numbers (5/1 vs 5/2)
+                    return a.className.localeCompare(b.className, 'ar', { numeric: true });
+                });
 
                 grid.innerHTML = active.map(item => `
                     <div class="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 overflow-hidden relative">
                         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
                         <div class="p-5">
                             <div class="flex justify-between items-start mb-4">
-                                <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-sm font-bold border border-indigo-100">${item.className}</span>
+                                <span class="bg-indigo-50 text-indigo-800 px-4 py-2 rounded-xl text-4xl font-extrabold border border-indigo-200 shadow-sm font-sans">
+                                    ${item.className}
+                                </span>
                                 <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs font-bold">${item.t.short[0] || '?'}</div>
                             </div>
                             <h3 class="font-bold text-lg text-slate-800 mb-1 truncate">${item.t.name}</h3>
