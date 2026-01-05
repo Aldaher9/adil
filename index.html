@@ -40,6 +40,10 @@
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .hidden-view { display: none !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        /* Ensure modal content is clickable */
+        .modal-content { z-index: 60; position: relative; }
+        .modal-backdrop { z-index: 50; }
     </style>
 <script type="importmap">
 {
@@ -50,11 +54,11 @@
     "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
     "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
     "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
-    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.6?external=rxjs",
-    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.6?external=rxjs",
-    "@angular/core": "https://esm.sh/@angular/core@^21.0.6?external=rxjs",
     "@angular/common": "https://esm.sh/@angular/common@^21.0.6?external=rxjs",
-    "@angular/forms": "https://esm.sh/@angular/forms@^21.0.6?external=rxjs"
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.6?external=rxjs",
+    "@angular/forms": "https://esm.sh/@angular/forms@^21.0.6?external=rxjs",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.6?external=rxjs",
+    "@angular/core": "https://esm.sh/@angular/core@^21.0.6?external=rxjs"
   }
 }
 </script>
@@ -71,7 +75,7 @@
                     <i class="fas fa-university text-yellow-400"></i>
                     <span class="hidden sm:inline">مدير المدرسة الذكي</span>
                     <span id="cloudStatusBadge" class="text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30 flex items-center gap-1">
-                        <i class="fas fa-circle text-[6px]"></i> غير متصل
+                        <i class="fas fa-circle text-[6px]"></i> جاري الاتصال...
                     </span>
                 </h1>
 
@@ -80,7 +84,7 @@
                         <i class="fas fa-clock text-indigo-300 text-xs"></i>
                         <span id="clockDisplay" class="font-mono font-bold text-green-400 dir-ltr">00:00:00</span>
                     </div>
-                    <button onclick="app.addSimulationHour()" class="text-xs bg-white/10 hover:bg-white/20 p-2 rounded transition text-indigo-200 hover:text-white" title="تقديم ساعة">
+                    <button onclick="window.app.addSimulationHour()" class="text-xs bg-white/10 hover:bg-white/20 p-2 rounded transition text-indigo-200 hover:text-white" title="تقديم ساعة">
                         <i class="fas fa-forward"></i>
                     </button>
                 </div>
@@ -88,17 +92,17 @@
             
             <!-- Navigation -->
             <nav class="flex gap-1 overflow-x-auto pt-2 pb-0 scrollbar-hide">
-                <button onclick="app.setView('now')" id="btn-now" class="nav-btn bg-indigo-800 text-yellow-400 border-b-2 border-yellow-400 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                <button onclick="window.app.setView('now')" id="btn-now" class="nav-btn bg-indigo-800 text-yellow-400 border-b-2 border-yellow-400 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-chalkboard"></i> الحصص الحالية
                 </button>
-                <button onclick="app.setView('teachers')" id="btn-teachers" class="nav-btn text-indigo-200 hover:text-white hover:bg-indigo-800/50 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                <button onclick="window.app.setView('teachers')" id="btn-teachers" class="nav-btn text-indigo-200 hover:text-white hover:bg-indigo-800/50 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-users-cog"></i> المعلمون
                 </button>
-                <button onclick="app.setView('reports')" id="btn-reports" class="nav-btn text-indigo-200 hover:text-white hover:bg-indigo-800/50 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                <button onclick="window.app.setView('reports')" id="btn-reports" class="nav-btn text-indigo-200 hover:text-white hover:bg-indigo-800/50 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-file-invoice"></i> التقارير
                 </button>
                 <div class="mr-auto self-center pb-2">
-                    <button onclick="app.openSettings()" class="text-sm bg-white/10 hover:bg-white/20 text-indigo-100 hover:text-white px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-2">
+                    <button onclick="window.app.openSettings()" class="text-sm bg-white/10 hover:bg-white/20 text-indigo-100 hover:text-white px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-2">
                         <i class="fas fa-cog"></i> <span class="hidden md:inline">الإعدادات</span>
                     </button>
                 </div>
@@ -110,20 +114,20 @@
     <main class="container mx-auto p-4 md:p-6">
         
         <!-- View: Current Classes -->
-        <section id="view-now" class="fade-in space-y-6">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <section id="view-now" class="fade-in space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
                 <div class="flex items-center gap-3">
-                    <div class="bg-indigo-100 text-indigo-700 w-12 h-12 rounded-full flex items-center justify-center text-xl">
+                    <div class="bg-indigo-100 text-indigo-700 w-10 h-10 rounded-full flex items-center justify-center text-lg">
                         <i class="fas fa-clock"></i>
                     </div>
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-800">الحصص القائمة الآن</h2>
-                        <p class="text-slate-500 text-sm">متابعة حية للجدول المدرسي</p>
+                        <h2 class="text-xl font-bold text-slate-800">الحصص القائمة الآن</h2>
                     </div>
                 </div>
                 <div id="currentPeriodInfo"></div>
             </div>
-            <div id="activeClassesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+            <!-- Increased columns and reduced gap for moderation -->
+            <div id="activeClassesGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2"></div>
         </section>
 
         <!-- View: Teachers -->
@@ -134,7 +138,7 @@
                     <p class="text-slate-500 text-sm">إدارة بيانات التواصل والتقييمات</p>
                 </div>
                 <div class="relative w-full md:w-96">
-                    <input type="text" id="teacherSearch" onkeyup="app.renderTeachers()" placeholder="بحث عن معلم..." class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none bg-slate-50 focus:bg-white">
+                    <input type="text" id="teacherSearch" onkeyup="window.app.renderTeachers()" placeholder="بحث عن معلم..." class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none bg-slate-50 focus:bg-white">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 </div>
             </div>
@@ -148,7 +152,7 @@
                     <h2 class="text-2xl font-bold text-slate-800">تقارير الأداء</h2>
                     <p class="text-sm text-slate-500">نظرة عامة على انضباط المعلمين</p>
                 </div>
-                <button onclick="app.exportReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg shadow-emerald-200">
+                <button onclick="window.app.exportReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg shadow-emerald-200">
                     <i class="fas fa-file-excel"></i> <span>تصدير Excel</span>
                 </button>
             </div>
@@ -175,60 +179,89 @@
     
     <!-- Action Modal -->
     <div id="modal-action" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden-view">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="app.closeModal('modal-action')"></div>
-        <div class="relative bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-scale-in">
-            <div class="bg-gradient-to-r from-indigo-900 to-indigo-800 p-6 text-white">
-                <h3 id="actionModalTitle" class="text-xl font-bold flex items-center gap-2"></h3>
-                <p id="actionModalSubtitle" class="text-indigo-200 text-sm mt-1"></p>
-                <button onclick="app.closeModal('modal-action')" class="absolute top-4 left-4 text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-action')"></div>
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in modal-content">
+            <div class="bg-slate-800 p-4 text-white flex justify-between items-start">
+                <div>
+                    <h3 class="text-lg font-bold flex items-center gap-2" id="actionModalTitle"></h3>
+                    <p id="actionModalSubtitle" class="text-slate-300 text-xs mt-1"></p>
+                </div>
+                <button type="button" onclick="window.app.closeModal('modal-action')" class="text-white/50 hover:text-white"><i class="fas fa-times text-lg"></i></button>
             </div>
-            <div class="p-6 space-y-4">
-                <div class="space-y-3">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">التواصل السريع</label>
-                    <button onclick="app.sendWhatsApp('summon')" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 p-4 rounded-xl font-bold flex items-center justify-between transition">
-                        <span class="flex items-center gap-3"><i class="fab fa-whatsapp text-2xl"></i> استدعاء للمكتب</span>
-                    </button>
-                    <button id="btn-remind" onclick="app.sendWhatsApp('remind')" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 p-4 rounded-xl font-bold flex items-center justify-between transition hidden">
-                        <span class="flex items-center gap-3"><i class="fas fa-bell text-xl"></i> تذكير بالحصة</span>
-                    </button>
+            
+            <div class="p-4 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <!-- Communication Buttons -->
+                <div class="space-y-2">
+                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">التواصل</label>
+                     <div class="grid grid-cols-2 gap-2">
+                         <button type="button" onclick="window.app.sendWhatsApp('summon')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 p-3 rounded-lg font-bold text-xs flex flex-col items-center gap-2 transition cursor-pointer">
+                            <i class="fab fa-whatsapp text-xl"></i><span>استدعاء</span>
+                         </button>
+                         <button type="button" id="btn-remind" onclick="window.app.sendWhatsApp('remind')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 p-3 rounded-lg font-bold text-xs flex flex-col items-center gap-2 transition cursor-pointer">
+                            <i class="fas fa-bell text-xl"></i><span>تذكير</span>
+                         </button>
+                     </div>
                 </div>
-                <div class="h-px bg-slate-100 my-2"></div>
-                <div class="space-y-3">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">تسجيل مخالفة</label>
-                    <button onclick="app.dockScore('late', 5)" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 p-4 rounded-xl font-bold flex items-center justify-between transition">
-                         <span class="flex items-center gap-3"><i class="fas fa-clock text-xl"></i> تأخر عن الحصة</span><span class="bg-white px-2 py-1 rounded text-xs border border-amber-200">-5</span>
-                    </button>
-                    <button onclick="app.dockScore('absent', 15)" class="w-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 p-4 rounded-xl font-bold flex items-center justify-between transition">
-                         <span class="flex items-center gap-3"><i class="fas fa-user-slash text-xl"></i> غياب عن الحصة</span><span class="bg-white px-2 py-1 rounded text-xs border border-red-200">-15</span>
-                    </button>
+                <div class="h-px bg-slate-100"></div>
+                <!-- Dynamic Violation Buttons -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">المخالفات</label>
+                    <div id="violationButtonsContainer" class="space-y-2"></div>
                 </div>
+            </div>
+             <div class="bg-slate-50 p-3 text-center border-t border-slate-200 flex justify-between items-center px-6">
+                <span class="text-xs text-slate-500">التقييم الحالي</span>
+                <span class="text-lg font-bold text-slate-800" id="currentScoreDisplay"></span>
             </div>
         </div>
     </div>
 
     <!-- Settings Modal -->
     <div id="modal-settings" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden-view">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="app.closeModal('modal-settings')"></div>
-        <div class="relative bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-scale-in">
-            <div class="bg-slate-800 text-white p-6 flex justify-between items-center">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-settings')"></div>
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[90vh] modal-content">
+            <div class="bg-slate-800 text-white p-5 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-cog"></i> الإعدادات</h3>
-                <button onclick="app.closeModal('modal-settings')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+                <button type="button" onclick="window.app.closeModal('modal-settings')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div class="p-6 space-y-6">
-                <div class="bg-indigo-50 p-5 rounded-2xl border border-indigo-100">
-                    <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2"><i class="fas fa-calendar-alt"></i> جدول الحصص</h4>
-                    <p class="text-sm text-indigo-700/70 mb-4">استيراد XML من برنامج الجدول المدرسي (ASC).</p>
-                    <button onclick="document.getElementById('xmlInput').click()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2"><i class="fas fa-upload"></i> رفع ملف XML</button>
-                    <input type="file" id="xmlInput" accept=".xml" class="hidden" onchange="app.handleXml(event)">
-                </div>
-                <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
-                    <h4 class="font-bold text-emerald-900 mb-2 flex items-center gap-2"><i class="fas fa-users"></i> بيانات المعلمين</h4>
-                    <p class="text-sm text-emerald-700/70 mb-4">تصدير واستيراد بيانات المعلمين (Excel).</p>
-                    <div class="flex gap-3">
-                        <button onclick="app.exportTeacherTemplate()" class="flex-1 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-100 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2"><i class="fas fa-download"></i> تصدير</button>
-                        <button onclick="document.getElementById('excelInput').click()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2"><i class="fas fa-file-import"></i> استيراد</button>
+            
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-8">
+                <!-- Violation Management -->
+                <div class="space-y-4">
+                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i class="fas fa-gavel text-red-500"></i> إدارة المخالفات</h4>
                     </div>
-                    <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="app.handleExcel(event)">
+                    <!-- Add Form -->
+                    <div class="flex gap-2 bg-slate-50 p-3 rounded-lg border border-slate-200 items-end">
+                        <div class="flex-1 space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500">اسم المخالفة</label>
+                            <input type="text" id="newViolationLabel" placeholder="مثلاً: عدم تحضير" class="w-full text-sm p-2 rounded border border-slate-300 focus:border-indigo-500 outline-none">
+                        </div>
+                        <div class="w-24 space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500">الخصم</label>
+                            <input type="number" id="newViolationPoints" value="5" class="w-full text-sm p-2 rounded border border-slate-300 focus:border-indigo-500 outline-none text-center">
+                        </div>
+                        <button type="button" onclick="window.app.addViolation()" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded h-[38px] w-10 flex items-center justify-center transition cursor-pointer"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <!-- List -->
+                    <div id="violationsList" class="space-y-2"></div>
+                </div>
+
+                <!-- Imports -->
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                        <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-calendar-alt"></i> جدول الحصص (XML)</h4>
+                        <button type="button" onclick="document.getElementById('xmlInput').click()" class="w-full bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-2 rounded-lg font-bold text-xs transition cursor-pointer">رفع ملف XML</button>
+                        <input type="file" id="xmlInput" accept=".xml" class="hidden" onchange="window.app.handleXml(event)">
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                        <h4 class="font-bold text-emerald-900 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-users"></i> بيانات المعلمين (Excel)</h4>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="window.app.exportTeacherTemplate()" class="flex-1 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-100 py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-download"></i> تصدير</button>
+                            <button type="button" onclick="document.getElementById('excelInput').click()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-upload"></i> استيراد</button>
+                        </div>
+                        <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleExcel(event)">
+                    </div>
                 </div>
             </div>
         </div>
@@ -242,13 +275,20 @@
                     teachers: [],
                     periods: [],
                     classes: {},
+                    violationTypes: [
+                        { id: 'late', label: 'تأخر عن الحصة', points: 5, icon: 'fa-clock' },
+                        { id: 'absent', label: 'غياب عن الحصة', points: 15, icon: 'fa-user-slash' }
+                    ],
                     simulationOffset: 0,
                     selectedTeacherId: null,
                     selectedClassName: null
                 };
                 this.db = null;
-                this.initFirebase();
+                
+                // Initialize
+                this.loadLocalData();
                 this.startClock();
+                this.initFirebase();
             }
 
             initFirebase() {
@@ -263,93 +303,139 @@
                 };
                 
                 try {
-                    firebase.initializeApp(firebaseConfig);
-                    this.db = firebase.firestore();
-                    firebase.analytics();
-                    this.updateCloudStatus('connected');
-                    this.loadData();
+                    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                        firebase.initializeApp(firebaseConfig);
+                    }
+                    if(typeof firebase !== 'undefined') {
+                        this.db = firebase.firestore();
+                        this.db.collection("school_settings").doc("timetable")
+                            .onSnapshot((doc) => {
+                                if(doc.exists) {
+                                    const data = doc.data();
+                                    this.state.teachers = data.teachers || [];
+                                    this.state.periods = data.periods || [];
+                                    this.state.classes = data.classes || {};
+                                    if(data.violationTypes) this.state.violationTypes = data.violationTypes;
+                                    
+                                    this.renderAll();
+                                    this.saveToLocal();
+                                    this.updateCloudStatus('connected');
+                                }
+                            }, (error) => {
+                                console.error("Cloud Error:", error);
+                                this.updateCloudStatus('error');
+                            });
+                    }
                 } catch (e) {
                     console.error("Firebase Init Error:", e);
                     this.updateCloudStatus('error');
                 }
             }
 
-            updateCloudStatus(status) {
-                const badge = document.getElementById('cloudStatusBadge');
-                if(status === 'connected') {
-                    badge.innerHTML = '<i class="fas fa-circle text-[6px] animate-pulse"></i> متصل';
-                    badge.className = "text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full border border-green-500/30 flex items-center gap-1";
-                } else if(status === 'saving') {
-                    badge.innerHTML = 'جاري الحفظ...';
-                    badge.className = "text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30 flex items-center gap-1";
-                } else {
-                    badge.innerHTML = 'غير متصل';
-                    badge.className = "text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30 flex items-center gap-1";
+            loadLocalData() {
+                const local = localStorage.getItem('school_data_v1');
+                if(local) {
+                    try {
+                        const parsed = JSON.parse(local);
+                        this.state.teachers = parsed.teachers || [];
+                        this.state.periods = parsed.periods || [];
+                        this.state.classes = parsed.classes || {};
+                        if(parsed.violationTypes) this.state.violationTypes = parsed.violationTypes;
+                        this.renderAll();
+                    } catch(e) { console.error("Local Load Error", e); }
                 }
             }
 
-            async loadData() {
-                if(!this.db) return;
-                try {
-                    const doc = await this.db.collection("school_settings").doc("timetable").get();
-                    if(doc.exists) {
-                        const data = doc.data();
-                        this.state.teachers = data.teachers || [];
-                        this.state.periods = data.periods || [];
-                        this.state.classes = data.classes || {};
-                        this.renderAll();
-                    }
-                } catch(e) { console.error(e); }
+            saveToLocal() {
+                localStorage.setItem('school_data_v1', JSON.stringify({
+                    teachers: this.state.teachers,
+                    periods: this.state.periods,
+                    classes: this.state.classes,
+                    violationTypes: this.state.violationTypes,
+                    lastSync: new Date()
+                }));
             }
 
             async saveData() {
+                this.saveToLocal();
+                this.renderAll();
+
                 if(!this.db) return;
+                
                 this.updateCloudStatus('saving');
                 try {
                     await this.db.collection("school_settings").doc("timetable").set({
                         teachers: this.state.teachers,
                         periods: this.state.periods,
                         classes: this.state.classes,
+                        violationTypes: this.state.violationTypes,
                         lastSync: new Date()
-                    });
-                    this.updateCloudStatus('connected');
-                } catch(e) { this.updateCloudStatus('error'); }
+                    }, { merge: true });
+                } catch(e) { 
+                    console.error("Save Error:", e);
+                    this.updateCloudStatus('error'); 
+                }
+            }
+
+            updateCloudStatus(status) {
+                const badge = document.getElementById('cloudStatusBadge');
+                if(!badge) return;
+                if(status === 'connected') {
+                    badge.innerHTML = '<i class="fas fa-circle text-[6px] animate-pulse"></i> متصل';
+                    badge.className = "text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full border border-green-500/30 flex items-center gap-1";
+                } else if(status === 'saving') {
+                    badge.innerHTML = '<i class="fas fa-sync fa-spin text-[8px]"></i> حفظ...';
+                    badge.className = "text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30 flex items-center gap-1";
+                } else {
+                    badge.innerHTML = '<i class="fas fa-wifi-slash"></i>';
+                    badge.className = "text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30 flex items-center gap-1";
+                }
             }
 
             startClock() {
                 setInterval(() => {
                     const now = new Date(new Date().getTime() + this.state.simulationOffset);
-                    document.getElementById('clockDisplay').innerText = now.toLocaleTimeString('en-US', {hour12:false});
+                    const el = document.getElementById('clockDisplay');
+                    if(el) el.innerText = now.toLocaleTimeString('en-US', {hour12:false});
                     this.renderCurrentPeriod(now);
                 }, 1000);
             }
 
             addSimulationHour() {
                 this.state.simulationOffset += 3600000;
-                // Force update
                 const now = new Date(new Date().getTime() + this.state.simulationOffset);
-                document.getElementById('clockDisplay').innerText = now.toLocaleTimeString('en-US', {hour12:false});
+                const el = document.getElementById('clockDisplay');
+                if(el) el.innerText = now.toLocaleTimeString('en-US', {hour12:false});
                 this.renderCurrentPeriod(now);
             }
 
-            // --- Views Logic ---
             setView(viewName) {
                 ['now', 'teachers', 'reports'].forEach(v => {
-                    document.getElementById(`view-${v}`).classList.add('hidden-view');
+                    const el = document.getElementById(`view-${v}`);
+                    if(el) el.classList.add('hidden-view');
                     const btn = document.getElementById(`btn-${v}`);
-                    btn.className = v === viewName 
+                    if(btn) btn.className = v === viewName 
                         ? "nav-btn bg-indigo-800 text-yellow-400 border-b-2 border-yellow-400 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap"
                         : "nav-btn text-indigo-200 hover:text-white hover:bg-indigo-800/50 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap";
                 });
-                document.getElementById(`view-${viewName}`).classList.remove('hidden-view');
+                const view = document.getElementById(`view-${viewName}`);
+                if(view) view.classList.remove('hidden-view');
                 if(viewName === 'teachers') this.renderTeachers();
                 if(viewName === 'reports') this.renderReports();
             }
 
-            // --- Render Logic ---
             renderAll() {
-                this.renderTeachers();
-                this.renderReports();
+                const btn = document.querySelector('.nav-btn.bg-indigo-800');
+                if(!btn) return;
+                const currentView = btn.id.replace('btn-', '');
+                if(currentView === 'now') {
+                     const now = new Date(new Date().getTime() + this.state.simulationOffset);
+                     this.renderCurrentPeriod(now);
+                } else if (currentView === 'teachers') {
+                    this.renderTeachers();
+                } else if (currentView === 'reports') {
+                    this.renderReports();
+                }
             }
 
             renderCurrentPeriod(now) {
@@ -361,15 +447,17 @@
                 });
 
                 const infoDiv = document.getElementById('currentPeriodInfo');
-                if(currentPeriod) {
-                    infoDiv.innerHTML = `
-                        <div class="flex items-center gap-3 bg-indigo-50 px-6 py-3 rounded-xl border border-indigo-100">
-                            <span class="text-indigo-900 font-bold text-lg">الحصة ${currentPeriod.id}</span>
-                            <span class="text-indigo-400">|</span>
-                            <span class="text-indigo-600 font-mono">${currentPeriod.start} - ${currentPeriod.end}</span>
-                        </div>`;
-                } else {
-                    infoDiv.innerHTML = `<div class="bg-amber-50 text-amber-700 px-6 py-3 rounded-xl border border-amber-100 font-bold">لا توجد حصص نشطة حالياً</div>`;
+                if(infoDiv) {
+                    if(currentPeriod) {
+                        infoDiv.innerHTML = `
+                            <div class="flex items-center gap-3 bg-indigo-50 px-4 py-2 rounded-lg border border-indigo-100 shadow-sm">
+                                <span class="text-indigo-900 font-bold">الحصة ${currentPeriod.id}</span>
+                                <span class="text-indigo-300">|</span>
+                                <span class="text-indigo-600 font-mono text-sm">${currentPeriod.start} - ${currentPeriod.end}</span>
+                            </div>`;
+                    } else {
+                        infoDiv.innerHTML = `<div class="bg-amber-50 text-amber-700 px-4 py-2 rounded-lg border border-amber-100 font-bold text-sm">لا توجد حصص نشطة</div>`;
+                    }
                 }
 
                 this.renderActiveClasses(now, currentPeriod);
@@ -377,12 +465,14 @@
 
             renderActiveClasses(now, period) {
                 const grid = document.getElementById('activeClassesGrid');
+                if(!grid) return;
+                
                 if(!period) {
-                    grid.innerHTML = `<div class="col-span-full py-20 text-center text-slate-400 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200"><i class="fas fa-coffee text-4xl mb-4 text-slate-300"></i><p>لا توجد حصص في الوقت الحالي</p></div>`;
+                    grid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-400 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200"><i class="fas fa-coffee text-3xl mb-3 text-slate-300"></i><p class="text-sm">لا توجد حصص في الوقت الحالي</p></div>`;
                     return;
                 }
 
-                const dayId = now.getDay() + 1; // Assuming 1=Sun based on XML usually
+                const dayId = now.getDay() + 1;
                 const pId = parseInt(period.id);
                 
                 let active = [];
@@ -391,46 +481,63 @@
                     if(l) active.push({ t, className: l.className });
                 });
                 
-                // Sort classes numerically (Smallest to Largest)
                 active.sort((a, b) => {
-                    // Extract the first number found in the string
-                    const getNum = (str) => {
-                        const match = str.match(/\d+/);
-                        return match ? parseInt(match[0]) : 0;
+                    const getGrade = (name) => {
+                        const n = name.trim();
+                        if (n.match(/(الثاني|ثاني)\s*عشر/)) return 12;
+                        if (n.match(/(الحادي|حادي)\s*عشر/)) return 11;
+                        if (n.match(/العاشر|عاشر/)) return 10;
+                        if (n.match(/التاسع|تاسع/)) return 9;
+                        if (n.match(/الثامن|ثامن/)) return 8;
+                        if (n.match(/السابع|سابع/)) return 7;
+                        if (n.match(/السادس|سادس/)) return 6;
+                        if (n.match(/الخامس|خامس/)) return 5;
+                        if (n.match(/الرابع|رابع/)) return 4;
+                        if (n.match(/الثالث|ثالث/)) return 3;
+                        if (n.match(/الثاني|ثاني/)) return 2;
+                        if (n.match(/الاول|الأول|اول|أول/)) return 1;
+                        const match = n.match(/\d+/);
+                        return match ? parseInt(match[0]) : 999;
                     };
-                    const numA = getNum(a.className);
-                    const numB = getNum(b.className);
-
-                    // If numbers are different, sort by number (5 < 10)
-                    if (numA !== numB) {
-                        return numA - numB;
-                    }
+                    const gA = getGrade(a.className);
+                    const gB = getGrade(b.className);
+                    if (gA !== gB) return gA - gB;
                     
-                    // Fallback to standard string compare for same numbers (5/1 vs 5/2)
-                    return a.className.localeCompare(b.className, 'ar', { numeric: true });
+                    const getSection = (str) => {
+                         const nums = str.match(/\d+/g);
+                         return nums ? parseInt(nums[nums.length-1]) : 0;
+                    };
+                    const sA = getSection(a.className);
+                    const sB = getSection(b.className);
+                    if (sA !== sB) return sA - sB;
+                    return a.className.localeCompare(b.className, 'ar');
                 });
 
                 grid.innerHTML = active.map(item => `
-                    <div class="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 overflow-hidden relative">
-                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-                        <div class="p-5">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="bg-indigo-50 text-indigo-800 px-4 py-2 rounded-xl text-4xl font-extrabold border border-indigo-200 shadow-sm font-sans">
+                    <div class="group bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-slate-200 overflow-hidden relative flex flex-col">
+                        <div class="h-1 w-full bg-indigo-500"></div>
+                        <div class="p-2 flex-1 flex flex-col">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-xs font-bold border border-slate-200 truncate max-w-[70%]">
                                     ${item.className}
                                 </span>
-                                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs font-bold">${item.t.short[0] || '?'}</div>
+                                <div class="w-5 h-5 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-[9px] font-bold border border-indigo-100">
+                                   ${item.t.short[0] || '?'}
+                                </div>
                             </div>
-                            <h3 class="font-bold text-lg text-slate-800 mb-1 truncate">${item.t.name}</h3>
-                            <p class="text-xs text-slate-400 mb-4"><i class="fas fa-star text-yellow-400 mr-1"></i> الأداء: ${item.t.score}%</p>
-                            <button onclick="app.openActionModal('${item.t.id}', '${item.className}')" class="w-full py-2.5 rounded-lg bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 font-bold text-sm transition-colors border border-slate-200 hover:border-indigo-200 flex justify-center items-center gap-2"><i class="fas fa-sliders-h"></i> إجراءات سريعة</button>
+                            <h3 class="font-bold text-xs text-slate-700 mb-1 truncate">${item.t.name}</h3>
+                            <div class="flex items-center gap-1 text-[9px] text-slate-400 mb-2"><i class="fas fa-star text-yellow-400"></i> <span>${item.t.score}%</span></div>
+                            <button type="button" onclick="window.app.openActionModal('${item.t.id}', '${item.className}')" class="mt-auto w-full py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[10px] transition-colors flex justify-center items-center gap-1 cursor-pointer"><i class="fas fa-cog"></i> إجراء</button>
                         </div>
                     </div>
                 `).join('');
             }
 
             renderTeachers() {
-                const term = document.getElementById('teacherSearch').value.toLowerCase();
+                const termInput = document.getElementById('teacherSearch');
+                const term = termInput ? termInput.value.toLowerCase() : '';
                 const grid = document.getElementById('teachersGrid');
+                if(!grid) return;
                 
                 let filtered = this.state.teachers.filter(t => t.name.toLowerCase().includes(term));
                 filtered.sort((a,b) => a.name.localeCompare(b.name, 'ar'));
@@ -448,11 +555,11 @@
                         </div>
                         <div class="relative group/input">
                              <i class="fas fa-phone absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-indigo-500 transition-colors"></i>
-                            <input type="tel" value="${t.phone || ''}" onchange="app.updatePhone('${t.id}', this.value)" placeholder="أضف رقم الهاتف" class="w-full pr-9 pl-3 py-2 text-sm rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all dir-rtl">
+                            <input type="tel" value="${t.phone || ''}" onchange="window.app.updatePhone('${t.id}', this.value)" placeholder="أضف رقم الهاتف" class="w-full pr-9 pl-3 py-2 text-sm rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all dir-rtl">
                         </div>
                         <div class="flex gap-2 mt-auto pt-2 border-t border-slate-50">
-                            <button onclick="app.openActionModal('${t.id}')" class="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2 rounded-lg text-xs font-bold transition">خيارات</button>
-                             <button onclick="app.openWhatsApp('${t.id}')" class="w-10 flex items-center justify-center bg-green-50 hover:bg-green-100 text-green-600 border border-green-200 rounded-lg transition"><i class="fab fa-whatsapp"></i></button>
+                            <button type="button" onclick="window.app.openActionModal('${t.id}')" class="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2 rounded-lg text-xs font-bold transition cursor-pointer">خيارات</button>
+                             <button type="button" onclick="window.app.openWhatsApp('${t.id}')" class="w-10 flex items-center justify-center bg-green-50 hover:bg-green-100 text-green-600 border border-green-200 rounded-lg transition cursor-pointer"><i class="fab fa-whatsapp"></i></button>
                         </div>
                     </div>`;
                 }).join('');
@@ -460,6 +567,7 @@
 
             renderReports() {
                 const tbody = document.getElementById('reportsBody');
+                if(!tbody) return;
                 tbody.innerHTML = this.state.teachers.map(t => {
                     let badge = t.score >= 90 ? "bg-green-100 text-green-700" : (t.score >= 70 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700");
                     let status = t.score < 80 ? '<span class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded">يحتاج متابعة</span>' : '<span class="text-xs text-green-500 font-bold bg-green-50 px-2 py-1 rounded">ممتاز</span>';
@@ -484,21 +592,96 @@
                 this.state.selectedClassName = className;
                 const t = this.state.teachers.find(x => x.id === tId);
                 
-                document.getElementById('actionModalTitle').innerHTML = `<i class="fas fa-user-cog"></i> ${t.name}`;
-                document.getElementById('actionModalSubtitle').innerText = className ? `الحصة الحالية: صف ${className}` : 'قائمة الإدارة';
-                
+                if(!t) return;
+
+                document.getElementById('actionModalTitle').innerHTML = `<i class="fas fa-user-edit text-yellow-400"></i> ${t.name}`;
+                document.getElementById('actionModalSubtitle').innerText = className && className !== 'undefined' ? `الحصة الحالية: ${className}` : 'قائمة الإدارة';
+                document.getElementById('currentScoreDisplay').innerText = t.score + '%';
+
                 const remindBtn = document.getElementById('btn-remind');
-                if(className) remindBtn.classList.remove('hidden'); else remindBtn.classList.add('hidden');
+                if(className && className !== 'undefined') {
+                    remindBtn.disabled = false;
+                    remindBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    remindBtn.disabled = true;
+                    remindBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
                 
+                // Render Dynamic Violation Buttons
+                const container = document.getElementById('violationButtonsContainer');
+                if(container) {
+                    container.innerHTML = this.state.violationTypes.map(v => `
+                        <button type="button" onclick="window.app.dockScore('${v.id}')" class="w-full bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-red-700 border border-slate-200 hover:border-red-200 p-3 rounded-lg flex items-center justify-between transition group cursor-pointer">
+                            <span class="flex items-center gap-3 font-bold text-sm">
+                                <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:text-red-500 group-hover:border-red-200 transition">
+                                    <i class="fas ${v.icon}"></i>
+                                </div>
+                                ${v.label}
+                            </span>
+                            <span class="bg-white px-2 py-1 rounded text-xs font-bold text-red-500 border border-slate-200 group-hover:border-red-200 shadow-sm">
+                                -${v.points}
+                            </span>
+                        </button>
+                    `).join('');
+                }
+
                 document.getElementById('modal-action').classList.remove('hidden-view');
             }
 
-            closeModal(id) { document.getElementById(id).classList.add('hidden-view'); }
-            openSettings() { document.getElementById('modal-settings').classList.remove('hidden-view'); }
+            closeModal(id) { 
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden-view'); 
+            }
+            
+            openSettings() { 
+                this.renderViolationsSettings();
+                document.getElementById('modal-settings').classList.remove('hidden-view'); 
+            }
+
+            renderViolationsSettings() {
+                const list = document.getElementById('violationsList');
+                if(!list) return;
+                list.innerHTML = this.state.violationTypes.map(v => `
+                    <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-100 shadow-sm group hover:border-red-100 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fas ${v.icon}"></i></div>
+                            <span class="font-bold text-sm text-slate-700">${v.label}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="bg-red-50 text-red-600 text-xs font-bold px-2 py-1 rounded border border-red-100">-${v.points}</span>
+                            <button type="button" onclick="window.app.removeViolation('${v.id}')" class="text-slate-300 hover:text-red-500 transition px-2 cursor-pointer"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            addViolation() {
+                const labelIn = document.getElementById('newViolationLabel');
+                const pointsIn = document.getElementById('newViolationPoints');
+                if(!labelIn || !pointsIn) return;
+
+                const label = labelIn.value;
+                const points = parseInt(pointsIn.value);
+                
+                if(label && points) {
+                    this.state.violationTypes.push({ id: Date.now().toString(), label, points, icon: 'fa-exclamation-circle' });
+                    labelIn.value = '';
+                    this.saveData();
+                    this.renderViolationsSettings();
+                }
+            }
+
+            removeViolation(id) {
+                this.state.violationTypes = this.state.violationTypes.filter(v => v.id !== id);
+                this.saveData();
+                this.renderViolationsSettings();
+            }
 
             sendWhatsApp(type) {
                 const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId);
-                if(!t || !t.phone) return alert('أضف الهاتف أولاً');
+                if(!t) return; 
+                
+                if(!t.phone) return alert('أضف الهاتف أولاً');
                 
                 let msg = type === 'summon' 
                     ? `السلام عليكم أستاذ ${t.name}، يرجى التكرم بزيارة مكتب الإدارة.` 
@@ -512,13 +695,17 @@
                 else alert('أضف الهاتف أولاً');
             }
 
-            dockScore(reason, amount) {
-                if(confirm(`خصم ${amount} نقاط؟`)) {
+            dockScore(violationId) {
+                const v = this.state.violationTypes.find(x => x.id === violationId);
+                if(!v) return;
+
+                if(confirm(`تأكيد خصم ${v.points} نقاط بسبب: ${v.label}؟`)) {
                     const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId);
-                    t.score = Math.max(0, t.score - amount);
-                    this.saveData();
-                    this.renderAll();
-                    this.closeModal('modal-action');
+                    if(t) {
+                        t.score = Math.max(0, t.score - v.points);
+                        this.saveData();
+                        this.closeModal('modal-action');
+                    }
                 }
             }
 
@@ -587,8 +774,8 @@
             }
         }
 
-        // Initialize App
-        const app = new SchoolApp();
+        // Attach to window explicitly
+        window.app = new SchoolApp();
     </script>
 </body>
 </html>

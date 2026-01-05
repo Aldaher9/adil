@@ -25,6 +25,13 @@ export interface Period {
   end: string;
 }
 
+export interface ViolationType {
+  id: string;
+  label: string;
+  points: number;
+  icon: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,6 +40,13 @@ export class SchoolStoreService {
   teachers = signal<Teacher[]>([]);
   periods = signal<Period[]>([]);
   classes = signal<Record<string, string>>({});
+  
+  // New: Configurable Violations
+  violationTypes = signal<ViolationType[]>([
+    { id: 'late', label: 'تأخر عن الحصة', points: 5, icon: 'fa-clock' },
+    { id: 'absent', label: 'غياب عن الحصة', points: 15, icon: 'fa-user-slash' },
+    { id: 'phone', label: 'استخدام الهاتف', points: 3, icon: 'fa-mobile-alt' }
+  ]);
   
   cloudStatus = signal<'connected' | 'saving' | 'error' | 'offline'>('offline');
   lastSync = signal<Date | null>(null);
@@ -81,7 +95,6 @@ export class SchoolStoreService {
 
   addSimulationHour() {
     this.simulationOffset.update(v => v + 3600000);
-    // Immediately update current time to reflect change without waiting for interval
     this.currentTime.set(new Date(new Date().getTime() + this.simulationOffset()));
   }
 
@@ -101,9 +114,6 @@ export class SchoolStoreService {
   });
 
   currentDayId = computed(() => {
-    // 0=Sun, 6=Sat in JS. Assuming school Week: Sun=1, Mon=2...
-    // Adjust based on typical regional settings. standard JS getDay(): Sun=0.
-    // Let's assume the XML data uses 1=Sunday, 2=Monday.
     return this.currentTime().getDay() + 1;
   });
 
@@ -123,8 +133,42 @@ export class SchoolStoreService {
       }
     });
     
-    // Sort by class name numeric (1/1, 1/2, 2/1...)
-    return active.sort((a, b) => a.className.localeCompare(b.className, 'ar', { numeric: true }));
+    return active.sort((a, b) => {
+      const getGradeValue = (name: string): number => {
+        const n = name.trim();
+        if (n.match(/(الثاني|ثاني)\s*عشر/)) return 12;
+        if (n.match(/(الحادي|حادي)\s*عشر/)) return 11;
+        if (n.match(/العاشر|عاشر/)) return 10;
+        if (n.match(/التاسع|تاسع/)) return 9;
+        if (n.match(/الثامن|ثامن/)) return 8;
+        if (n.match(/السابع|سابع/)) return 7;
+        if (n.match(/السادس|سادس/)) return 6;
+        if (n.match(/الخامس|خامس/)) return 5;
+        if (n.match(/الرابع|رابع/)) return 4;
+        if (n.match(/الثالث|ثالث/)) return 3;
+        if (n.match(/الثاني|ثاني/)) return 2;
+        if (n.match(/الاول|الأول|اول|أول/)) return 1;
+        const match = n.match(/\d+/);
+        if (match) return parseInt(match[0], 10);
+        return 999;
+      };
+
+      const valA = getGradeValue(a.className);
+      const valB = getGradeValue(b.className);
+
+      if (valA !== valB) return valA - valB;
+      
+      const getSection = (str: string) => {
+          const nums = str.match(/\d+/g);
+          return nums ? parseInt(nums[nums.length - 1], 10) : 0;
+      };
+
+      const secA = getSection(a.className);
+      const secB = getSection(b.className);
+      if (secA !== secB) return secA - secB;
+
+      return a.className.localeCompare(b.className, 'ar', { numeric: true });
+    });
   });
 
 
@@ -139,6 +183,10 @@ export class SchoolStoreService {
         this.teachers.set(data.teachers || []);
         this.periods.set(data.periods || []);
         this.classes.set(data.classes || {});
+        // Load settings if exist, else keep default
+        if(data.violationTypes && Array.isArray(data.violationTypes)) {
+            this.violationTypes.set(data.violationTypes);
+        }
         this.cloudStatus.set('connected');
       }
     } catch (e) {
@@ -155,6 +203,7 @@ export class SchoolStoreService {
         teachers: this.teachers(),
         periods: this.periods(),
         classes: this.classes(),
+        violationTypes: this.violationTypes(),
         lastSync: new Date()
       });
       this.cloudStatus.set('connected');
@@ -179,6 +228,18 @@ export class SchoolStoreService {
     await this.syncToCloud();
   }
 
+  // --- Settings Operations ---
+  
+  async addViolationType(v: ViolationType) {
+      this.violationTypes.update(list => [...list, v]);
+      await this.syncToCloud();
+  }
+
+  async removeViolationType(id: string) {
+      this.violationTypes.update(list => list.filter(x => x.id !== id));
+      await this.syncToCloud();
+  }
+
   exportToExcel() {
     if (typeof XLSX === 'undefined') return;
     
@@ -194,11 +255,10 @@ export class SchoolStoreService {
     XLSX.writeFile(wb, "School_Report.xlsx");
   }
 
-  // --- XML Parser ---
+  // --- XML/Excel Parsers (Keep existing) ---
   
   parseXML(file: File) {
     const reader = new FileReader();
-    // Using windows-1256 for Arabic XML support as per original
     reader.readAsText(file, "windows-1256");
     
     reader.onload = async (e: any) => {
@@ -206,20 +266,17 @@ export class SchoolStoreService {
         const parser = new DOMParser();
         const xml = parser.parseFromString(e.target.result, "text/xml");
 
-        // Parse Periods
         const newPeriods = Array.from(xml.querySelectorAll('periods period')).map(p => ({
             id: p.getAttribute('period')!, 
             start: p.getAttribute('starttime')!, 
             end: p.getAttribute('endtime')!
         }));
 
-        // Parse Classes
         const newClasses: Record<string, string> = {};
         xml.querySelectorAll('classes class').forEach(c => {
           newClasses[c.getAttribute('id')!] = c.getAttribute('name')!;
         });
 
-        // Parse Teachers
         const newTeachers = Array.from(xml.querySelectorAll('teachers teacher')).map(t => ({
             id: t.getAttribute('id')!, 
             name: t.getAttribute('name')!, 
@@ -229,7 +286,6 @@ export class SchoolStoreService {
             lessons: [] as Lesson[]
         }));
 
-        // Parse Schedule
         xml.querySelectorAll('TimeTableSchedules TimeTableSchedule').forEach(sch => {
             const tId = sch.getAttribute('TeacherID');
             const teacher = newTeachers.find(x => x.id === tId);
@@ -242,7 +298,6 @@ export class SchoolStoreService {
             }
         });
 
-        // Update State
         this.periods.set(newPeriods);
         this.classes.set(newClasses);
         this.teachers.set(newTeachers);
@@ -257,18 +312,9 @@ export class SchoolStoreService {
     };
   }
 
-  // --- Advanced Teacher Data Import/Export ---
-
   exportTeacherDataTemplate() {
     if (typeof XLSX === 'undefined') return alert('المكتبة غير محملة');
-
-    const data = this.teachers().map(t => ({
-      'Teacher_ID': t.id,
-      'Short_Name': t.short,
-      'Full_Name': t.name,
-      'Phone': t.phone
-    }));
-
+    const data = this.teachers().map(t => ({ 'Teacher_ID': t.id, 'Short_Name': t.short, 'Full_Name': t.name, 'Phone': t.phone }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Teachers_Data");
@@ -277,37 +323,24 @@ export class SchoolStoreService {
 
   importTeacherData(file: File) {
     if (typeof XLSX === 'undefined') return alert('المكتبة غير محملة');
-
     const reader = new FileReader();
     reader.onload = async (e: any) => {
       try {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheet];
-        const json = XLSX.utils.sheet_to_json(worksheet);
-
+        const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
         this.teachers.update(teachers => {
           return teachers.map(t => {
-            // Find row by ID
             const row: any = json.find((r: any) => r['Teacher_ID'] == t.id);
             if (row) {
-              return {
-                ...t,
-                name: row['Full_Name'] || t.name,
-                phone: row['Phone'] ? String(row['Phone']) : t.phone
-              };
+              return { ...t, name: row['Full_Name'] || t.name, phone: row['Phone'] ? String(row['Phone']) : t.phone };
             }
             return t;
           });
         });
-
         await this.syncToCloud();
         alert('تم تحديث بيانات المعلمين بنجاح');
-      } catch (err) {
-        console.error(err);
-        alert('خطأ في قراءة ملف Excel');
-      }
+      } catch (err) { console.error(err); alert('خطأ في قراءة ملف Excel'); }
     };
     reader.readAsArrayBuffer(file);
   }
