@@ -1,14 +1,12 @@
+ // Critical for JIT
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { AppComponent } from './src/app.component';
 
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideZonelessChangeDetection()
+  ]
+}).catch(err => console.error(err));
 
-const container = document.getElementById('root');
-if (container) {
-  const root = createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
-}
+// AI Studio always uses an `index.tsx` file for all project types.

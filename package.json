@@ -1,21 +1,27 @@
 {
-  "name": "منصة-القائد---نظام-الإدارة-المدرسية-المتكامل",
+  "name": "school-manager-pro",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "ng serve",
+    "build": "ng build",
+    "preview": "ng serve --configuration=production"
   },
   "dependencies": {
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "react-router-dom": "6.26.2"
+    "rxjs": "^7.8.2",
+    "@angular/forms": "^21.0.6",
+    "@angular/compiler": "^21.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/build": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
+    "tailwindcss": "latest"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

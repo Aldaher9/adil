@@ -3,274 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدير المدرسة الذكي - نظام السحابة</title>
+    <title>مدير المدرسة الذكي</title>
     
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Firebase Compat (from original request) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
-        .nav-link.active { border-bottom: 3px solid #facc15; color: #facc15; }
-        .page-content { display: none; }
-        .page-content.active { display: block; }
-        .sync-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
+<script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
+    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
+    "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
+    "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
+    "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
+    "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
+    "@angular/forms": "https://esm.sh/@angular/forms@^21.0.6?external=rxjs",
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.6?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.0.6?external=rxjs",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.6?external=rxjs",
+    "@angular/core": "https://esm.sh/@angular/core@^21.0.6?external=rxjs"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
 </head>
-<body>
-
-    <header class="bg-indigo-900 text-white shadow-xl sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <h1 class="text-xl font-bold flex items-center gap-2">
-                    <i class="fas fa-university text-yellow-400"></i> الإدارة المدرسية 
-                    <span id="cloudStatus" class="sync-badge bg-green-500 text-white">متصل بالسحابة</span>
-                </h1>
-                <div class="flex gap-4 text-center">
-                    <div id="realClock" class="font-mono text-lg font-bold text-green-400 bg-black/20 px-3 py-1 rounded">00:00</div>
-                    <button onclick="simulateRandomTime()" class="text-xs bg-white/10 hover:bg-white/20 p-2 rounded transition"><i class="fas fa-sync"></i> محاكاة</button>
-                </div>
-            </div>
-            
-            <nav class="flex gap-6 pb-2 overflow-x-auto">
-                <button onclick="showPage('now')" id="nav-now" class="nav-link active pb-2 whitespace-nowrap"><i class="fas fa-chalkboard ml-1"></i> الحصص الحالية</button>
-                <button onclick="showPage('teachers')" id="nav-teachers" class="nav-link pb-2 whitespace-nowrap"><i class="fas fa-users-cog ml-1"></i> المعلمون والتقييم</button>
-                <button onclick="showPage('reports')" id="nav-reports" class="nav-link pb-2 whitespace-nowrap"><i class="fas fa-file-invoice ml-1"></i> التقارير والأداء</button>
-                <button onclick="document.getElementById('xmlFileInput').click()" class="text-yellow-400 pb-2"><i class="fas fa-file-import ml-1"></i> استيراد XML</button>
-            </nav>
-        </div>
-    </header>
-
-    <input type="file" id="xmlFileInput" accept=".xml" class="hidden" />
-
-    <main class="container mx-auto p-4 md:p-6">
-        <section id="page-now" class="page-content active">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-slate-800">متابعة الفصول الآن</h2>
-                <div id="currentPeriodLabel" class="bg-indigo-100 text-indigo-800 px-4 py-1 rounded-full font-bold">--</div>
-            </div>
-            <div id="currentClassesGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <div class="col-span-full text-center py-20 bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
-                    <p class="text-gray-500 italic">يتم الآن جلب البيانات من السحابة...</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="page-teachers" class="page-content">
-            <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
-                <h2 class="text-2xl font-bold text-slate-800">إدارة المعلمين</h2>
-                <input type="text" id="searchBox" placeholder="ابحث عن معلم..." class="p-2 border rounded-lg w-full md:w-80 shadow-sm" onkeyup="renderTeachers()">
-            </div>
-            <div id="teachersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-        </section>
-
-        <section id="page-reports" class="page-content">
-            <div class="bg-white rounded-2xl shadow-sm p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-slate-800">تقرير الأداء العام</h2>
-                    <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition">
-                        <i class="fas fa-file-excel"></i> تصدير Excel
-                    </button>
-                </div>
-                <div class="overflow-x-auto"><table class="w-full text-right"><thead class="bg-slate-50"><tr><th class="p-4">المعلم</th><th class="p-4 text-center">التقييم</th><th class="p-4 text-center">الهاتف</th></tr></thead><tbody id="reportTableBody" class="divide-y"></tbody></table></div>
-            </div>
-        </section>
-    </main>
-
-    <div id="actionModal" class="fixed inset-0 bg-black/60 hidden flex justify-center items-center z-[100] backdrop-blur-sm">
-        <div class="bg-white rounded-2xl w-11/12 md:w-96 shadow-2xl p-6">
-            <h3 id="modalTeacherName" class="text-xl font-bold mb-4 text-indigo-900"></h3>
-            <div class="space-y-4">
-                <button onclick="sendWhatsApp('summon')" class="w-full bg-green-50 text-green-700 p-3 rounded-xl font-bold border border-green-200 flex justify-between items-center">
-                    <span><i class="fab fa-whatsapp ml-2"></i> استدعاء للمكتب</span>
-                </button>
-                <button onclick="sendWhatsApp('remind')" id="remindBtn" class="w-full bg-blue-50 text-blue-700 p-3 rounded-xl font-bold border border-blue-200 flex justify-between items-center hidden">
-                    <span><i class="fas fa-bell ml-2"></i> تذكير بالحصة</span>
-                </button>
-                <div class="h-px bg-gray-100"></div>
-                <button onclick="logIncident('تأخر', 5)" class="w-full bg-red-50 text-red-700 p-3 rounded-xl font-bold border border-red-100 flex justify-between">
-                    <span>تأخر عن الحصة</span><span class="bg-red-200 px-2 rounded">-5</span>
-                </button>
-                <button onclick="logIncident('غياب', 15)" class="w-full bg-red-50 text-red-700 p-3 rounded-xl font-bold border border-red-100 flex justify-between">
-                    <span>غياب عن الحصة</span><span class="bg-red-200 px-2 rounded">-15</span>
-                </button>
-                <button onclick="closeModal()" class="w-full text-gray-500 py-2">إغلاق</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- إعدادات الفايربيس الخاصة بك ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
-            authDomain: "school-9416e.firebaseapp.com",
-            projectId: "school-9416e",
-            storageBucket: "school-9416e.firebasestorage.app",
-            messagingSenderId: "680872052240",
-            appId: "1:680872052240:web:96d2e544166ab5f8096c95",
-            measurementId: "G-5EBTV0MV83"
-        };
-
-        // تهيئة Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        let db_teachers = []; let db_periods = []; let db_classes = {}; 
-        let simulationOffset = 0; let selectedTeacherId = null; let currentActiveClassName = "";
-
-        // 1. جلب البيانات من السحابة عند فتح الموقع
-        async function loadFromCloud() {
-            try {
-                const doc = await db.collection("school_settings").doc("timetable").get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    db_teachers = data.teachers;
-                    db_periods = data.periods;
-                    db_classes = data.classes;
-                    renderTeachers();
-                    console.log("تم تحميل البيانات من السحابة");
-                }
-            } catch (e) { console.error("خطأ في التحميل:", e); }
-        }
-
-        // 2. حفظ أي تغيير في السحابة تلقائياً
-        async function syncToCloud() {
-            document.getElementById('cloudStatus').innerText = "جاري الحفظ...";
-            document.getElementById('cloudStatus').classList.replace('bg-green-500', 'bg-orange-500');
-            try {
-                await db.collection("school_settings").doc("timetable").set({
-                    teachers: db_teachers,
-                    periods: db_periods,
-                    classes: db_classes,
-                    lastSync: new Date()
-                });
-                document.getElementById('cloudStatus').innerText = "متصل بالسحابة";
-                document.getElementById('cloudStatus').classList.replace('bg-orange-500', 'bg-green-500');
-            } catch (e) { alert("خطأ في المزامنة!"); }
-        }
-
-        // 3. معالجة رفع الملف
-        document.getElementById('xmlFileInput').addEventListener('change', function(e) {
-            const reader = new FileReader();
-            reader.readAsText(e.target.files[0], "windows-1256");
-            reader.onload = async function(e) {
-                const xml = new DOMParser().parseFromString(e.target.result, "text/xml");
-                db_periods = Array.from(xml.querySelectorAll('periods period')).map(p => ({
-                    id: p.getAttribute('period'), start: p.getAttribute('starttime'), end: p.getAttribute('endtime')
-                }));
-                xml.querySelectorAll('classes class').forEach(c => db_classes[c.getAttribute('id')] = c.getAttribute('name'));
-                db_teachers = Array.from(xml.querySelectorAll('teachers teacher')).map(t => ({
-                    id: t.getAttribute('id'), name: t.getAttribute('name'), short: t.getAttribute('short'),
-                    score: 100, phone: '', lessons: []
-                }));
-                xml.querySelectorAll('TimeTableSchedules TimeTableSchedule').forEach(sch => {
-                    const t = db_teachers.find(x => x.id === sch.getAttribute('TeacherID'));
-                    if(t) t.lessons.push({ day: parseInt(sch.getAttribute('DayID')), period: parseInt(sch.getAttribute('Period')), className: db_classes[sch.getAttribute('ClassID')] || 'نشاط' });
-                });
-                await syncToCloud();
-                renderTeachers();
-                alert("تم رفع الجدول وحفظه في السحابة!");
-            };
-        });
-
-        // تشغيل الساعة والمنطق
-        setInterval(() => {
-            const now = new Date(new Date().getTime() + simulationOffset);
-            document.getElementById('realClock').innerText = now.toLocaleTimeString('ar-OM');
-            const day = now.getDay() + 1;
-            const mins = now.getHours() * 60 + now.getMinutes();
-            let cp = db_periods.find(p => {
-                const [sh, sm] = p.start.split(':').map(Number);
-                const [eh, em] = p.end.split(':').map(Number);
-                return mins >= (sh*60+sm) && mins <= (eh*60+em);
-            });
-            document.getElementById('currentPeriodLabel').innerText = cp ? `الحصة ${cp.id}` : 'خارج الدوام';
-            renderCurrentClasses(day, cp ? parseInt(cp.id) : -1);
-        }, 1000);
-
-        function renderCurrentClasses(day, period) {
-            const grid = document.getElementById('currentClassesGrid');
-            if(period === -1) { grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">لا توجد حصص حالياً</div>'; return; }
-            let active = [];
-            db_teachers.forEach(t => {
-                const l = t.lessons.find(ls => ls.day === day && ls.period === period);
-                if(l) active.push({ t: t, className: l.className });
-            });
-            active.sort((a,b) => a.className.localeCompare(b.className, 'ar', {numeric:true}));
-            grid.innerHTML = active.map(l => `
-                <div class="bg-white p-4 rounded-xl border-r-4 border-indigo-500 shadow-sm flex flex-col justify-between">
-                    <div><div class="text-xs font-bold text-indigo-500 mb-1">الصف ${l.className}</div><div class="text-xs text-gray-500 mb-4">${l.t.name}</div></div>
-                    <button onclick="openModal('${l.t.id}', '${l.className}')" class="bg-indigo-50 text-indigo-700 py-2 rounded-lg text-xs font-bold border border-indigo-100">تواصل أو تقييم</button>
-                </div>
-            `).join('');
-        }
-
-        function renderTeachers() {
-            const grid = document.getElementById('teachersGrid');
-            const search = document.getElementById('searchBox').value.toLowerCase();
-            grid.innerHTML = db_teachers.filter(t => t.name.toLowerCase().includes(search)).map(t => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between mb-4"><div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">${t.short[0]}</div><span class="text-blue-700 font-bold">${t.score}%</span></div>
-                    <h3 class="font-bold text-sm mb-4">${t.name}</h3>
-                    <div class="flex gap-2">
-                        <button onclick="openModal('${t.id}')" class="flex-1 bg-slate-50 text-xs font-bold py-2 rounded-lg border">إجراء سريع</button>
-                        <input type="text" placeholder="رقم الهاتف" class="w-24 text-xs border rounded p-1" onchange="updatePhone('${t.id}', this.value)" value="${t.phone}">
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function updatePhone(id, val) { 
-            const t = db_teachers.find(x => x.id === id); 
-            if(t) { t.phone = val; syncToCloud(); } 
-        }
-
-        async function logIncident(type, pts) {
-            const t = db_teachers.find(x => x.id === selectedTeacherId);
-            t.score = Math.max(0, t.score - pts);
-            await syncToCloud();
-            renderTeachers();
-            closeModal();
-            alert(`تم خصم ${pts} من ${t.short}`);
-        }
-
-        function openModal(id, cName = "") {
-            selectedTeacherId = id; currentActiveClassName = cName;
-            const t = db_teachers.find(x => x.id === id);
-            document.getElementById('modalTeacherName').innerText = t.name;
-            document.getElementById('remindBtn').classList.toggle('hidden', !cName);
-            document.getElementById('actionModal').classList.remove('hidden');
-        }
-
-        function closeModal() { document.getElementById('actionModal').classList.add('hidden'); }
-
-        function sendWhatsApp(type) {
-            const t = db_teachers.find(x => x.id === selectedTeacherId);
-            if(!t.phone) return alert("أدخل الهاتف أولاً");
-            let msg = type === 'summon' ? "يرجى التكرم بالحضور لمكتب المدير." : `أستاذ ${t.short}، نذكرك بحصتك في صف (${currentActiveClassName}).`;
-            window.open(`https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function showPage(p) {
-            document.querySelectorAll('.page-content').forEach(el => el.classList.remove('active'));
-            document.getElementById('page-' + p).classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('nav-' + p).classList.add('active');
-            if(p === 'reports') renderReports();
-        }
-
-        function renderReports() {
-            document.getElementById('reportTableBody').innerHTML = db_teachers.map(t => `<tr><td class="p-4">${t.name}</td><td class="p-4 text-center font-bold text-indigo-600">${t.score}%</td><td class="p-4 text-center">${t.phone || '-'}</td></tr>`).join('');
-        }
-
-        function simulateRandomTime() { simulationOffset += 3600000; }
-
-        // تحميل البيانات من السحابة فور تشغيل الصفحة
-        loadFromCloud();
-    </script>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900">
+    <app-root></app-root>
 </body>
 </html>

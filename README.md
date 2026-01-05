@@ -1,168 +1,20 @@
-# 🚀 منصة القائد مع Firebase (v9 Modular)
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
 
-## ✅ تم تجهيز الربط مع مشروعك!
+# Run and deploy your AI Studio app
 
-الكود الذي أرسلته تم دمجه بالكامل! جميع الإعدادات جاهزة ✨
+This contains everything you need to run your app locally.
 
----
+View your app in AI Studio: https://ai.studio/apps/drive/1Qhn5ATjvlrKF39ackhiKFoxIPK-iO4bg
 
-## 📦 الملفات المرفقة
+## Run Locally
 
-### ملفات Firebase (جاهزة للاستخدام):
-1. ✅ **firebase-config.js** - إعداداتك الخاصة (مدمجة بالفعل!)
-2. ✅ **firebase-service.js** - خدمات Firebase (v9 Modular)
-3. ✅ **firebase-ui.js** - واجهة تسجيل الدخول
-4. ✅ **firebase-helpers.js** - دوال مساعدة
-5. ✅ **index.html** - الملف الرئيسي المحدّث
+**Prerequisites:**  Node.js
 
-### ملفاتك الأصلية (استخدمها كما هي):
-- **script.js** - لا تحتاج تعديل
-- **styles.css** - لا تحتاج تعديل
-- **استمارة_التقييم.json** - لا تحتاج تعديل
 
----
-
-## ⚡ البدء الفوري (دقيقتان فقط!)
-
-### الخطوة 1: تفعيل خدمات Firebase
-
-انتقل إلى: https://console.firebase.google.com/project/school-9416e
-
-**أ) تفعيل Authentication:**
-```
-1. Authentication → Get started
-2. Email/Password → Enable
-3. Save ✅
-```
-
-**ب) إنشاء Realtime Database:**
-```
-1. Realtime Database → Create Database
-2. اختر الموقع: us-central1 (أو أقرب موقع)
-3. Start in test mode ✅
-4. Enable
-```
-
-**ج) قواعد الأمان (مهم!):**
-```json
-{
-  "rules": {
-    "users": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
-      }
-    }
-  }
-}
-```
-
-### الخطوة 2: رفع الملفات
-
-ارفع جميع الملفات إلى:
-- ✅ Firebase Hosting (موصى به)
-- ✅ Netlify
-- ✅ Vercel
-- ✅ GitHub Pages
-- ✅ أي خادم يدعم HTTPS
-
-### الخطوة 3: التجربة!
-
-1. افتح index.html
-2. سجل حساب جديد
-3. ابدأ الاستخدام! 🎉
-
----
-
-## 🔥 رفع الملفات باستخدام Firebase Hosting
-
-```bash
-# تثبيت Firebase CLI
-npm install -g firebase-tools
-
-# تسجيل الدخول
-firebase login
-
-# تهيئة المشروع
-firebase init hosting
-
-# اختر مشروعك: school-9416e
-# المجلد: . (النقطة)
-# SPA: No
-
-# رفع الملفات
-firebase deploy
-```
-
-سيعطيك رابط مثل: `https://school-9416e.web.app` ✅
-
----
-
-## ⚠️ ملاحظة مهمة: databaseURL
-
-أضفت `databaseURL` تلقائياً في firebase-config.js:
-```javascript
-databaseURL: "https://school-9416e-default-rtdb.firebaseio.com"
-```
-
-**إذا لم تعمل**، تحقق من الرابط الصحيح:
-1. اذهب إلى Realtime Database في Firebase Console
-2. انسخ الرابط من الأعلى
-3. ضعه في firebase-config.js
-
----
-
-## 🎯 المميزات
-
-✅ **كود مشروعك مدمج بالكامل**  
-✅ **Firebase SDK v9 Modular** (أحدث إصدار)  
-✅ **تسجيل دخول آمن**  
-✅ **حفظ تلقائي على السحابة**  
-✅ **مزامنة بين الأجهزة**  
-✅ **واجهة عربية كاملة**  
-✅ **وضع تجربة بدون تسجيل**  
-
----
-
-## 🆘 حل المشاكل
-
-### 1. خطأ: "Module not found"
-**السبب:** المتصفح لا يدعم ES Modules من الملفات المحلية  
-**الحل:** استخدم خادم ويب (Firebase Hosting, Live Server, إلخ)
-
-### 2. خطأ: "Permission denied"
-**السبب:** قواعد الأمان لم تُضبط بعد  
-**الحل:** راجع الخطوة 1 → قواعد الأمان
-
-### 3. خطأ: "databaseURL is not defined"
-**السبب:** رابط قاعدة البيانات غير صحيح  
-**الحل:** انسخ الرابط الصحيح من Firebase Console
-
-### 4. صفحة بيضاء فارغة
-**السبب:** خطأ في تحميل الملفات  
-**الحل:** افتح Console (F12) وشاهد الأخطاء
-
----
-
-## 🧪 اختبار سريع
-
-```javascript
-// افتح Console في المتصفح (F12) واكتب:
-console.log('Firebase متصل؟', window.firebaseService ? 'نعم ✅' : 'لا ❌');
-```
-
----
-
-## 📞 الدعم
-
-- راجع FIREBASE-SETUP-GUIDE.md للشرح المفصل
-- Firebase Console: https://console.firebase.google.com
-- وثائق Firebase: https://firebase.google.com/docs
-
----
-
-**الحالة:** ✅ جاهز للاستخدام الفوري!  
-**المشروع:** school-9416e  
-**التاريخ:** 3 يناير 2026
-
-© 2026 منصة القائد - جميع الحقوق محفوظة
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
