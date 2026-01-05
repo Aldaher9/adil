@@ -1188,31 +1188,30 @@
                 document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
 
                 try {
-                    // Safe check for environment key
+                    // --- API Key Retrieval Logic ---
                     let apiKey = '';
+                    
+                    // 1. Try process.env (Node-like environments/Bundlers)
                     if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
                         apiKey = process.env.API_KEY;
-                    }
-
+                    } 
+                    
                     if (!apiKey) {
-                        // Fallback check if it was somehow injected differently or just warn
-                        console.warn("API Key missing in process.env");
-                        // We proceed to try, but it might fail if the library expects it strictly.
-                        // However, based on instructions, we must assume it's there. 
-                        // If it fails below, the catch block handles it.
+                        throw new Error("API Key is missing. Environment variable process.env.API_KEY not found.");
                     }
 
                     if (typeof window.GoogleGenAI === 'undefined') {
-                         throw new Error("SDK not loaded");
+                         throw new Error("SDK not loaded from esm.sh");
                     }
 
                     const ai = new window.GoogleGenAI({ apiKey: apiKey });
                     
-                    // Correct Stateless Call for @google/genai
                     const response = await ai.models.generateContent({
                         model: 'gemini-2.5-flash',
+                        config: {
+                            systemInstruction: "أنت خبير تربوي وموجه فني متخصص في صياغة التوصيات التربوية للمعلمين."
+                        },
                         contents: `
-                        أنت خبير تربوي وموجه فني.
                         عنوان الدرس: ${topic}
                         الصف: ${document.getElementById('repClassName').innerText}
                         
@@ -1228,13 +1227,25 @@
 
                     const text = response.text;
                     
+                    if (!text) {
+                        throw new Error("Empty response from AI");
+                    }
+
                     // Clean markdown if present
                     const cleanHtml = text.replace(/```html/g, '').replace(/```/g, '');
                     recContainer.innerHTML = cleanHtml;
                     
                 } catch (error) {
-                    console.error("AI Error:", error);
-                    alert("تعذر الاتصال بخدمة الذكاء الاصطناعي. يرجى التأكد من إعدادات المفتاح أو الاتصال بالإنترنت.");
+                    console.error("AI Error Full Details:", error);
+                    let msg = "تعذر الاتصال بخدمة الذكاء الاصطناعي.";
+                    if (error.message.includes("API Key")) {
+                        msg += "\nالسبب: مفتاح API غير موجود في البيئة.";
+                    } else if (error.message.includes("SDK")) {
+                        msg += "\nالسبب: مكتبة Google GenAI لم يتم تحميلها.";
+                    } else {
+                        msg += "\nالسبب: " + error.message;
+                    }
+                    alert(msg);
                 } finally {
                     document.getElementById('aiLoadingOverlay').classList.add('hidden-view');
                 }
