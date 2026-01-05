@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مدير المدرسة الذكي</title>
     
     <!-- Fonts & Icons -->
@@ -44,6 +44,8 @@
         /* Ensure modal content is clickable */
         .modal-content { z-index: 60; position: relative; }
         .modal-backdrop { z-index: 50; }
+        /* Safe area for mobile bottom nav */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 <script type="importmap">
 {
@@ -64,49 +66,30 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900 pb-20">
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900 pb-28">
 
-    <!-- Header -->
+    <!-- Header (Fixed Top) -->
     <header class="bg-indigo-900 text-white shadow-xl sticky top-0 z-40">
-        <div class="container mx-auto px-4">
-            <!-- Top Bar -->
-            <div class="flex justify-between items-center py-3 border-b border-indigo-800/50">
-                <h1 class="text-xl font-bold flex items-center gap-3">
-                    <i class="fas fa-university text-yellow-400"></i>
-                    <span class="hidden sm:inline">مدير المدرسة الذكي</span>
-                    <span id="cloudStatusBadge" class="text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30 flex items-center gap-1">
-                        <i class="fas fa-circle text-[6px]"></i> جاري الاتصال...
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-lg font-bold flex items-center gap-2">
+                <i class="fas fa-university text-yellow-400 text-xl"></i>
+                <div class="flex flex-col">
+                    <span class="leading-none">مدير المدرسة</span>
+                    <span id="cloudStatusBadge" class="text-[9px] mt-1 bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full border border-red-500/30 w-fit flex items-center gap-1">
+                        <i class="fas fa-circle text-[5px]"></i> جاري الاتصال...
                     </span>
-                </h1>
+                </div>
+            </h1>
 
-                <div class="flex gap-3 items-center">
-                    <div class="bg-black/20 px-3 py-1 rounded-lg border border-white/10 backdrop-blur-sm flex items-center gap-2">
-                        <i class="fas fa-clock text-indigo-300 text-xs"></i>
-                        <span id="clockDisplay" class="font-mono font-bold text-green-400 dir-ltr">00:00:00</span>
-                    </div>
-                    <button onclick="window.app.addSimulationHour()" class="text-xs bg-white/10 hover:bg-white/20 p-2 rounded transition text-indigo-200 hover:text-white" title="تقديم ساعة">
-                        <i class="fas fa-forward"></i>
-                    </button>
+            <div class="flex gap-2 items-center">
+                <div class="bg-black/20 px-3 py-1.5 rounded-lg border border-white/10 backdrop-blur-sm flex items-center gap-2">
+                    <i class="fas fa-clock text-indigo-300 text-xs"></i>
+                    <span id="clockDisplay" class="font-mono font-bold text-green-400 dir-ltr text-sm">00:00:00</span>
                 </div>
+                <button onclick="window.app.addSimulationHour()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="تقديم ساعة">
+                    <i class="fas fa-forward"></i>
+                </button>
             </div>
-            
-            <!-- Navigation -->
-            <nav class="flex gap-1 overflow-x-auto pt-2 pb-0 scrollbar-hide">
-                <button onclick="window.app.setView('now')" id="btn-now" class="nav-btn bg-indigo-800 text-yellow-400 border-b-2 border-yellow-400 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
-                    <i class="fas fa-chalkboard"></i> الحصص الحالية
-                </button>
-                <button onclick="window.app.setView('teachers')" id="btn-teachers" class="nav-btn text-indigo-200 hover:text-white hover:bg-indigo-800/50 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
-                    <i class="fas fa-users-cog"></i> المعلمون
-                </button>
-                <button onclick="window.app.setView('reports')" id="btn-reports" class="nav-btn text-indigo-200 hover:text-white hover:bg-indigo-800/50 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap">
-                    <i class="fas fa-file-invoice"></i> التقارير
-                </button>
-                <div class="mr-auto self-center pb-2">
-                    <button onclick="window.app.openSettings()" class="text-sm bg-white/10 hover:bg-white/20 text-indigo-100 hover:text-white px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-2">
-                        <i class="fas fa-cog"></i> <span class="hidden md:inline">الإعدادات</span>
-                    </button>
-                </div>
-            </nav>
         </div>
     </header>
 
@@ -126,7 +109,7 @@
                 </div>
                 <div id="currentPeriodInfo"></div>
             </div>
-            <!-- Increased columns and reduced gap for moderation -->
+            <!-- Compact Grid -->
             <div id="activeClassesGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2"></div>
         </section>
 
@@ -175,12 +158,45 @@
 
     </main>
 
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40 pb-safe">
+        <div class="flex justify-around items-center h-16 px-2">
+            <button onclick="window.app.setView('now')" id="btn-now" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-indigo-700 transition-all duration-300 group">
+                <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors">
+                    <i class="fas fa-chalkboard text-xl mb-0.5"></i>
+                </div>
+                <span class="text-[10px] font-bold">الحصص</span>
+            </button>
+            
+            <button onclick="window.app.setView('teachers')" id="btn-teachers" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-users-cog text-xl mb-0.5"></i>
+                 </div>
+                <span class="text-[10px] font-bold">المعلمين</span>
+            </button>
+            
+            <button onclick="window.app.setView('reports')" id="btn-reports" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-file-invoice text-xl mb-0.5"></i>
+                 </div>
+                <span class="text-[10px] font-bold">التقارير</span>
+            </button>
+            
+            <button onclick="window.app.openSettings()" class="flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-cog text-xl mb-0.5"></i>
+                 </div>
+                <span class="text-[10px] font-bold">الإعدادات</span>
+            </button>
+        </div>
+    </nav>
+
     <!-- Modals -->
     
     <!-- Action Modal -->
     <div id="modal-action" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-action')"></div>
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in modal-content">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in modal-content mb-20"> <!-- Added mb-20 to push above nav -->
             <div class="bg-slate-800 p-4 text-white flex justify-between items-start">
                 <div>
                     <h3 class="text-lg font-bold flex items-center gap-2" id="actionModalTitle"></h3>
@@ -189,7 +205,7 @@
                 <button type="button" onclick="window.app.closeModal('modal-action')" class="text-white/50 hover:text-white"><i class="fas fa-times text-lg"></i></button>
             </div>
             
-            <div class="p-4 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <div class="p-4 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
                 <!-- Communication Buttons -->
                 <div class="space-y-2">
                      <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">التواصل</label>
@@ -219,7 +235,7 @@
     <!-- Settings Modal -->
     <div id="modal-settings" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-settings')"></div>
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[90vh] modal-content">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[80vh] modal-content mb-16">
             <div class="bg-slate-800 text-white p-5 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-cog"></i> الإعدادات</h3>
                 <button type="button" onclick="window.app.closeModal('modal-settings')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
@@ -381,14 +397,14 @@
                 const badge = document.getElementById('cloudStatusBadge');
                 if(!badge) return;
                 if(status === 'connected') {
-                    badge.innerHTML = '<i class="fas fa-circle text-[6px] animate-pulse"></i> متصل';
-                    badge.className = "text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full border border-green-500/30 flex items-center gap-1";
+                    badge.innerHTML = '<i class="fas fa-circle text-[5px] animate-pulse"></i> متصل';
+                    badge.className = "text-[9px] mt-1 bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded-full border border-green-500/30 w-fit flex items-center gap-1";
                 } else if(status === 'saving') {
-                    badge.innerHTML = '<i class="fas fa-sync fa-spin text-[8px]"></i> حفظ...';
-                    badge.className = "text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30 flex items-center gap-1";
+                    badge.innerHTML = '<i class="fas fa-sync fa-spin text-[6px]"></i> حفظ...';
+                    badge.className = "text-[9px] mt-1 bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-500/30 w-fit flex items-center gap-1";
                 } else {
                     badge.innerHTML = '<i class="fas fa-wifi-slash"></i>';
-                    badge.className = "text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30 flex items-center gap-1";
+                    badge.className = "text-[9px] mt-1 bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full border border-red-500/30 w-fit flex items-center gap-1";
                 }
             }
 
@@ -414,20 +430,49 @@
                     const el = document.getElementById(`view-${v}`);
                     if(el) el.classList.add('hidden-view');
                     const btn = document.getElementById(`btn-${v}`);
-                    if(btn) btn.className = v === viewName 
-                        ? "nav-btn bg-indigo-800 text-yellow-400 border-b-2 border-yellow-400 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap"
-                        : "nav-btn text-indigo-200 hover:text-white hover:bg-indigo-800/50 px-4 py-3 rounded-t-lg transition-all flex items-center gap-2 whitespace-nowrap";
+                    
+                    if(btn) {
+                        // Reset to inactive state (Bottom Nav style)
+                        btn.className = "nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group";
+                        const iconContainer = btn.querySelector('div');
+                        if(iconContainer) {
+                             iconContainer.className = "w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors";
+                        }
+                    }
                 });
+                
+                // Show View
                 const view = document.getElementById(`view-${viewName}`);
                 if(view) view.classList.remove('hidden-view');
+                
+                // Set Active State
+                const activeBtn = document.getElementById(`btn-${viewName}`);
+                if(activeBtn) {
+                     activeBtn.className = "nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-indigo-700 transition-all duration-300 group";
+                     const iconContainer = activeBtn.querySelector('div');
+                     if(iconContainer) {
+                         iconContainer.className = "w-10 h-8 flex items-center justify-center rounded-xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors";
+                     }
+                }
+
                 if(viewName === 'teachers') this.renderTeachers();
                 if(viewName === 'reports') this.renderReports();
             }
 
             renderAll() {
-                const btn = document.querySelector('.nav-btn.bg-indigo-800');
-                if(!btn) return;
-                const currentView = btn.id.replace('btn-', '');
+                // Find active button to determine current view
+                let currentView = 'now';
+                const nowBtn = document.getElementById('btn-now');
+                if(nowBtn && nowBtn.classList.contains('text-indigo-700')) currentView = 'now';
+                else {
+                    const teachBtn = document.getElementById('btn-teachers');
+                    if(teachBtn && teachBtn.classList.contains('text-indigo-700')) currentView = 'teachers';
+                    else {
+                        const repBtn = document.getElementById('btn-reports');
+                        if(repBtn && repBtn.classList.contains('text-indigo-700')) currentView = 'reports';
+                    }
+                }
+                
                 if(currentView === 'now') {
                      const now = new Date(new Date().getTime() + this.state.simulationOffset);
                      this.renderCurrentPeriod(now);
