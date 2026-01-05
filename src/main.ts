@@ -1,0 +1,1 @@
+// Angular bootstrap disabled in favor of Vanilla JS for portability
