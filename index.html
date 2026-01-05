@@ -1188,17 +1188,30 @@
                 document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
 
                 try {
-                    // Check if Gemini is available (Client side simulation for prototype)
-                    if (typeof window.GoogleGenAI === 'undefined' || !process.env.API_KEY) {
-                        // Fallback or Error handling if key not present
-                        console.warn("Gemini API Key missing or lib not loaded");
-                        // For demo purposes, we might just timeout
+                    // Safe check for environment key
+                    let apiKey = '';
+                    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+                        apiKey = process.env.API_KEY;
                     }
 
-                    const ai = new window.GoogleGenAI({ apiKey: process.env.API_KEY });
-                    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
+                    if (!apiKey) {
+                        // Fallback check if it was somehow injected differently or just warn
+                        console.warn("API Key missing in process.env");
+                        // We proceed to try, but it might fail if the library expects it strictly.
+                        // However, based on instructions, we must assume it's there. 
+                        // If it fails below, the catch block handles it.
+                    }
 
-                    const prompt = `
+                    if (typeof window.GoogleGenAI === 'undefined') {
+                         throw new Error("SDK not loaded");
+                    }
+
+                    const ai = new window.GoogleGenAI({ apiKey: apiKey });
+                    
+                    // Correct Stateless Call for @google/genai
+                    const response = await ai.models.generateContent({
+                        model: 'gemini-2.5-flash',
+                        contents: `
                         أنت خبير تربوي وموجه فني.
                         عنوان الدرس: ${topic}
                         الصف: ${document.getElementById('repClassName').innerText}
@@ -1210,20 +1223,18 @@
                         إعادة صياغة هذه التوصيات لتكون "سياقية" ومرتبطة تحديداً بموضوع الدرس "${topic}".
                         اجعلها عملية وقابلة للتطبيق داخل الحصة.
                         أعد القائمة كنقاط HTML (li tags) فقط.
-                    `;
+                        `
+                    });
 
-                    const result = await model.generateContent(prompt);
-                    const response = await result.response;
-                    const text = response.text();
+                    const text = response.text;
                     
                     // Clean markdown if present
                     const cleanHtml = text.replace(/```html/g, '').replace(/```/g, '');
-                    
                     recContainer.innerHTML = cleanHtml;
                     
                 } catch (error) {
                     console.error("AI Error:", error);
-                    alert("تعذر الاتصال بخدمة الذكاء الاصطناعي. يرجى التحقق من المفتاح أو الاتصال.");
+                    alert("تعذر الاتصال بخدمة الذكاء الاصطناعي. يرجى التأكد من إعدادات المفتاح أو الاتصال بالإنترنت.");
                 } finally {
                     document.getElementById('aiLoadingOverlay').classList.add('hidden-view');
                 }
