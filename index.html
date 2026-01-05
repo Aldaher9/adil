@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدير المدرسة - نظام الحسابات المحدث</title>
+    <title>مدير المدرسة الذكي - GitHub Version</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -14,45 +14,70 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body { font-family: 'Cairo', sans-serif; }
-        #loginOverlay { position: fixed; inset: 0; background: #1e1b4b; display: flex; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.5s; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
+        .nav-link.active { border-bottom: 3px solid #facc15; color: #facc15; }
+        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .hidden { display: none !important; }
         .page-content { display: none; }
         .page-content.active { display: block; }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="loginOverlay">
         <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full mx-4">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">تسجيل الدخول</h2>
-            <button onclick="loginWithGoogle()" id="loginBtn" class="w-full flex items-center justify-center gap-3 border py-3 rounded-xl hover:bg-gray-50 transition">
+            <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-university text-3xl text-indigo-900"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2 text-gray-800">نظام الإدارة المدرسية</h2>
+            <p class="text-gray-500 mb-8 text-sm">سجل دخولك لحفظ جدولك وبياناتك سحابياً</p>
+            <button onclick="loginWithGoogle()" id="loginBtn" class="w-full flex items-center justify-center gap-3 border-2 border-gray-100 py-3 rounded-2xl hover:bg-gray-50 transition font-bold text-gray-700">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa_google_main_64dp.png" class="w-6">
-                الدخول بحساب جوجل
+                الدخول عبر جوجل
             </button>
             <p id="authError" class="text-red-500 text-xs mt-4 hidden"></p>
         </div>
     </div>
 
     <div id="appInterface" class="hidden">
-        <header class="bg-indigo-900 text-white p-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <img id="userPhoto" class="w-10 h-10 rounded-full border">
-                <span id="userName" class="font-bold text-sm"></span>
+        <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center gap-3">
+                        <img id="userPhoto" class="w-10 h-10 rounded-full border-2 border-yellow-400">
+                        <div>
+                            <p id="userName" class="text-xs font-bold leading-tight"></p>
+                            <button onclick="logout()" class="text-[10px] text-yellow-400 hover:underline">تسجيل الخروج</button>
+                        </div>
+                    </div>
+                    <div id="realClock" class="font-mono text-lg font-bold text-green-400 bg-black/20 px-3 py-1 rounded">00:00</div>
+                </div>
+                <nav class="flex gap-6 pb-2 overflow-x-auto text-sm">
+                    <button onclick="showPage('now')" id="nav-now" class="nav-link active pb-2 whitespace-nowrap">الحصص الآن</button>
+                    <button onclick="showPage('teachers')" id="nav-teachers" class="nav-link pb-2 whitespace-nowrap">المعلمون</button>
+                    <button onclick="document.getElementById('xmlFileInput').click()" class="text-yellow-400 pb-2 whitespace-nowrap">استيراد XML</button>
+                </nav>
             </div>
-            <button onclick="logout()" class="text-xs bg-red-500 px-3 py-1 rounded">خروج</button>
         </header>
-        
-        <main class="p-6 text-center">
-            <h1 class="text-xl font-bold mb-4">تم تسجيل الدخول بنجاح!</h1>
-            <p class="text-gray-600 mb-8">يمكنك الآن البدء برفع الجدول أو إدارة المعلمين.</p>
-            <button onclick="document.getElementById('xmlFileInput').click()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg">رفع ملف الجدول XML</button>
-            <input type="file" id="xmlFileInput" class="hidden">
+
+        <input type="file" id="xmlFileInput" accept=".xml" class="hidden" />
+
+        <main class="container mx-auto p-4 md:p-6">
+            <div id="page-now" class="page-content active">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-slate-800">متابعة الفصول الآن</h2>
+                    <div id="currentPeriodLabel" class="bg-indigo-100 text-indigo-800 px-4 py-1 rounded-full text-xs font-bold">--</div>
+                </div>
+                <div id="currentClassesGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+            </div>
+
+            <div id="page-teachers" class="page-content">
+                <div id="teachersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+            </div>
         </main>
     </div>
 
     <script>
-        // إعداداتك الخاصة
         const firebaseConfig = {
             apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
             authDomain: "school-9416e.firebaseapp.com",
@@ -63,52 +88,151 @@
             measurementId: "G-5EBTV0MV83"
         };
 
-        // تهيئة الفايربيس مع معالجة الأخطاء
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase Initialized");
-        } catch (e) {
-            console.error("Firebase Init Error:", e);
-        }
-
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // دالة تسجيل الدخول
+        let currentUser = null;
+        let db_teachers = [], db_periods = [], db_classes = {};
+
+        // --- نظام الدخول ---
         async function loginWithGoogle() {
-            const btn = document.getElementById('loginBtn');
-            btn.disabled = true;
-            btn.innerText = "جاري الاتصال...";
-            
             try {
                 await auth.signInWithPopup(provider);
             } catch (error) {
-                console.error("Login Error:", error);
-                document.getElementById('authError').innerText = "حدث خطأ: " + error.message;
+                document.getElementById('authError').innerText = "خطأ: " + error.message;
                 document.getElementById('authError').classList.remove('hidden');
-                btn.disabled = false;
-                btn.innerText = "الدخول بحساب جوجل";
             }
         }
 
-        // مراقبة حالة المستخدم
+        function logout() { auth.signOut().then(() => location.reload()); }
+
         auth.onAuthStateChanged(user => {
             if (user) {
-                console.log("User is logged in:", user.uid);
+                currentUser = user;
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('appInterface').classList.remove('hidden');
                 document.getElementById('userName').innerText = user.displayName;
                 document.getElementById('userPhoto').src = user.photoURL;
-            } else {
-                console.log("No user logged in");
-                document.getElementById('loginOverlay').classList.remove('hidden');
-                document.getElementById('appInterface').classList.add('hidden');
+                loadData();
             }
         });
 
-        function logout() {
-            auth.signOut();
+        // --- التعامل مع البيانات السحابية ---
+        async function loadData() {
+            const doc = await db.collection("users_data").doc(currentUser.uid).get();
+            if (doc.exists) {
+                const data = doc.data();
+                db_teachers = data.teachers || [];
+                db_periods = data.periods || [];
+                db_classes = data.classes || {};
+                renderTeachers();
+                startClock();
+            }
+        }
+
+        async function saveData() {
+            if (!currentUser) return;
+            await db.collection("users_data").doc(currentUser.uid).set({
+                teachers: db_teachers, periods: db_periods, classes: db_classes, lastSync: new Date()
+            });
+        }
+
+        // --- معالجة XML ---
+        document.getElementById('xmlFileInput').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.readAsText(e.target.files[0], "windows-1256");
+            reader.onload = async function(ev) {
+                const xml = new DOMParser().parseFromString(ev.target.result, "text/xml");
+                
+                // استخراج الحصص
+                db_periods = Array.from(xml.querySelectorAll('periods period')).map(p => ({
+                    id: p.getAttribute('period'), start: p.getAttribute('starttime'), end: p.getAttribute('endtime')
+                }));
+
+                // استخراج الفصول
+                xml.querySelectorAll('classes class').forEach(c => db_classes[c.getAttribute('id')] = c.getAttribute('name'));
+
+                // استخراج المعلمين
+                db_teachers = Array.from(xml.querySelectorAll('teachers teacher')).map(t => ({
+                    id: t.getAttribute('id'), name: t.getAttribute('name'), short: t.getAttribute('short'),
+                    score: 100, phone: '', lessons: []
+                }));
+
+                // استخراج الجدول
+                xml.querySelectorAll('TimeTableSchedules TimeTableSchedule').forEach(sch => {
+                    const t = db_teachers.find(x => x.id === sch.getAttribute('TeacherID'));
+                    if(t) t.lessons.push({
+                        day: parseInt(sch.getAttribute('DayID')),
+                        period: parseInt(sch.getAttribute('Period')),
+                        className: db_classes[sch.getAttribute('ClassID')] || 'نشاط'
+                    });
+                });
+
+                await saveData();
+                renderTeachers();
+                alert("تم رفع الجدول ومزامنته بنجاح!");
+            };
+        });
+
+        // --- منطق الساعة والعرض ---
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('realClock').innerText = now.toLocaleTimeString('ar-OM', {hour: '2-digit', minute:'2-digit'});
+                const day = now.getDay() + 1; // الأحد = 1
+                const mins = now.getHours() * 60 + now.getMinutes();
+                
+                let cp = db_periods.find(p => {
+                    const [sh, sm] = p.start.split(':').map(Number);
+                    const [eh, em] = p.end.split(':').map(Number);
+                    return mins >= (sh*60+sm) && mins <= (eh*60+em);
+                });
+
+                document.getElementById('currentPeriodLabel').innerText = cp ? `الحصة ${cp.id}` : 'خارج الدوام';
+                updateNowGrid(day, cp ? parseInt(cp.id) : -1);
+            }, 1000);
+        }
+
+        function updateNowGrid(day, period) {
+            const grid = document.getElementById('currentClassesGrid');
+            if(period === -1) { grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">لا توجد حصص حالياً</div>'; return; }
+            
+            let active = [];
+            db_teachers.forEach(t => {
+                const l = t.lessons.find(ls => ls.day === day && ls.period === period);
+                if(l) active.push({ name: t.name, className: l.className });
+            });
+
+            grid.innerHTML = active.map(l => `
+                <div class="bg-white p-4 rounded-xl border-r-4 border-indigo-500 shadow-sm">
+                    <div class="text-[10px] font-bold text-indigo-500">الصف ${l.className}</div>
+                    <div class="text-sm font-bold text-gray-800">${l.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderTeachers() {
+            document.getElementById('teachersGrid').innerHTML = db_teachers.map(t => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-sm mb-3">${t.name}</h3>
+                    <input type="text" placeholder="رقم الهاتف" class="w-full text-xs border rounded p-2 mb-2" onchange="updatePhone('${t.id}', this.value)" value="${t.phone}">
+                    <div class="text-xs text-blue-600 font-bold">التقييم: ${t.score}%</div>
+                </div>
+            `).join('');
+        }
+
+        async function updatePhone(id, val) {
+            const t = db_teachers.find(x => x.id === id);
+            if(t) { t.phone = val; await saveData(); }
+        }
+
+        function showPage(p) {
+            document.querySelectorAll('.page-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('page-' + p).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('nav-' + p).classList.add('active');
         }
     </script>
 </body>
