@@ -34,6 +34,14 @@ import { Teacher, SchoolStoreService, ViolationType } from '../services/school-s
             </div>
 
             <div class="p-4 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <!-- Smart Evaluation Button -->
+                <button (click)="startEvaluation()" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 p-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer mb-2">
+                    <i class="fas fa-clipboard-list text-xl"></i>
+                    <span>تقييم زيارة إشرافية</span>
+                </button>
+
+                <div class="h-px bg-slate-100 mb-2"></div>
+
                 <!-- WhatsApp Actions -->
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">التواصل</label>
@@ -99,6 +107,7 @@ export class ActionModalComponent {
   teacher = input<Teacher | null>(null);
   className = input<string | undefined>(undefined);
   close = output<void>();
+  evaluate = output<void>();
   
   store = inject(SchoolStoreService);
 
@@ -127,5 +136,13 @@ export class ActionModalComponent {
           await this.store.dockScore(t.id, v.points);
           this.close.emit();
       }
+  }
+
+  startEvaluation() {
+      // Logic handled by main app or output event
+      // Since this is the Angular version, we can route or show the supervision component
+      // However, we need to bridge this.
+      alert('الرجاء استخدام النسخة الكاملة لخاصية التقييم (Vanilla JS Version currently implements full flow)');
+      this.close.emit();
   }
 }

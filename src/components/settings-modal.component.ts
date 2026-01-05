@@ -76,9 +76,6 @@ import { SchoolStoreService } from '../services/school-store.service';
                         <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2 text-sm">
                             <i class="fas fa-calendar-alt"></i> جدول الحصص (XML)
                         </h4>
-                        <p class="text-xs text-indigo-700/70 mb-3">
-                            استيراد ملف الجدول من برنامج aSc Timetables.
-                        </p>
                         <button (click)="triggerXml()" class="w-full bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-2 rounded-lg font-bold text-xs transition">
                              رفع ملف XML
                         </button>
@@ -89,9 +86,6 @@ import { SchoolStoreService } from '../services/school-store.service';
                         <h4 class="font-bold text-emerald-900 mb-2 flex items-center gap-2 text-sm">
                             <i class="fas fa-users"></i> بيانات المعلمين (Excel)
                         </h4>
-                        <p class="text-xs text-emerald-700/70 mb-3">
-                            تحديث الأسماء وأرقام الهواتف.
-                        </p>
                         <div class="flex gap-2">
                             <button (click)="store.exportTeacherDataTemplate()" class="flex-1 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-100 py-2 rounded-lg font-bold text-xs transition">
                                 <i class="fas fa-download"></i> تصدير
@@ -101,6 +95,20 @@ import { SchoolStoreService } from '../services/school-store.service';
                             </button>
                         </div>
                         <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" (change)="handleExcel($event)">
+                    </div>
+
+                    <!-- Criteria Import -->
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 md:col-span-2">
+                        <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2 text-sm">
+                            <i class="fas fa-clipboard-list"></i> معايير التقييم (JSON)
+                        </h4>
+                        <p class="text-xs text-purple-700/70 mb-3">
+                            تحديث قاعدة بيانات بنود التقييم.
+                        </p>
+                        <button (click)="triggerJson()" class="w-full bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 py-2 rounded-lg font-bold text-xs transition">
+                             رفع ملف معايير الزيارات (JSON)
+                        </button>
+                        <input type="file" id="jsonInput" accept=".json" class="hidden" (change)="handleJson($event)">
                     </div>
                 </div>
             </div>
@@ -124,6 +132,7 @@ export class SettingsModalComponent {
 
   triggerXml() { document.getElementById('xmlInput')?.click(); }
   triggerExcel() { document.getElementById('excelInput')?.click(); }
+  triggerJson() { document.getElementById('jsonInput')?.click(); }
 
   handleXml(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
@@ -139,6 +148,31 @@ export class SettingsModalComponent {
         this.store.importTeacherData(file);
         this.close.emit();
     }
+  }
+
+  handleJson(e: Event) {
+      // Angular side implementation of JSON Import
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+              try {
+                  const json = JSON.parse(evt.target?.result as string);
+                  if (Array.isArray(json) && json[0]?.items) {
+                      this.store.evaluationDB.set(json);
+                      this.store.syncToCloud();
+                      alert('تم تحديث معايير التقييم بنجاح!');
+                      this.close.emit();
+                  } else {
+                      alert('صيغة الملف غير متوافقة.');
+                  }
+              } catch(err) {
+                  console.error(err);
+                  alert('خطأ في ملف JSON');
+              }
+          };
+          reader.readAsText(file);
+      }
   }
 
   addViolation() {

@@ -46,6 +46,18 @@
         .modal-backdrop { z-index: 50; }
         /* Safe area for mobile bottom nav */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        
+        /* Supervision Radio Styles */
+        .sup-radio:checked + div { background-color: #eff6ff; border-color: #6366f1; }
+        .sup-radio:checked + div .check-icon { display: block; }
+        .print-only { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #view-supervision-report, #view-supervision-report * { visibility: visible; }
+            #view-supervision-report { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+            .print-only { display: block; }
+        }
     </style>
 <script type="importmap">
 {
@@ -60,16 +72,21 @@
     "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.6?external=rxjs",
     "@angular/forms": "https://esm.sh/@angular/forms@^21.0.6?external=rxjs",
     "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.6?external=rxjs",
-    "@angular/core": "https://esm.sh/@angular/core@^21.0.6?external=rxjs"
+    "@angular/core": "https://esm.sh/@angular/core@^21.0.6?external=rxjs",
+    "@google/genai": "https://esm.sh/@google/genai"
   }
 }
+</script>
+<script type="module">
+    import { GoogleGenAI } from "@google/genai";
+    window.GoogleGenAI = GoogleGenAI;
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900 pb-28">
 
     <!-- Header (Fixed Top) -->
-    <header class="bg-indigo-900 text-white shadow-xl sticky top-0 z-40">
+    <header class="bg-indigo-900 text-white shadow-xl sticky top-0 z-40 no-print">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <h1 class="text-lg font-bold flex items-center gap-2">
                 <i class="fas fa-university text-yellow-400 text-xl"></i>
@@ -156,10 +173,133 @@
             </div>
         </section>
 
+        <!-- View: Supervision History -->
+        <section id="view-supervision-history" class="fade-in space-y-6 hidden-view">
+            <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">سجل الزيارات الإشرافية</h2>
+                    <p class="text-sm text-slate-500">أرشيف الزيارات السابقة والتقارير</p>
+                </div>
+            </div>
+            <div id="supervisionHistoryGrid" class="space-y-3"></div>
+        </section>
+
+        <!-- View: Supervision Form -->
+        <section id="view-supervision" class="fade-in space-y-6 hidden-view pb-20">
+            <div class="flex items-center gap-2 mb-4 text-sm text-slate-500 cursor-pointer hover:text-indigo-600 transition" onclick="window.app.setView('now')">
+                <i class="fas fa-arrow-right"></i> عودة
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i class="fas fa-clipboard-check text-indigo-500"></i> زيارة إشرافية ذكية
+                </h2>
+                
+                <!-- Info Fields -->
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">المعلم</label>
+                        <input type="text" id="supTeacherName" readonly class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">الصف</label>
+                        <input type="text" id="supClassName" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-700 focus:border-indigo-500 outline-none">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 mb-1">عنوان الدرس</label>
+                        <input type="text" id="supLessonTopic" placeholder="أدخل عنوان الدرس..." class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-700 focus:border-indigo-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- Criteria List -->
+                <div id="supervisionCriteriaList" class="space-y-6"></div>
+
+                <button onclick="window.app.generateReport()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition mt-8 flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fas fa-magic"></i> توليد التقرير الذكي
+                </button>
+            </div>
+        </section>
+
+        <!-- View: Supervision Report -->
+        <section id="view-supervision-report" class="fade-in space-y-6 hidden-view bg-white p-8 rounded-none md:rounded-2xl shadow-none md:shadow-lg min-h-screen md:min-h-0 print:min-h-0">
+            <!-- Header -->
+            <div class="border-b-2 border-slate-800 pb-6 mb-6 flex justify-between items-start">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-slate-900 mb-2">تقرير زيارة إشرافية</h1>
+                    <p class="text-slate-500 text-sm">نظام الإدارة المدرسية الذكي</p>
+                </div>
+                <div class="text-left text-sm text-slate-500">
+                    <p id="reportDate" class="font-mono"></p>
+                </div>
+            </div>
+
+            <!-- Basic Info -->
+            <div class="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-8">
+                <div class="grid grid-cols-2 gap-y-4 text-sm">
+                    <div><span class="text-slate-400 ml-2">المعلم:</span> <span id="repTeacherName" class="font-bold text-slate-800 text-lg"></span></div>
+                    <div><span class="text-slate-400 ml-2">الصف:</span> <span id="repClassName" class="font-bold text-slate-800"></span></div>
+                    <div class="col-span-2"><span class="text-slate-400 ml-2">الدرس:</span> <span id="repLessonTopic" class="font-bold text-slate-800"></span></div>
+                </div>
+            </div>
+
+            <!-- Strengths -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2 bg-emerald-50 w-fit px-3 py-1 rounded-lg border border-emerald-100">
+                    <i class="fas fa-star"></i> جوانب الإجادة
+                </h3>
+                <ul id="repStrengths" class="space-y-3 pr-4 list-disc marker:text-emerald-500 text-slate-700 text-sm leading-relaxed"></ul>
+            </div>
+
+            <!-- Improvements -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-amber-700 mb-4 flex items-center gap-2 bg-amber-50 w-fit px-3 py-1 rounded-lg border border-amber-100">
+                    <i class="fas fa-wrench"></i> جوانب التحسين
+                </h3>
+                <ul id="repImprovements" class="space-y-3 pr-4 list-disc marker:text-amber-500 text-slate-700 text-sm leading-relaxed"></ul>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-indigo-700 flex items-center gap-2 bg-indigo-50 w-fit px-3 py-1 rounded-lg border border-indigo-100">
+                        <i class="fas fa-lightbulb"></i> التوصيات
+                    </h3>
+                    <button onclick="window.app.enhanceReportWithAI()" class="text-xs bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1.5 rounded-full flex items-center gap-1 shadow-md hover:shadow-lg transition cursor-pointer no-print">
+                        <i class="fas fa-wand-magic-sparkles"></i> تحسين بالذكاء الاصطناعي
+                    </button>
+                </div>
+                <div class="bg-indigo-50/50 p-6 rounded-xl border border-indigo-100 text-slate-700 text-sm leading-relaxed relative">
+                    <p class="mb-4 font-bold">شكراً لكم أستاذ <span id="repTeacherNameSmall"></span> على جهودكم المبذولة في الحصة الدراسية.</p>
+                    <ul id="repRecommendations" class="space-y-2 list-decimal pr-4"></ul>
+                    <!-- Loading Overlay for AI -->
+                    <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view">
+                        <i class="fas fa-spinner fa-spin text-3xl text-indigo-600 mb-2"></i>
+                        <span class="text-xs font-bold text-indigo-800">جاري صياغة التوصيات سياقياً...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-4 mt-12 no-print">
+                <button onclick="window.print()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fas fa-print"></i> طباعة / PDF
+                </button>
+                <button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fas fa-save"></i> حفظ في السجل
+                </button>
+                <button onclick="window.app.setView('supervision')" class="flex-1 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 py-3 rounded-xl font-bold transition cursor-pointer">
+                    تعديل
+                </button>
+                <button onclick="window.app.setView('supervision-history')" class="flex-1 bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 py-3 rounded-xl font-bold transition cursor-pointer">
+                    إغلاق
+                </button>
+            </div>
+        </section>
+
     </main>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40 pb-safe">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40 pb-safe no-print">
         <div class="flex justify-around items-center h-16 px-2">
             <button onclick="window.app.setView('now')" id="btn-now" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-indigo-700 transition-all duration-300 group">
                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors">
@@ -182,6 +322,13 @@
                 <span class="text-[10px] font-bold">التقارير</span>
             </button>
             
+            <button onclick="window.app.setView('supervision-history')" id="btn-supervision-history" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-history text-xl mb-0.5"></i>
+                 </div>
+                <span class="text-[10px] font-bold">السجل</span>
+            </button>
+            
             <button onclick="window.app.openSettings()" class="flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
                  <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
                     <i class="fas fa-cog text-xl mb-0.5"></i>
@@ -196,7 +343,7 @@
     <!-- Action Modal -->
     <div id="modal-action" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-action')"></div>
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in modal-content mb-20"> <!-- Added mb-20 to push above nav -->
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in modal-content mb-20">
             <div class="bg-slate-800 p-4 text-white flex justify-between items-start">
                 <div>
                     <h3 class="text-lg font-bold flex items-center gap-2" id="actionModalTitle"></h3>
@@ -206,6 +353,14 @@
             </div>
             
             <div class="p-4 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                <!-- Evaluation Button -->
+                <button type="button" id="btn-evaluate" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 p-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer mb-2">
+                    <i class="fas fa-clipboard-list text-xl"></i>
+                    <span>تقييم زيارة إشرافية</span>
+                </button>
+
+                <div class="h-px bg-slate-100 mb-2"></div>
+
                 <!-- Communication Buttons -->
                 <div class="space-y-2">
                      <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">التواصل</label>
@@ -278,6 +433,13 @@
                         </div>
                         <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleExcel(event)">
                     </div>
+                    
+                    <!-- Criteria Import -->
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 md:col-span-2">
+                        <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-clipboard-list"></i> معايير التقييم (JSON)</h4>
+                        <button type="button" onclick="document.getElementById('jsonInput').click()" class="w-full bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 py-2 rounded-lg font-bold text-xs transition cursor-pointer">رفع ملف معايير الزيارات (JSON)</button>
+                        <input type="file" id="jsonInput" accept=".json" class="hidden" onchange="window.app.handleCriteriaJson(event)">
+                    </div>
                 </div>
             </div>
         </div>
@@ -297,14 +459,121 @@
                     ],
                     simulationOffset: 0,
                     selectedTeacherId: null,
-                    selectedClassName: null
+                    selectedClassName: null,
+                    
+                    // Supervision State
+                    supervisionData: {
+                        ratings: {}
+                    },
+                    supervisionHistory: [],
+                    evaluationCriteria: []
                 };
                 this.db = null;
+                
+                // Initialize FULL default criteria
+                this.initDefaultCriteria();
                 
                 // Initialize
                 this.loadLocalData();
                 this.startClock();
                 this.initFirebase();
+            }
+            
+            initDefaultCriteria() {
+                // Populating with the full 13 items provided
+                this.state.evaluationCriteria = [
+                    { id: 1, title: "التحصيل الدراسي", items: {
+                        1: { desc: "اكتسب جميع الطلبة المهارات الأساسية والمعارف في ضوء أهداف الدرس بصورة فعالة، بدليل تحسين النطق واللفظ والكتابة لدى جميع الطلبة بدرجة عالية.", rec: "تنفيذ مبادرة تربوية تعزز من اكتساب الطلبة للمهارات والمعارف مثل مبادرة المدقق اللغوي الصغير." },
+                        2: { desc: "يكتسب معظم الطلبة المهارات الأساسية والمعارف في ضوء أهداف الدرس بصورة فاعلة، بدليل تحسين النطق واللفظ والكتابة لدى معظم الطلبة بدرجة جيدة.", rec: "تكثيف الأنشطة الإثرائية التي تستهدف الطلبة ذوي المستوى المرتفع لضمان استمرار تقدمهم وتحقيق نتائج أعلى." },
+                        3: { desc: "يكتسب أغلب الطلبة المهارات الأساسية والمعارف في ضوء أهداف الدرس بصورة ملائمة أو مقبولة، بدليل تحقيق المستوى الأساسي من المهارات لدى أغلب الطلبة.", rec: "التركيز على تصميم أنشطة صفية متمايزة تضمن اكتساب جميع الطلبة للمهارات الأساسية المطلوبة." },
+                        4: { desc: "اكتسب قلة من الطلبة المهارات الأساسية والمعارف في ضوء أهداف الدرس بصورة محدودة، بدليل انخفاض المستوى التحصيلي لمعظم الطلبة.", rec: "تنفيذ حصص تقوية للطلبة واستغلال حصص الاحتياط لتكثيف الخطط العلاجية والإثرائية." },
+                        5: { desc: "يكتسب عدد نادر من الطلبة المهارات الأساسية والمعارف... بصورة محدودة جداً/نادرة.", rec: "وضع خطة علاجية فورية وشاملة، والعمل على حصر المهارات الأساسية المتأخرة لدى الطلبة." }
+                    }},
+                    { id: 2, title: "التقدم الدراسي", items: {
+                        1: { desc: "يتقدم جميع الطلبة في المعارف والمفاهيم والمهارات مقارنة ببداية الحصة بصورة متميزة.", rec: "تنفيذ قراءة موجهة لزملاء العمل لآلية تطبيق هرم بلوم للأهداف في الانتقال من البسيط إلى الأعلى." },
+                        2: { desc: "يتقدم معظم الطلبة دراسياً أثناء الحصة بصورة فاعلة، بدليل إنجاز معظم الطلاب للأعمال الفردية والجماعية.", rec: "الحرص على مراجعة آليات تفريد التعليم المقدمة للطلبة ذوي الاحتياجات التعليمية." },
+                        3: { desc: "يتقدم أغلب الطلبة دراسياً أثناء الحصة بصورة ملائمة، بدليل إنجاز أغلب الطلاب للأعمال بصورة ملائمة.", rec: "ضمان توظيف هرم بلوم للأهداف بفاعلية في صياغة أسئلة الحصة والانتقال بالطلبة لمستويات التفكير العليا." },
+                        4: { desc: "اكتسب بعض الطلبة المعارف والمفاهيم والمهارات مقارنة ببداية الحصة بصورة محدودة.", rec: "تطبيق مشروع تفريد التعلم وتنفيذ الخطط الفردية بما يتناسب مع جميع الطلبة." },
+                        5: { desc: "يتقدم عدد نادر من الطلبة دراسياً أثناء الحصة بصورة محدودة جداً.", rec: "البدء فوراً في تنفيذ الخطط الفردية وتفريد التعلم لتلبية احتياجات جميع الطلبة." }
+                    }},
+                    { id: 3, title: "مهارات التعلم", items: {
+                        1: { desc: "يطبق جميع الطلبة مهارات التعلم الذاتي والتعاوني والرقمي ومهارات التفكير العليا بصورة متميزة.", rec: "تنفيذ قراءة موجهة لآلية طرح أسئلة مثيرة للتفكير وتوجيه الطلبة للتعلم الذاتي دون توجيه المعلم." },
+                        2: { desc: "يطبق معظم الطلبة مهارات التعلم الذاتي والتعاوني والرقمي بمستوى فاعل.", rec: "تعزيز توظيف المنصات الرقمية لتدريب الطلبة على التعلم الذاتي بشكل أوسع وأكثر عمقاً." },
+                        3: { desc: "يطبق أغلب الطلبة مهارات التعلم بمستوى ملائم أو مناسب.", rec: "إدراج أنشطة صفية محددة تهدف لتنمية مهارات التفكير الناقد والابتكاري لدى الطلبة." },
+                        4: { desc: "اكتسب بعض الطلبة مهارات التعلم الذاتي والتعاوني والرقمي بصورة محدودة.", rec: "تنفيذ مشروع يهدف إلى تنمية مهارات التعلم الذاتي والرقمي لدى الطلبة مثل تفعيل إحدى المنصات الرقمية." },
+                        5: { desc: "يطبق عدد نادر من الطلبة مهارات التعلم بمستوى محدود جداً.", rec: "التركيز على تدريب الطلبة على أبسط مهارات التعلم (مثل مهارات البحث والتعاون)." }
+                    }},
+                    { id: 4, title: "القيم والسلوك", items: {
+                        1: { desc: "يدرك جميع الطلبة للحقوق والواجبات ويعتزون بهويتهم العمانية بدرجة عالية.", rec: "تعزيز وتحفيز الطلبة بنماذج وملصقات تعبر عن الهوية العمانية وتغرس القيم والاتجاهات الإيجابية." },
+                        2: { desc: "يلتزم معظم الطلبة بالقيم الإنسانية المشتركة بمستوى فاعل.", rec: "تصميم أنشطة إثرائية لتعزيز القيم الإيجابية لدى الطلبة، والعمل على تكريم السلوكيات الإيجابية." },
+                        3: { desc: "يلتزم أغلب الطلبة بالقيم الإنسانية المشتركة بمستوى ملائم.", rec: "توفير فرص للطلبة لممارسة التعبير عن الذات والحوار بثقة واحترام." },
+                        4: { desc: "يدرك بعض الطلبة الحقوق والواجبات بصورة محدودة، بدليل عدم انضباط بعض الطلبة ذاتياً.", rec: "تنفيذ مشروع يهدف إلى تنمية القيم والسلوك وتعزيز الهوية العمانية لدى الطلبة." },
+                        5: { desc: "يلتزم عدد محدود جداً من الطلبة بالقيم الإنسانية... بدليل وجود حالات انفلات.", rec: "وضع خطة سلوكية مركزة لعلاج حالات عدم الانضباط في الحصة، والتنسيق مع الأخصائي الاجتماعي." }
+                    }},
+                    { id: 5, title: "جودة بيئة التعلم", items: {
+                        1: { desc: "يتابع جميع جوانب الأمن والسلامة والنظافة في الصف الدراسي بصورة متميزة.", rec: "تنفيذ حصة تطبيقية حول جوانب الأمن والسلامة في البيئة الصفية." },
+                        2: { desc: "يتابع المعلم جوانب الأمن والسلامة والنظافة بصورة جيدة.", rec: "توثيق الممارسات المتميزة في جوانب الأمن والسلامة والنظافة وتعميمها." },
+                        3: { desc: "يتابع المعلم جوانب الأمن والسلامة والنظافة بصورة مناسبة.", rec: "التأكد من تطبيق سياسات الأمن والسلامة في جميع الأنشطة الصفية." },
+                        4: { desc: "يتابع بعض جوانب الأمن والسلامة والنظافة في البيئة الصفية بصورة محدودة.", rec: "الالتزام بتدابير الأمن والسلامة في البيئة الصفية (أسلاك مكشوفة، تنبيهات تحذيرية)." },
+                        5: { desc: "يتابع المعلم جوانب الأمن والسلامة بصورة نادرة منعدمة، بدليل وجود مخاطر واضحة.", rec: "اتخاذ إجراءات تصحيحية فورية لضمان سلامة الطلبة والالتزام الصارم بقواعد الأمن والسلامة." }
+                    }},
+                    { id: 6, title: "تخطيط المنهاج الدراسي", items: {
+                        1: { desc: "يخطط لجميع دروسه متسلسلاً في تنوع الأهداف مرتبطاً بالخطة الفصلية ومحققاً لنواتج التعلم بصورة متميزة.", rec: "تنفيذ ورشة تدريبية لكيفية التخطيط للدرس بما يتوافق مع الخطة الفصلية كما هو مرسوم لها." },
+                        2: { desc: "يخطط المعلم معظم دروسه بصورة جيدة، بدليل تحقق معظم نواتج التعلم.", rec: "تطوير التخطيط اليومي عبر إضافة أنشطة إثرائية وخطط علاجية واضحة ومحددة." },
+                        3: { desc: "يخطط المعلم أغلب دروسه بصورة مناسبة، بدليل تحقق أغلب نواتج التعلم.", rec: "مراجعة التخطيط للتأكد من ربط الأهداف بنواتج التعلم المحددة في الخطة الفصلية." },
+                        4: { desc: "يخطط لبعض دروسه متسلسلاً في تنوع الأهداف بصورة محدودة، بدليل تأخر في الخطة الفصلية.", rec: "الالتزام بتوافق أهداف خطة الدرس مع الخطة الفصلية كما هو مرسوم لها." },
+                        5: { desc: "يخطط المعلم عدد محدود جداً من دروسه بصورة نادرة، بدليل وجود تأخر كبير في الخطة الفصلية.", rec: "الالتزام الفوري بإعداد خطط الدروس اليومية بشكل متكامل وتضمينها أهدافاً واضحة." }
+                    }},
+                    { id: 7, title: "إدارة الصف", items: {
+                        1: { desc: "يقوم بإدارة زمن التعلم وسلوكيات جميع الطلبة ويثير دافعيتهم للتعلم بصورة فعالة.", rec: "العمل على تحليل نتائج الطلبة نهاية الفصل وتوثيق الأسئلة العاصفة للذهن." },
+                        2: { desc: "يقوم المعلم بإدارة زمن التعلم وسلوك طلبته ويثير دافعيتهم بصورة جيدة.", rec: "إدراج استراتيجيات مبتكرة لإدارة سلوكيات الطلبة وتعزيز دافعيتهم للتعلم." },
+                        3: { desc: "يقوم المعلم بإدارة زمن التعلم وسلوك طلبته ويثير دافعيتهم بصورة ملائمة.", rec: "الاستمرار في الإدارة الجيدة للحصة، مع التركيز على توظيف استراتيجيات تحويل السلوكيات السلبية." },
+                        4: { desc: "يقوم بإدارة زمن التعلم وسلوكيات قلة من الطلبة بصورة محدودة.", rec: "الالتزام بزمن التعلم والعمل على إدارة وقت الحصة بشكل فعال من حيث تقسيم المراحل." },
+                        5: { desc: "يقوم المعلم بإدارة زمن التعلم وسلوك طلبته بصورة نادرة، بدليل فقدان السيطرة.", rec: "تطبيق قواعد صارمة لإدارة الصف والالتزام بالخطة الزمنية للحصة." }
+                    }},
+                    { id: 8, title: "فاعلية التدريس", items: {
+                        1: { desc: "يوظف استراتيجيات التدريس والتقنيات الحديثة بصورة فعالة (التعلم النشط) مما أدى إلى تعميق التعلم.", rec: "تصميم دليل رقمي لبعض المنصات الرقمية وبرامج الذكاء الاصطناعي التي يمكن توظيفها." },
+                        2: { desc: "يوظف المعلم استراتيجيات تدريس فعالة بحيث يستفيد منها معظم الطلبة بمستوى فاعل.", rec: "توسيع نطاق توظيف برامج الذكاء الاصطناعي في تصميم الأنشطة المتمايزة." },
+                        3: { desc: "يوظف المعلم استراتيجيات تدريس فعالة بحيث يستفيد منها أغلب الطلبة بمستوى ملائم.", rec: "التنويع في استراتيجيات التدريس لضمان تلبية احتياجات جميع الطلبة والابتعاد عن التلقين." },
+                        4: { desc: "يوظف استراتيجيات التدريس والتقنيات الحديثة بصورة محدودة (مثل التلقين).", rec: "العمل على التنويع من مصادر التعلم وتحديدها وفقاً لاحتياجات جميع الطلبة." },
+                        5: { desc: "يوظف المعلم استراتيجيات تدريس فعالة بمستوى نادر، بدليل عدم وجود تعلم فعلي.", rec: "استبدال استراتيجيات التلقين باستراتيجيات التعلم النشط وتحديد مصادر متنوعة." }
+                    }},
+                    { id: 9, title: "تفعيل المصادر والموارد", items: {
+                        1: { desc: "يفعل المعلم التقنيات الرقمية بحيث يستفيد منها جميع الطلبة في تعميق تعلمهم بمستوى متميز.", rec: "توثيق أفضل ممارسات توظيف التقنيات الرقمية والذكاء الاصطناعي في الحصة وتعميمها." },
+                        2: { desc: "يفعل المعلم التقنيات الرقمية بحيث يستفيد منها معظم الطلبة بمستوى جيد.", rec: "تشجيع الطلبة على استخدام التقنيات الرقمية كأداة للإنتاج المعرفي وليس فقط للاستهلاك." },
+                        3: { desc: "يفعل المعلم التقنيات الرقمية بحيث يستفيد منها أغلب الطلبة بمستوى ملائم.", rec: "العمل على دمج المصادر الرقمية والتقليدية في خطة الدرس بطريقة واضحة وفعالة." },
+                        4: { desc: "يفعل المعلم التقنيات الرقمية بحيث يستفيد منها قليل من الطلبة بمستوى محدود.", rec: "العمل على تنويع المصادر والموارد التعليمية المستخدمة (الرقمية وغير الرقمية)." },
+                        5: { desc: "يفعل المعلم التقنيات الرقمية بمستوى نادر منعدم.", rec: "البدء فوراً في تفعيل المصادر والموارد التعليمية المتاحة ودمجها في الأنشطة الصفية." }
+                    }},
+                    { id: 10, title: "التقويم ومساندة التقدم", items: {
+                        1: { desc: "يوظف أساليب تقويم متنوعة تراعي التمايز بين جميع الطلبة بدرجة عالية.", rec: "تشكيل فريق عمل لصياغة مجموعة أنشطة صفية فردية وجماعية ضمن خطة المنهج." },
+                        2: { desc: "يوظف المعلم أساليب تقويم متنوعة تراعي التمايز بين معظم الطلبة بمستوى فاعل.", rec: "تعميم تجربة توظيف أساليب التقويم المتنوعة على الزملاء كأفضل ممارسة." },
+                        3: { desc: "يوظف المعلم أساليب تقويم متنوعة تراعي التمايز بين أغلب الطلبة بمستوى ملائم.", rec: "مراجعة أدوات التقويم المستخدمة للتأكد من أنها تغطي المستويات المعرفية الثلاثة." },
+                        4: { desc: "يوظف المعلم أساليب تقويم متنوعة تراعي التمايز بين قليل من الطلبة بمستوى محدود.", rec: "التنويع من أساليب تقويم تراعي التمايز بين جميع الطلبة والتنويع في الأسئلة." },
+                        5: { desc: "يوظف المعلم أساليب تقويم متنوعة تراعي التمايز بمستوى نادر (الاعتماد الكلي على أسلوب واحد).", rec: "التنويع الفوري في أساليب التقويم (الشفوي، الكتابي، الأداء) وتصحيح الأدوات المستخدمة." }
+                    }},
+                    { id: 11, title: "قيادة التغيير", items: {
+                        1: { desc: "يُجري تقويماً لأدائه ذاتياً ويوظفه في تحسين تعلم جميع الطلبة بمستوى متميز.", rec: "تنفيذ مشغل تدريبي لزملائه حول أحد جوانب الإجادة التي تميز بها." },
+                        2: { desc: "يُجري المعلم تقويماً لأدائه ذاتياً ويوظفه في تحسين تعلم معظم الطلبة بمستوى فاعل.", rec: "تشجيع الزملاء على تبني ممارساته المتميزة في التقويم الذاتي وتطوير الأداء." },
+                        3: { desc: "يُجري المعلم تقويماً لأدائه ذاتياً ويوظفه في تحسين تعلم أغلب الطلبة بمستوى مناسب.", rec: "الالتزام ببرامج التطوير المهني المتاحة والعمل على تطبيق المكتسب منها." },
+                        4: { desc: "يُجري تقويماً لأدائه ذاتياً بشكل محدود (قلة المشاركات المهنية).", rec: "الالتزام بالمشاركة المهنية وفقاً لاحتياجاته كحضور الورش والمحاضرات." },
+                        5: { desc: "يُجري المعلم تقويماً لأدائه ذاتياً ويوظفه بمستوى نادر (عدم إجراء أي تقويم ذاتي).", rec: "الالتزام بحضور الورش والمحاضرات المهنية وحلقات النقاش والبدء في توثيق ممارساته." }
+                    }},
+                    { id: 12, title: "الحوكمة", items: {
+                        1: { desc: "يطبق السياسات والأنظمة واللوائح المنظمة للعمل بصورة فعالة (المحافظة على زمن التعلم).", rec: "الاستمرار بتطبيق اللوائح والأنظمة المنظمة للعمل ومتابعة أثر الانضباط على التحصيل." },
+                        2: { desc: "يطبق السياسات والأنظمة واللوائح المنظمة للعمل بصورة فاعلة.", rec: "توثيق الممارسات المتميزة في تطبيق الأنظمة واللوائح وتأثيرها على البيئة المدرسية." },
+                        3: { desc: "يطبق السياسات والأنظمة واللوائح المنظمة للعمل بصورة مناسبة.", rec: "التأكد من أن الالتزام باللوائح والأنظمة ينعكس إيجاباً على أداء الطلبة." },
+                        4: { desc: "يطبق السياسات والأنظمة واللوائح المنظمة للعمل بصورة محدودة.", rec: "الالتزام باللوائح والأنظمة وضرورة المحافظة على زمن التعلم والانضباط الوظيفي." },
+                        5: { desc: "يطبق السياسات والأنظمة واللوائح المنظمة للعمل بصورة نادرة (إخلال واضح).", rec: "الالتزام التام بالدوام الرسمي وضبط زمن التعلم وتطبيق كافة الأنظمة واللوائح." }
+                    }},
+                    { id: 13, title: "المبادرات والأنشطة", items: {
+                        1: { desc: "يقدم مبادرات فعالة لدعم وتحسين العملية التعليمية ويتميز بالتفاعل الإيجابي.", rec: "توثيق مبادرة التحصيل الدراسي بطريقة علمية للمشاركة بها ضمن مبادرات الإجادة." },
+                        2: { desc: "يقدم مبادرات فاعلة ويتميز بالتفاعل الإيجابي في معظم الأنشطة التربوية.", rec: "التوسع في مجال المبادرة والعمل على توثيق أثرها بشكل دقيق وعلمي." },
+                        3: { desc: "يقدم مبادرات ملائمة ويتفاعل إيجابياً في أغلب الأنشطة التربوية.", rec: "الاستمرار في تقديم المبادرات والتفاعل الإيجابي وقيادة فريق عمل." },
+                        4: { desc: "يقدم مبادرات محدودة ويتميز بالتفاعل المحدود في الأنشطة التربوية.", rec: "الالتزام بحضور الاجتماعات والورش والبرامج الإنمائية المنفذة بالمدرسة." },
+                        5: { desc: "نادراً ما يقدم مبادرات وتفاعله محدود جداً، مما أدى إلى جمود في الأداء.", rec: "الالتزام التام بحضور الاجتماعات والبرامج والمبادرة فوراً بتقديم مقترح لمبادرة تربوية." }
+                    }}
+                ];
             }
 
             initFirebase() {
@@ -332,6 +601,8 @@
                                     this.state.periods = data.periods || [];
                                     this.state.classes = data.classes || {};
                                     if(data.violationTypes) this.state.violationTypes = data.violationTypes;
+                                    if(data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
+                                    if(data.evaluationCriteria) this.state.evaluationCriteria = data.evaluationCriteria;
                                     
                                     this.renderAll();
                                     this.saveToLocal();
@@ -357,6 +628,8 @@
                         this.state.periods = parsed.periods || [];
                         this.state.classes = parsed.classes || {};
                         if(parsed.violationTypes) this.state.violationTypes = parsed.violationTypes;
+                        if(parsed.supervisionHistory) this.state.supervisionHistory = parsed.supervisionHistory;
+                        if(parsed.evaluationCriteria) this.state.evaluationCriteria = parsed.evaluationCriteria;
                         this.renderAll();
                     } catch(e) { console.error("Local Load Error", e); }
                 }
@@ -368,6 +641,8 @@
                     periods: this.state.periods,
                     classes: this.state.classes,
                     violationTypes: this.state.violationTypes,
+                    supervisionHistory: this.state.supervisionHistory,
+                    evaluationCriteria: this.state.evaluationCriteria,
                     lastSync: new Date()
                 }));
             }
@@ -385,6 +660,8 @@
                         periods: this.state.periods,
                         classes: this.state.classes,
                         violationTypes: this.state.violationTypes,
+                        supervisionHistory: this.state.supervisionHistory,
+                        evaluationCriteria: this.state.evaluationCriteria,
                         lastSync: new Date()
                     }, { merge: true });
                 } catch(e) { 
@@ -426,7 +703,7 @@
             }
 
             setView(viewName) {
-                ['now', 'teachers', 'reports'].forEach(v => {
+                ['now', 'teachers', 'reports', 'supervision', 'supervision-report', 'supervision-history'].forEach(v => {
                     const el = document.getElementById(`view-${v}`);
                     if(el) el.classList.add('hidden-view');
                     const btn = document.getElementById(`btn-${v}`);
@@ -457,6 +734,7 @@
 
                 if(viewName === 'teachers') this.renderTeachers();
                 if(viewName === 'reports') this.renderReports();
+                if(viewName === 'supervision-history') this.renderHistory();
             }
 
             renderAll() {
@@ -626,6 +904,41 @@
                 }).join('');
             }
 
+            renderHistory() {
+                const grid = document.getElementById('supervisionHistoryGrid');
+                if(!grid) return;
+                
+                const history = this.state.supervisionHistory || [];
+                if(history.length === 0) {
+                    grid.innerHTML = '<div class="text-center p-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">لا يوجد سجل زيارات حتى الآن</div>';
+                    return;
+                }
+
+                // Sort by date desc
+                history.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+                grid.innerHTML = history.map((visit, index) => `
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-indigo-200 transition">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-slate-800 text-lg">${visit.teacherName}</span>
+                                <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded border border-slate-200">${visit.className}</span>
+                            </div>
+                            <p class="text-sm text-slate-500 mb-1"><i class="fas fa-book-open ml-1"></i> ${visit.topic || 'بدون عنوان'}</p>
+                            <span class="text-xs text-slate-400 font-mono">${visit.date}</span>
+                        </div>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <button onclick="window.app.loadVisit(${index})" class="flex-1 md:flex-none bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-lg font-bold text-xs transition cursor-pointer">
+                                <i class="fas fa-eye"></i> عرض
+                            </button>
+                            <button onclick="window.app.deleteVisit(${index})" class="md:flex-none text-red-400 hover:text-red-600 px-3 py-2 rounded-lg transition cursor-pointer" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
             // --- Actions ---
             updatePhone(id, val) {
                 const t = this.state.teachers.find(x => x.id === id);
@@ -644,15 +957,30 @@
                 document.getElementById('currentScoreDisplay').innerText = t.score + '%';
 
                 const remindBtn = document.getElementById('btn-remind');
+                const evaluateBtn = document.getElementById('btn-evaluate');
+                
                 if(className && className !== 'undefined') {
                     remindBtn.disabled = false;
                     remindBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    
+                    // Setup Evaluate Button
+                    evaluateBtn.onclick = () => {
+                        this.closeModal('modal-action');
+                        this.startSupervision(tId, className);
+                    };
+                    evaluateBtn.style.display = 'flex';
                 } else {
                     remindBtn.disabled = true;
                     remindBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    
+                    // Allow evaluation even if not in class (general eval)
+                    evaluateBtn.onclick = () => {
+                        this.closeModal('modal-action');
+                        this.startSupervision(tId, 'زيارة عامة');
+                    };
                 }
                 
-                // Render Dynamic Violation Buttons
+                // Render Dynamic Violation Buttons (Existing logic)
                 const container = document.getElementById('violationButtonsContainer');
                 if(container) {
                     container.innerHTML = this.state.violationTypes.map(v => `
@@ -678,6 +1006,252 @@
                 if(el) el.classList.add('hidden-view'); 
             }
             
+            // --- Supervision Logic ---
+            startSupervision(teacherId, className) {
+                const t = this.state.teachers.find(x => x.id === teacherId);
+                if(!t) return;
+
+                document.getElementById('supTeacherName').value = t.name;
+                document.getElementById('supClassName').value = className;
+                document.getElementById('supLessonTopic').value = '';
+                
+                // Reset Ratings
+                this.state.supervisionData = { ratings: {} };
+                
+                // Render Criteria Form with Radio Buttons & Description
+                const list = document.getElementById('supervisionCriteriaList');
+                list.innerHTML = this.state.evaluationCriteria.map((criterion, index) => `
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="font-bold text-slate-800 text-base mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
+                            <span class="bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">${index + 1}</span>
+                            ${criterion.title}
+                        </h3>
+                        <div class="space-y-3">
+                            ${[1,2,3,4,5].map(rating => {
+                                const desc = criterion.items[rating] ? criterion.items[rating].desc : '';
+                                return `
+                                <label class="relative flex items-start gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer bg-white hover:bg-slate-50 transition-colors group">
+                                    <input type="radio" name="criteria_${criterion.id}" value="${rating}" 
+                                        onchange="window.app.setRating(${criterion.id}, ${rating})" class="sup-radio peer mt-1 accent-indigo-600">
+                                    
+                                    <!-- Custom Radio UI (Optional enhancement can be added via CSS, keeping it simple native for reliability) -->
+                                    
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="font-bold text-indigo-700 bg-indigo-50 px-2 rounded text-xs">مستوى ${rating}</span>
+                                        </div>
+                                        <p class="text-xs text-slate-600 leading-relaxed">${desc}</p>
+                                    </div>
+                                    
+                                    <!-- Checked Indicator -->
+                                    <div class="check-icon hidden text-indigo-600 absolute top-3 left-3">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `).join('');
+
+                this.setView('supervision');
+            }
+
+            setRating(criteriaId, rating) {
+                this.state.supervisionData.ratings[criteriaId] = rating;
+                
+                // Add styling to selected parent (handled via CSS :checked)
+            }
+
+            generateReport(isLoad = false, existingData = null) {
+                const ratings = existingData ? existingData.ratings : this.state.supervisionData.ratings;
+                
+                if(!isLoad && Object.keys(ratings).length < this.state.evaluationCriteria.length) {
+                    alert('يرجى استكمال تقييم جميع البنود');
+                    return;
+                }
+
+                const tName = isLoad ? existingData.teacherName : document.getElementById('supTeacherName').value;
+                const cName = isLoad ? existingData.className : document.getElementById('supClassName').value;
+                const lTopic = isLoad ? existingData.topic : document.getElementById('supLessonTopic').value || '-';
+                const rDate = isLoad ? existingData.date : new Date().toLocaleDateString('ar-EG');
+
+                // Fill Report Info
+                document.getElementById('repTeacherName').innerText = tName;
+                document.getElementById('repTeacherNameSmall').innerText = tName;
+                document.getElementById('repClassName').innerText = cName;
+                document.getElementById('repLessonTopic').innerText = lTopic;
+                document.getElementById('reportDate').innerText = rDate;
+
+                // Analyze Ratings
+                const analysis = [];
+                this.state.evaluationCriteria.forEach(c => {
+                    const r = ratings[c.id];
+                    if(r) {
+                        analysis.push({
+                            id: c.id,
+                            title: c.title,
+                            rating: r,
+                            desc: c.items[r].desc,
+                            rec: c.items[r].rec
+                        });
+                    }
+                });
+
+                const strengths = [...analysis].sort((a,b) => a.rating - b.rating).slice(0, 3);
+                
+                const improvements = [...analysis]
+                    .filter(a => a.rating > 2)
+                    .sort((a,b) => b.rating - a.rating)
+                    .slice(0, 4);
+
+                // Render Lists
+                document.getElementById('repStrengths').innerHTML = strengths.map(s => `<li><span class="font-bold text-emerald-700">${s.title}:</span> ${s.desc}</li>`).join('');
+
+                if(improvements.length > 0) {
+                    document.getElementById('repImprovements').innerHTML = improvements.map(s => `<li><span class="font-bold text-amber-700">${s.title}:</span> ${s.desc}</li>`).join('');
+                } else {
+                    document.getElementById('repImprovements').innerHTML = '<li class="text-slate-400 italic">لا توجد جوانب تحسين ملحوظة (أداء متميز).</li>';
+                }
+
+                // If loading existing data, use saved recommendations if available
+                if (isLoad && existingData.finalRecommendations) {
+                     document.getElementById('repRecommendations').innerHTML = existingData.finalRecommendations;
+                } else {
+                    // Default Recommendations
+                    const recSource = improvements.length > 0 ? improvements : strengths; 
+                    document.getElementById('repRecommendations').innerHTML = recSource.map(s => `<li>${s.rec}</li>`).join('');
+                }
+
+                this.setView('supervision-report');
+            }
+
+            saveVisit() {
+                const tName = document.getElementById('repTeacherName').innerText;
+                const cName = document.getElementById('repClassName').innerText;
+                const lTopic = document.getElementById('repLessonTopic').innerText;
+                const rDate = document.getElementById('reportDate').innerText;
+                const recHtml = document.getElementById('repRecommendations').innerHTML;
+
+                const visitData = {
+                    id: Date.now().toString(),
+                    teacherName: tName,
+                    className: cName,
+                    topic: lTopic,
+                    date: rDate,
+                    ratings: {...this.state.supervisionData.ratings},
+                    finalRecommendations: recHtml // Save potentially AI-enhanced text
+                };
+
+                // Add to history
+                if(!this.state.supervisionHistory) this.state.supervisionHistory = [];
+                this.state.supervisionHistory.push(visitData);
+                
+                this.saveData();
+                alert('تم حفظ الزيارة في السجل بنجاح');
+            }
+
+            loadVisit(index) {
+                // We need to sort the history first to match the display index
+                const sortedHistory = [...this.state.supervisionHistory].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                const visit = sortedHistory[index];
+                if(visit) {
+                    this.state.supervisionData = { ratings: visit.ratings };
+                    this.generateReport(true, visit);
+                }
+            }
+
+            deleteVisit(index) {
+                if(confirm('هل أنت متأكد من حذف هذا التقرير؟')) {
+                    // Match sorting logic to find correct index in original array
+                    const sortedHistory = [...this.state.supervisionHistory].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                    const targetId = sortedHistory[index].id;
+                    
+                    this.state.supervisionHistory = this.state.supervisionHistory.filter(v => v.id !== targetId);
+                    this.saveData();
+                    this.renderHistory();
+                }
+            }
+
+            // --- AI Enhancement ---
+            async enhanceReportWithAI() {
+                const topic = document.getElementById('repLessonTopic').innerText;
+                const recContainer = document.getElementById('repRecommendations');
+                const currentRecs = recContainer.innerText;
+                
+                if(!topic || topic === '-') {
+                    alert('يرجى تحديد عنوان الدرس أولاً للحصول على صياغة سياقية.');
+                    return;
+                }
+
+                // Show Loading
+                document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
+
+                try {
+                    // Check if Gemini is available (Client side simulation for prototype)
+                    if (typeof window.GoogleGenAI === 'undefined' || !process.env.API_KEY) {
+                        // Fallback or Error handling if key not present
+                        console.warn("Gemini API Key missing or lib not loaded");
+                        // For demo purposes, we might just timeout
+                    }
+
+                    const ai = new window.GoogleGenAI({ apiKey: process.env.API_KEY });
+                    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+                    const prompt = `
+                        أنت خبير تربوي وموجه فني.
+                        عنوان الدرس: ${topic}
+                        الصف: ${document.getElementById('repClassName').innerText}
+                        
+                        التوصيات الحالية (عامة):
+                        ${currentRecs}
+
+                        المطلوب:
+                        إعادة صياغة هذه التوصيات لتكون "سياقية" ومرتبطة تحديداً بموضوع الدرس "${topic}".
+                        اجعلها عملية وقابلة للتطبيق داخل الحصة.
+                        أعد القائمة كنقاط HTML (li tags) فقط.
+                    `;
+
+                    const result = await model.generateContent(prompt);
+                    const response = await result.response;
+                    const text = response.text();
+                    
+                    // Clean markdown if present
+                    const cleanHtml = text.replace(/```html/g, '').replace(/```/g, '');
+                    
+                    recContainer.innerHTML = cleanHtml;
+                    
+                } catch (error) {
+                    console.error("AI Error:", error);
+                    alert("تعذر الاتصال بخدمة الذكاء الاصطناعي. يرجى التحقق من المفتاح أو الاتصال.");
+                } finally {
+                    document.getElementById('aiLoadingOverlay').classList.add('hidden-view');
+                }
+            }
+
+            // --- JSON Import for Criteria ---
+            handleCriteriaJson(e) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        const json = JSON.parse(evt.target.result);
+                        // Basic validation
+                        if (Array.isArray(json) && json[0]?.items) {
+                            this.state.evaluationCriteria = json;
+                            this.saveData();
+                            alert('تم تحديث معايير التقييم بنجاح!');
+                            this.closeModal('modal-settings');
+                        } else {
+                            alert('صيغة الملف غير متوافقة.');
+                        }
+                    } catch(err) {
+                        console.error(err);
+                        alert('خطأ في ملف JSON');
+                    }
+                };
+                reader.readAsText(e.target.files[0]);
+            }
+
             openSettings() { 
                 this.renderViolationsSettings();
                 document.getElementById('modal-settings').classList.remove('hidden-view'); 
