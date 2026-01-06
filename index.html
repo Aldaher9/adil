@@ -26,6 +26,7 @@
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     
@@ -33,6 +34,60 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
+        :root {
+            --color-primary-50: 239 246 255; /* indigo-50 */
+            --color-primary-100: 219 234 254; /* indigo-100 */
+            --color-primary-200: 199 210 254; /* indigo-200 */
+            --color-primary-500: 99 102 241; /* indigo-500 */
+            --color-primary-600: 79 70 229; /* indigo-600 */
+            --color-primary-700: 67 56 202; /* indigo-700 */
+            --color-primary-900: 49 46 129; /* indigo-900 */
+            
+            --color-bg-base: 248 250 252; /* slate-50 */
+            --color-text-base: 30 41 59; /* slate-800 */
+            --color-text-muted: 100 116 139; /* slate-500 */
+            --color-surface-base: 255 255 255; /* white */
+            --color-border-base: 241 245 249; /* slate-100 */
+            --color-border-muted: 226 232 240; /* slate-200 */
+        }
+
+        .theme-pink {
+            --color-primary-50: 253 242 248; /* pink-50 */
+            --color-primary-100: 252 231 243; /* pink-100 */
+            --color-primary-200: 251 207 232; /* pink-200 */
+            --color-primary-500: 236 72 153;  /* pink-500 */
+            --color-primary-600: 219 39 119;  /* pink-600 */
+            --color-primary-700: 190 24 93;   /* pink-700 */
+            --color-primary-900: 131 24 67;   /* pink-900 */
+        }
+
+        .theme-green {
+            --color-primary-50: 240 253 244; /* green-50 */
+            --color-primary-100: 220 252 231; /* green-100 */
+            --color-primary-200: 187 247 208; /* green-200 */
+            --color-primary-500: 34 197 94;   /* green-500 */
+            --color-primary-600: 22 163 74;   /* green-600 */
+            --color-primary-700: 21 128 61;   /* green-700 */
+            --color-primary-900: 20 83 45;    /* green-900 */
+        }
+
+        .theme-dark {
+            --color-primary-50: 30 41 59; /* slate-800 */
+            --color-primary-100: 51 65 85; /* slate-700 */
+            --color-primary-200: 71 85 105; /* slate-600 */
+            --color-primary-500: 99 102 241; /* indigo-500 */
+            --color-primary-600: 129 140 248; /* indigo-400 */
+            --color-primary-700: 165 180 252; /* indigo-300 */
+            --color-primary-900: 49 46 129; /* indigo-900 */
+            
+            --color-bg-base: 15 23 42; /* slate-900 */
+            --color-text-base: 226 232 240; /* slate-200 */
+            --color-text-muted: 148 163 184; /* slate-400 */
+            --color-surface-base: 30 41 59; /* slate-800 */
+            --color-border-base: 51 65 85; /* slate-700 */
+            --color-border-muted: 71 85 105; /* slate-600 */
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
@@ -41,16 +96,13 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .hidden-view { display: none !important; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        /* Ensure modal content is clickable */
         .modal-content { z-index: 60; position: relative; }
         .modal-backdrop { z-index: 50; }
-        /* Safe area for mobile bottom nav */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-        
-        /* Supervision Radio Styles */
-        .sup-radio:checked + div { background-color: #eff6ff; border-color: #6366f1; }
+        .sup-radio:checked + div { background-color: rgb(var(--color-primary-50)); border-color: rgb(var(--color-primary-600)); }
         .sup-radio:checked + div .check-icon { display: block; }
         .print-only { display: none; }
+        [x-cloak] { display: none !important; }
         @media print {
             body * { visibility: hidden; }
             #view-supervision-report, #view-supervision-report * { visibility: visible; }
@@ -83,28 +135,40 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900 pb-28">
+<body class="bg-[rgb(var(--color-bg-base))] text-[rgb(var(--color-text-base))] antialiased selection:bg-brand-100 selection:text-brand-900 pb-28">
 
+    <!-- Login View -->
+    <div id="login-view" class="min-h-screen flex flex-col items-center justify-center bg-slate-100 p-4">
+        <div class="w-full max-w-sm text-center">
+            <i class="fas fa-university text-5xl text-indigo-500 mb-4"></i>
+            <h1 class="text-3xl font-bold text-slate-800">مدير المدرسة الذكي</h1>
+            <p class="text-slate-500 mt-2 mb-8">مساحتك الخاصة لإدارة مدرستك بفاعلية.</p>
+            <button onclick="window.app.handleGoogleLogin()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-xl shadow-md border border-slate-200 flex items-center justify-center gap-3 transition">
+                <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="Google icon">
+                تسجيل الدخول باستخدام جوجل
+            </button>
+        </div>
+    </div>
+    
+    <!-- App View -->
+    <div id="app-view" class="hidden-view">
     <!-- Header (Fixed Top) -->
-    <header class="bg-indigo-900 text-white shadow-xl sticky top-0 z-40 no-print">
+    <header class="bg-[rgb(var(--color-primary-900))] text-white shadow-xl sticky top-0 z-40 no-print">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-lg font-bold flex items-center gap-2">
-                <i class="fas fa-university text-yellow-400 text-xl"></i>
-                <div class="flex flex-col">
-                    <span class="leading-none">مدير المدرسة</span>
-                    <span id="cloudStatusBadge" class="text-[9px] mt-1 bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full border border-red-500/30 w-fit flex items-center gap-1">
-                        <i class="fas fa-circle text-[5px]"></i> جاري الاتصال...
-                    </span>
-                </div>
-            </h1>
+             <div id="user-profile-container" class="flex items-center gap-3">
+                <!-- User profile will be rendered here -->
+            </div>
 
             <div class="flex gap-2 items-center">
                 <div class="bg-black/20 px-3 py-1.5 rounded-lg border border-white/10 backdrop-blur-sm flex items-center gap-2">
-                    <i class="fas fa-clock text-indigo-300 text-xs"></i>
+                    <i class="fas fa-clock text-[rgb(var(--color-primary-200))] text-xs"></i>
                     <span id="clockDisplay" class="font-mono font-bold text-green-400 dir-ltr text-sm">00:00:00</span>
                 </div>
-                <button onclick="window.app.addSimulationHour()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="تقديم ساعة">
-                    <i class="fas fa-forward"></i>
+                <button onclick="window.app.simulateRandomPeriod()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="محاكاة حصة عشوائية">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                </button>
+                <button onclick="window.app.resetTimeToReal()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="الوقت الفعلي">
+                    <i class="fas fa-clock-rotate-left"></i>
                 </button>
             </div>
         </div>
@@ -115,13 +179,13 @@
         
         <!-- View: Current Classes -->
         <section id="view-now" class="fade-in space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-3 bg-[rgb(var(--color-surface-base))] p-4 rounded-xl shadow-sm border border-[rgb(var(--color-border-base))]">
                 <div class="flex items-center gap-3">
-                    <div class="bg-indigo-100 text-indigo-700 w-10 h-10 rounded-full flex items-center justify-center text-lg">
+                    <div class="bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-700))] w-10 h-10 rounded-full flex items-center justify-center text-lg">
                         <i class="fas fa-clock"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800">الحصص القائمة الآن</h2>
+                        <h2 class="text-xl font-bold text-[rgb(var(--color-text-base))]">الحصص القائمة الآن</h2>
                     </div>
                 </div>
                 <div id="currentPeriodInfo"></div>
@@ -132,13 +196,13 @@
 
         <!-- View: Teachers -->
         <section id="view-teachers" class="fade-in space-y-6 hidden-view">
-            <div class="flex flex-col md:flex-row justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex flex-col md:flex-row justify-between gap-4 bg-[rgb(var(--color-surface-base))] p-6 rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))]">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800">سجل المعلمين</h2>
-                    <p class="text-slate-500 text-sm">إدارة بيانات التواصل والتقييمات</p>
+                    <h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))]">سجل المعلمين</h2>
+                    <p class="text-[rgb(var(--color-text-muted))] text-sm">إدارة بيانات التواصل والتقييمات</p>
                 </div>
                 <div class="relative w-full md:w-96">
-                    <input type="text" id="teacherSearch" onkeyup="window.app.renderTeachers()" placeholder="بحث عن معلم..." class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none bg-slate-50 focus:bg-white">
+                    <input type="text" id="teacherSearch" onkeyup="window.app.renderTeachers()" placeholder="بحث عن معلم..." class="w-full pl-4 pr-10 py-3 rounded-xl border border-[rgb(var(--color-border-muted))] focus:border-[rgb(var(--color-primary-500))] focus:ring-2 focus:ring-[rgb(var(--color-primary-200))] transition-all outline-none bg-[rgb(var(--color-bg-base))] focus:bg-[rgb(var(--color-surface-base))]">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 </div>
             </div>
@@ -147,19 +211,19 @@
 
         <!-- View: Reports -->
         <section id="view-reports" class="fade-in space-y-6 hidden-view">
-            <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-center bg-[rgb(var(--color-surface-base))] p-6 rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))]">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800">تقارير الأداء</h2>
-                    <p class="text-sm text-slate-500">نظرة عامة على انضباط المعلمين</p>
+                    <h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))]">تقارير الأداء</h2>
+                    <p class="text-sm text-[rgb(var(--color-text-muted))]">نظرة عامة على انضباط المعلمين</p>
                 </div>
                 <button onclick="window.app.exportReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg shadow-emerald-200">
                     <i class="fas fa-file-excel"></i> <span>تصدير Excel</span>
                 </button>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="bg-[rgb(var(--color-surface-base))] rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))] overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-right">
-                        <thead class="bg-slate-50 border-b border-slate-100 text-slate-500 text-sm uppercase">
+                        <thead class="bg-[rgb(var(--color-bg-base))] border-b border-[rgb(var(--color-border-base))] text-[rgb(var(--color-text-muted))] text-sm uppercase">
                             <tr>
                                 <th class="p-5 font-bold">المعلم</th>
                                 <th class="p-5 font-bold text-center">التقييم</th>
@@ -167,7 +231,7 @@
                                 <th class="p-5 font-bold text-center">الحالة</th>
                             </tr>
                         </thead>
-                        <tbody id="reportsBody" class="divide-y divide-slate-50"></tbody>
+                        <tbody id="reportsBody" class="divide-y divide-[rgb(var(--color-border-base))]"></tbody>
                     </table>
                 </div>
             </div>
@@ -175,10 +239,10 @@
 
         <!-- View: Supervision History -->
         <section id="view-supervision-history" class="fade-in space-y-6 hidden-view">
-            <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-center bg-[rgb(var(--color-surface-base))] p-6 rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))]">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800">سجل الزيارات الإشرافية</h2>
-                    <p class="text-sm text-slate-500">أرشيف الزيارات السابقة والتقارير</p>
+                    <h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))]">سجل الزيارات الإشرافية</h2>
+                    <p class="text-sm text-[rgb(var(--color-text-muted))]">أرشيف الزيارات السابقة والتقارير</p>
                 </div>
             </div>
             <div id="supervisionHistoryGrid" class="space-y-3"></div>
@@ -186,59 +250,59 @@
 
         <!-- View: Supervision Form -->
         <section id="view-supervision" class="fade-in space-y-6 hidden-view pb-20">
-            <div class="flex items-center gap-2 mb-4 text-sm text-slate-500 cursor-pointer hover:text-indigo-600 transition" onclick="window.app.setView('now')">
+            <div class="flex items-center gap-2 mb-4 text-sm text-[rgb(var(--color-text-muted))] cursor-pointer hover:text-[rgb(var(--color-primary-600))] transition" onclick="window.app.setView('now')">
                 <i class="fas fa-arrow-right"></i> عودة
             </div>
             
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <i class="fas fa-clipboard-check text-indigo-500"></i> زيارة إشرافية ذكية
+            <div class="bg-[rgb(var(--color-surface-base))] p-6 rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))]">
+                <h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))] mb-6 flex items-center gap-2">
+                    <i class="fas fa-clipboard-check text-[rgb(var(--color-primary-500))]"></i> زيارة إشرافية ذكية
                 </h2>
                 
                 <!-- Info Fields -->
                 <div class="grid md:grid-cols-2 gap-4 mb-6">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">المعلم</label>
-                        <input type="text" id="supTeacherName" readonly class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 font-bold">
+                        <label class="block text-xs font-bold text-[rgb(var(--color-text-muted))] mb-1">المعلم</label>
+                        <input type="text" id="supTeacherName" readonly class="w-full bg-[rgb(var(--color-bg-base))] border border-[rgb(var(--color-border-muted))] rounded-lg p-2 text-[rgb(var(--color-text-base))] font-bold">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">الصف</label>
-                        <input type="text" id="supClassName" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-700 focus:border-indigo-500 outline-none">
+                        <label class="block text-xs font-bold text-[rgb(var(--color-text-muted))] mb-1">الصف</label>
+                        <input type="text" id="supClassName" class="w-full bg-[rgb(var(--color-surface-base))] border border-[rgb(var(--color-border-muted))] rounded-lg p-2 text-[rgb(var(--color-text-base))] focus:border-[rgb(var(--color-primary-500))] outline-none">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-slate-500 mb-1">عنوان الدرس</label>
-                        <input type="text" id="supLessonTopic" placeholder="أدخل عنوان الدرس..." class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-700 focus:border-indigo-500 outline-none">
+                        <label class="block text-xs font-bold text-[rgb(var(--color-text-muted))] mb-1">عنوان الدرس</label>
+                        <input type="text" id="supLessonTopic" placeholder="أدخل عنوان الدرس..." class="w-full bg-[rgb(var(--color-surface-base))] border border-[rgb(var(--color-border-muted))] rounded-lg p-2 text-[rgb(var(--color-text-base))] focus:border-[rgb(var(--color-primary-500))] outline-none">
                     </div>
                 </div>
 
                 <!-- Criteria List -->
                 <div id="supervisionCriteriaList" class="space-y-6"></div>
 
-                <button onclick="window.app.generateReport()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition mt-8 flex items-center justify-center gap-2 cursor-pointer">
+                <button onclick="window.app.generateReport()" class="w-full bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white font-bold py-4 rounded-xl shadow-lg shadow-[rgb(var(--color-primary-200))] transition mt-8 flex items-center justify-center gap-2 cursor-pointer">
                     <i class="fas fa-magic"></i> توليد التقرير الذكي
                 </button>
             </div>
         </section>
 
         <!-- View: Supervision Report -->
-        <section id="view-supervision-report" class="fade-in space-y-6 hidden-view bg-white p-8 rounded-none md:rounded-2xl shadow-none md:shadow-lg min-h-screen md:min-h-0 print:min-h-0">
+        <section id="view-supervision-report" class="fade-in space-y-6 hidden-view bg-[rgb(var(--color-surface-base))] p-8 rounded-none md:rounded-2xl shadow-none md:shadow-lg min-h-screen md:min-h-0 print:min-h-0">
             <!-- Header -->
             <div class="border-b-2 border-slate-800 pb-6 mb-6 flex justify-between items-start">
                 <div>
                     <h1 class="text-3xl font-extrabold text-slate-900 mb-2">تقرير زيارة إشرافية</h1>
-                    <p class="text-slate-500 text-sm">نظام الإدارة المدرسية الذكي</p>
+                    <p class="text-[rgb(var(--color-text-muted))] text-sm">نظام الإدارة المدرسية الذكي</p>
                 </div>
-                <div class="text-left text-sm text-slate-500">
+                <div class="text-left text-sm text-[rgb(var(--color-text-muted))]">
                     <p id="reportDate" class="font-mono"></p>
                 </div>
             </div>
 
             <!-- Basic Info -->
-            <div class="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-8">
+            <div class="bg-[rgb(var(--color-bg-base))] rounded-xl p-6 border border-[rgb(var(--color-border-muted))] mb-8">
                 <div class="grid grid-cols-2 gap-y-4 text-sm">
-                    <div><span class="text-slate-400 ml-2">المعلم:</span> <span id="repTeacherName" class="font-bold text-slate-800 text-lg"></span></div>
-                    <div><span class="text-slate-400 ml-2">الصف:</span> <span id="repClassName" class="font-bold text-slate-800"></span></div>
-                    <div class="col-span-2"><span class="text-slate-400 ml-2">الدرس:</span> <span id="repLessonTopic" class="font-bold text-slate-800"></span></div>
+                    <div><span class="text-slate-400 ml-2">المعلم:</span> <span id="repTeacherName" class="font-bold text-[rgb(var(--color-text-base))] text-lg"></span></div>
+                    <div><span class="text-slate-400 ml-2">الصف:</span> <span id="repClassName" class="font-bold text-[rgb(var(--color-text-base))]"></span></div>
+                    <div class="col-span-2"><span class="text-slate-400 ml-2">الدرس:</span> <span id="repLessonTopic" class="font-bold text-[rgb(var(--color-text-base))]"></span></div>
                 </div>
             </div>
 
@@ -247,7 +311,7 @@
                 <h3 class="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2 bg-emerald-50 w-fit px-3 py-1 rounded-lg border border-emerald-100">
                     <i class="fas fa-star"></i> جوانب الإجادة
                 </h3>
-                <ul id="repStrengths" class="space-y-3 pr-4 list-disc marker:text-emerald-500 text-slate-700 text-sm leading-relaxed"></ul>
+                <ul id="repStrengths" class="space-y-3 pr-4 list-disc marker:text-emerald-500 text-[rgb(var(--color-text-base))] text-sm leading-relaxed"></ul>
             </div>
 
             <!-- Improvements -->
@@ -255,26 +319,26 @@
                 <h3 class="text-lg font-bold text-amber-700 mb-4 flex items-center gap-2 bg-amber-50 w-fit px-3 py-1 rounded-lg border border-amber-100">
                     <i class="fas fa-wrench"></i> جوانب التحسين
                 </h3>
-                <ul id="repImprovements" class="space-y-3 pr-4 list-disc marker:text-amber-500 text-slate-700 text-sm leading-relaxed"></ul>
+                <ul id="repImprovements" class="space-y-3 pr-4 list-disc marker:text-amber-500 text-[rgb(var(--color-text-base))] text-sm leading-relaxed"></ul>
             </div>
 
             <!-- Recommendations -->
             <div class="mb-8">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-indigo-700 flex items-center gap-2 bg-indigo-50 w-fit px-3 py-1 rounded-lg border border-indigo-100">
+                    <h3 class="text-lg font-bold text-[rgb(var(--color-primary-700))] flex items-center gap-2 bg-[rgb(var(--color-primary-50))] w-fit px-3 py-1 rounded-lg border border-[rgb(var(--color-primary-100))]">
                         <i class="fas fa-lightbulb"></i> التوصيات
                     </h3>
                     <button onclick="window.app.enhanceReportWithAI()" class="text-xs bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1.5 rounded-full flex items-center gap-1 shadow-md hover:shadow-lg transition cursor-pointer no-print">
                         <i class="fas fa-wand-magic-sparkles"></i> تحسين بالذكاء الاصطناعي
                     </button>
                 </div>
-                <div class="bg-indigo-50/50 p-6 rounded-xl border border-indigo-100 text-slate-700 text-sm leading-relaxed relative">
+                <div class="bg-[rgb(var(--color-primary-50))]/50 p-6 rounded-xl border border-[rgb(var(--color-primary-100))] text-[rgb(var(--color-text-base))] text-sm leading-relaxed relative">
                     <p class="mb-4 font-bold">شكراً لكم أستاذ <span id="repTeacherNameSmall"></span> على جهودكم المبذولة في الحصة الدراسية.</p>
                     <ul id="repRecommendations" class="space-y-2 list-decimal pr-4"></ul>
                     <!-- Loading Overlay for AI -->
                     <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view">
-                        <i class="fas fa-spinner fa-spin text-3xl text-indigo-600 mb-2"></i>
-                        <span class="text-xs font-bold text-indigo-800">جاري صياغة التوصيات سياقياً...</span>
+                        <i class="fas fa-spinner fa-spin text-3xl text-[rgb(var(--color-primary-600))] mb-2"></i>
+                        <span class="text-xs font-bold text-[rgb(var(--color-primary-900))]">جاري صياغة التوصيات سياقياً...</span>
                     </div>
                 </div>
             </div>
@@ -287,7 +351,7 @@
                 <button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer">
                     <i class="fas fa-save"></i> حفظ في السجل
                 </button>
-                <button onclick="window.app.setView('supervision')" class="flex-1 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 py-3 rounded-xl font-bold transition cursor-pointer">
+                <button onclick="window.app.setView('supervision')" class="flex-1 bg-[rgb(var(--color-surface-base))] border border-slate-300 text-[rgb(var(--color-text-muted))] hover:bg-[rgb(var(--color-bg-base))] py-3 rounded-xl font-bold transition cursor-pointer">
                     تعديل
                 </button>
                 <button onclick="window.app.setView('supervision-history')" class="flex-1 bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 py-3 rounded-xl font-bold transition cursor-pointer">
@@ -299,51 +363,52 @@
     </main>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40 pb-safe no-print">
+    <nav class="fixed bottom-0 left-0 right-0 bg-[rgb(var(--color-surface-base))] border-t border-[rgb(var(--color-border-muted))] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40 pb-safe no-print">
         <div class="flex justify-around items-center h-16 px-2">
-            <button onclick="window.app.setView('now')" id="btn-now" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-indigo-700 transition-all duration-300 group">
-                <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors">
+            <button onclick="window.app.setView('now')" id="btn-now" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-[rgb(var(--color-primary-700))] transition-all duration-300 group">
+                <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-[rgb(var(--color-primary-50))] group-hover:bg-[rgb(var(--color-primary-100))] transition-colors">
                     <i class="fas fa-chalkboard text-xl mb-0.5"></i>
                 </div>
                 <span class="text-[10px] font-bold">الحصص</span>
             </button>
             
-            <button onclick="window.app.setView('teachers')" id="btn-teachers" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
+            <button onclick="window.app.setView('teachers')" id="btn-teachers" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-[rgb(var(--color-text-base))] transition-all duration-300 group">
+                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-[rgb(var(--color-bg-base))] transition-colors">
                     <i class="fas fa-users-cog text-xl mb-0.5"></i>
                  </div>
                 <span class="text-[10px] font-bold">المعلمين</span>
             </button>
             
-            <button onclick="window.app.setView('reports')" id="btn-reports" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
+            <button onclick="window.app.setView('reports')" id="btn-reports" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-[rgb(var(--color-text-base))] transition-all duration-300 group">
+                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-[rgb(var(--color-bg-base))] transition-colors">
                     <i class="fas fa-file-invoice text-xl mb-0.5"></i>
                  </div>
                 <span class="text-[10px] font-bold">التقارير</span>
             </button>
             
-            <button onclick="window.app.setView('supervision-history')" id="btn-supervision-history" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
+            <button onclick="window.app.setView('supervision-history')" id="btn-supervision-history" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-[rgb(var(--color-text-base))] transition-all duration-300 group">
+                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-[rgb(var(--color-bg-base))] transition-colors">
                     <i class="fas fa-history text-xl mb-0.5"></i>
                  </div>
                 <span class="text-[10px] font-bold">السجل</span>
             </button>
             
-            <button onclick="window.app.openSettings()" class="flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
+            <button onclick="window.app.openSettings()" class="flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-[rgb(var(--color-text-base))] transition-all duration-300 group">
+                 <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-[rgb(var(--color-bg-base))] transition-colors">
                     <i class="fas fa-cog text-xl mb-0.5"></i>
                  </div>
                 <span class="text-[10px] font-bold">الإعدادات</span>
             </button>
         </div>
     </nav>
+    </div> <!-- End of #app-view -->
 
     <!-- Modals -->
     
     <!-- Action Modal -->
     <div id="modal-action" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-action')"></div>
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in modal-content mb-20">
+        <div class="bg-[rgb(var(--color-surface-base))] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in modal-content mb-20">
             <div class="bg-slate-800 p-4 text-white flex justify-between items-start">
                 <div>
                     <h3 class="text-lg font-bold flex items-center gap-2" id="actionModalTitle"></h3>
@@ -354,12 +419,12 @@
             
             <div class="p-4 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
                 <!-- Evaluation Button -->
-                <button type="button" id="btn-evaluate" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 p-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer mb-2">
+                <button type="button" id="btn-evaluate" class="w-full bg-[rgb(var(--color-primary-50))] hover:bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-700))] border border-[rgb(var(--color-primary-200))] p-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer mb-2">
                     <i class="fas fa-clipboard-list text-xl"></i>
                     <span>تقييم زيارة إشرافية</span>
                 </button>
 
-                <div class="h-px bg-slate-100 mb-2"></div>
+                <div class="h-px bg-[rgb(var(--color-border-base))] mb-2"></div>
 
                 <!-- Communication Buttons -->
                 <div class="space-y-2">
@@ -373,16 +438,16 @@
                          </button>
                      </div>
                 </div>
-                <div class="h-px bg-slate-100"></div>
+                <div class="h-px bg-[rgb(var(--color-border-base))]"></div>
                 <!-- Dynamic Violation Buttons -->
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">المخالفات</label>
                     <div id="violationButtonsContainer" class="space-y-2"></div>
                 </div>
             </div>
-             <div class="bg-slate-50 p-3 text-center border-t border-slate-200 flex justify-between items-center px-6">
-                <span class="text-xs text-slate-500">التقييم الحالي</span>
-                <span class="text-lg font-bold text-slate-800" id="currentScoreDisplay"></span>
+             <div class="bg-[rgb(var(--color-bg-base))] p-3 text-center border-t border-[rgb(var(--color-border-muted))] flex justify-between items-center px-6">
+                <span class="text-xs text-[rgb(var(--color-text-muted))]">التقييم الحالي</span>
+                <span class="text-lg font-bold text-[rgb(var(--color-text-base))]" id="currentScoreDisplay"></span>
             </div>
         </div>
     </div>
@@ -390,29 +455,42 @@
     <!-- Settings Modal -->
     <div id="modal-settings" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-settings')"></div>
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[80vh] modal-content mb-16">
+        <div class="bg-[rgb(var(--color-surface-base))] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[80vh] modal-content mb-16">
             <div class="bg-slate-800 text-white p-5 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-cog"></i> الإعدادات</h3>
                 <button type="button" onclick="window.app.closeModal('modal-settings')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
             
             <div class="p-6 overflow-y-auto custom-scrollbar space-y-8">
+                <!-- Theme Selection -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]">
+                        <h4 class="font-bold text-[rgb(var(--color-text-base))] flex items-center gap-2">
+                            <i class="fas fa-palette text-sky-500"></i>
+                            المظهر
+                        </h4>
+                    </div>
+                    <div id="themeSelectorContainer" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <!-- Theme buttons will be rendered here by JS -->
+                    </div>
+                </div>
+
                 <!-- Violation Management -->
                 <div class="space-y-4">
-                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i class="fas fa-gavel text-red-500"></i> إدارة المخالفات</h4>
+                     <div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]">
+                        <h4 class="font-bold text-[rgb(var(--color-text-base))] text-sm flex items-center gap-2"><i class="fas fa-gavel text-red-500"></i> إدارة المخالفات</h4>
                     </div>
                     <!-- Add Form -->
-                    <div class="flex gap-2 bg-slate-50 p-3 rounded-lg border border-slate-200 items-end">
+                    <div class="flex gap-2 bg-[rgb(var(--color-bg-base))] p-3 rounded-lg border border-[rgb(var(--color-border-muted))] items-end">
                         <div class="flex-1 space-y-1">
-                            <label class="text-[10px] font-bold text-slate-500">اسم المخالفة</label>
-                            <input type="text" id="newViolationLabel" placeholder="مثلاً: عدم تحضير" class="w-full text-sm p-2 rounded border border-slate-300 focus:border-indigo-500 outline-none">
+                            <label class="text-[10px] font-bold text-[rgb(var(--color-text-muted))]">اسم المخالفة</label>
+                            <input type="text" id="newViolationLabel" placeholder="مثلاً: عدم تحضير" class="w-full text-sm p-2 rounded border border-slate-300 focus:border-[rgb(var(--color-primary-500))] outline-none bg-[rgb(var(--color-surface-base))] text-[rgb(var(--color-text-base))]">
                         </div>
                         <div class="w-24 space-y-1">
-                            <label class="text-[10px] font-bold text-slate-500">الخصم</label>
-                            <input type="number" id="newViolationPoints" value="5" class="w-full text-sm p-2 rounded border border-slate-300 focus:border-indigo-500 outline-none text-center">
+                            <label class="text-[10px] font-bold text-[rgb(var(--color-text-muted))]">الخصم</label>
+                            <input type="number" id="newViolationPoints" value="5" class="w-full text-sm p-2 rounded border border-slate-300 focus:border-[rgb(var(--color-primary-500))] outline-none text-center bg-[rgb(var(--color-surface-base))] text-[rgb(var(--color-text-base))]">
                         </div>
-                        <button type="button" onclick="window.app.addViolation()" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded h-[38px] w-10 flex items-center justify-center transition cursor-pointer"><i class="fas fa-plus"></i></button>
+                        <button type="button" onclick="window.app.addViolation()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white p-2 rounded h-[38px] w-10 flex items-center justify-center transition cursor-pointer"><i class="fas fa-plus"></i></button>
                     </div>
                     <!-- List -->
                     <div id="violationsList" class="space-y-2"></div>
@@ -420,9 +498,9 @@
 
                 <!-- Imports -->
                 <div class="grid md:grid-cols-2 gap-4">
-                    <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                        <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-calendar-alt"></i> جدول الحصص (XML)</h4>
-                        <button type="button" onclick="document.getElementById('xmlInput').click()" class="w-full bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-2 rounded-lg font-bold text-xs transition cursor-pointer">رفع ملف XML</button>
+                    <div class="bg-[rgb(var(--color-primary-50))] p-4 rounded-xl border border-[rgb(var(--color-primary-100))]">
+                        <h4 class="font-bold text-[rgb(var(--color-primary-900))] mb-2 flex items-center gap-2 text-sm"><i class="fas fa-calendar-alt"></i> جدول الحصص (XML)</h4>
+                        <button type="button" onclick="document.getElementById('xmlInput').click()" class="w-full bg-[rgb(var(--color-surface-base))] hover:bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-700))] border border-[rgb(var(--color-primary-200))] py-2 rounded-lg font-bold text-xs transition cursor-pointer">رفع ملف XML</button>
                         <input type="file" id="xmlInput" accept=".xml" class="hidden" onchange="window.app.handleXml(event)">
                     </div>
                     <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
@@ -444,12 +522,14 @@
             </div>
         </div>
     </div>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <!-- App Logic -->
     <script>
         class SchoolApp {
             constructor() {
                 this.state = {
+                    currentUser: null,
                     teachers: [],
                     periods: [],
                     classes: {},
@@ -460,27 +540,161 @@
                     simulationOffset: 0,
                     selectedTeacherId: null,
                     selectedClassName: null,
-                    
-                    // Supervision State
-                    supervisionData: {
-                        ratings: {}
-                    },
+                    supervisionData: { ratings: {} },
                     supervisionHistory: [],
-                    evaluationCriteria: []
+                    evaluationCriteria: [],
+                    theme: 'default',
+                    cloudStatus: 'offline', // offline, connecting, connected, error
+                    unsubscribe: null // To store the snapshot listener
                 };
                 this.db = null;
+                this.auth = null;
                 
-                // Initialize FULL default criteria
                 this.initDefaultCriteria();
-                
-                // Initialize
-                this.loadLocalData();
+                this.initFirebaseAndAuth();
                 this.startClock();
-                this.initFirebase();
             }
+
+            resetState() {
+                this.state.teachers = [];
+                this.state.periods = [];
+                this.state.classes = {};
+                this.state.violationTypes = [
+                    { id: 'late', label: 'تأخر عن الحصة', points: 5, icon: 'fa-clock' },
+                    { id: 'absent', label: 'غياب عن الحصة', points: 15, icon: 'fa-user-slash' }
+                ];
+                this.state.supervisionHistory = [];
+                this.state.theme = 'default';
+                this.renderAll();
+                this.applyTheme();
+            }
+
+            initFirebaseAndAuth() {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
+                    authDomain: "school-9416e.firebaseapp.com",
+                    projectId: "school-9416e",
+                    storageBucket: "school-9416e.firebasestorage.app",
+                    messagingSenderId: "680872052240",
+                    appId: "1:680872052240:web:96d2e544166ab5f8096c95",
+                    measurementId: "G-5EBTV0MV83"
+                };
+                
+                try {
+                    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                        firebase.initializeApp(firebaseConfig);
+                    }
+                    if (typeof firebase !== 'undefined') {
+                        this.db = firebase.firestore();
+                        this.auth = firebase.auth();
+                        
+                        // Auth state listener
+                        this.auth.onAuthStateChanged(user => {
+                            const loginView = document.getElementById('login-view');
+                            const appView = document.getElementById('app-view');
+
+                            if (user) {
+                                this.state.currentUser = {
+                                    uid: user.uid,
+                                    name: user.displayName,
+                                    photoURL: user.photoURL
+                                };
+                                loginView.classList.add('hidden-view');
+                                appView.classList.remove('hidden-view');
+                                this.renderUserProfile();
+                                this.loadUserData();
+                            } else {
+                                this.state.currentUser = null;
+                                if (this.state.unsubscribe) {
+                                    this.state.unsubscribe(); // Detach old listener
+                                    this.state.unsubscribe = null;
+                                }
+                                this.resetState();
+                                loginView.classList.remove('hidden-view');
+                                appView.classList.add('hidden-view');
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Firebase Init Error:", e);
+                }
+            }
+
+            handleGoogleLogin() {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                this.auth.signInWithPopup(provider).catch(error => {
+                    console.error("Login Failed:", error);
+                    alert("فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.");
+                });
+            }
+
+            handleLogout() {
+                if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج؟')) {
+                    this.auth.signOut();
+                }
+            }
+
+            loadUserData() {
+                if (!this.state.currentUser) return;
+                
+                // Unsubscribe from any previous listener
+                if (this.state.unsubscribe) {
+                    this.state.unsubscribe();
+                }
+                
+                this.updateCloudStatus('connecting');
+                const userDocRef = this.db.collection("users").doc(this.state.currentUser.uid);
+                
+                this.state.unsubscribe = userDocRef.onSnapshot(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        this.state.teachers = data.teachers || [];
+                        this.state.periods = data.periods || [];
+                        this.state.classes = data.classes || {};
+                        if (data.violationTypes) this.state.violationTypes = data.violationTypes;
+                        if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
+                        if (data.evaluationCriteria) this.state.evaluationCriteria = data.evaluationCriteria;
+                        if (data.theme) this.state.theme = data.theme;
+                        
+                        this.applyTheme();
+                        this.renderAll();
+                        this.updateCloudStatus('connected');
+                    } else {
+                        // New user, create their document on first save
+                        this.updateCloudStatus('connected'); // Ready for first save
+                        this.renderAll();
+                    }
+                }, error => {
+                    console.error("Cloud Error:", error);
+                    this.updateCloudStatus('error');
+                });
+            }
+
+            async saveData() {
+                if (!this.state.currentUser) return;
+                this.updateCloudStatus('saving');
+                
+                try {
+                    await this.db.collection("users").doc(this.state.currentUser.uid).set({
+                        teachers: this.state.teachers,
+                        periods: this.state.periods,
+                        classes: this.state.classes,
+                        violationTypes: this.state.violationTypes,
+                        supervisionHistory: this.state.supervisionHistory,
+                        evaluationCriteria: this.state.evaluationCriteria,
+                        theme: this.state.theme,
+                        lastSync: new Date(),
+                        userName: this.state.currentUser.name // Store name for reference
+                    }, { merge: true });
+                    // No need to update status, snapshot listener will do it
+                } catch (e) {
+                    console.error("Save Error:", e);
+                    this.updateCloudStatus('error');
+                }
+            }
+
             
             initDefaultCriteria() {
-                // Populating with the full 13 items provided
                 this.state.evaluationCriteria = [
                     { id: 1, title: "التحصيل الدراسي", items: {
                         1: { desc: "اكتسب جميع الطلبة المهارات الأساسية والمعارف في ضوء أهداف الدرس بصورة فعالة، بدليل تحسين النطق واللفظ والكتابة لدى جميع الطلبة بدرجة عالية.", rec: "تنفيذ مبادرة تربوية تعزز من اكتساب الطلبة للمهارات والمعارف مثل مبادرة المدقق اللغوي الصغير." },
@@ -576,112 +790,46 @@
                 ];
             }
 
-            initFirebase() {
-                const firebaseConfig = {
-                    apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg",
-                    authDomain: "school-9416e.firebaseapp.com",
-                    projectId: "school-9416e",
-                    storageBucket: "school-9416e.firebasestorage.app",
-                    messagingSenderId: "680872052240",
-                    appId: "1:680872052240:web:96d2e544166ab5f8096c95",
-                    measurementId: "G-5EBTV0MV83"
-                };
+            renderUserProfile() {
+                const container = document.getElementById('user-profile-container');
+                if (!container || !this.state.currentUser) return;
                 
-                try {
-                    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-                        firebase.initializeApp(firebaseConfig);
-                    }
-                    if(typeof firebase !== 'undefined') {
-                        this.db = firebase.firestore();
-                        this.db.collection("school_settings").doc("timetable")
-                            .onSnapshot((doc) => {
-                                if(doc.exists) {
-                                    const data = doc.data();
-                                    this.state.teachers = data.teachers || [];
-                                    this.state.periods = data.periods || [];
-                                    this.state.classes = data.classes || {};
-                                    if(data.violationTypes) this.state.violationTypes = data.violationTypes;
-                                    if(data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
-                                    if(data.evaluationCriteria) this.state.evaluationCriteria = data.evaluationCriteria;
-                                    
-                                    this.renderAll();
-                                    this.saveToLocal();
-                                    this.updateCloudStatus('connected');
-                                }
-                            }, (error) => {
-                                console.error("Cloud Error:", error);
-                                this.updateCloudStatus('error');
-                            });
-                    }
-                } catch (e) {
-                    console.error("Firebase Init Error:", e);
-                    this.updateCloudStatus('error');
-                }
-            }
-
-            loadLocalData() {
-                const local = localStorage.getItem('school_data_v1');
-                if(local) {
-                    try {
-                        const parsed = JSON.parse(local);
-                        this.state.teachers = parsed.teachers || [];
-                        this.state.periods = parsed.periods || [];
-                        this.state.classes = parsed.classes || {};
-                        if(parsed.violationTypes) this.state.violationTypes = parsed.violationTypes;
-                        if(parsed.supervisionHistory) this.state.supervisionHistory = parsed.supervisionHistory;
-                        if(parsed.evaluationCriteria) this.state.evaluationCriteria = parsed.evaluationCriteria;
-                        this.renderAll();
-                    } catch(e) { console.error("Local Load Error", e); }
-                }
-            }
-
-            saveToLocal() {
-                localStorage.setItem('school_data_v1', JSON.stringify({
-                    teachers: this.state.teachers,
-                    periods: this.state.periods,
-                    classes: this.state.classes,
-                    violationTypes: this.state.violationTypes,
-                    supervisionHistory: this.state.supervisionHistory,
-                    evaluationCriteria: this.state.evaluationCriteria,
-                    lastSync: new Date()
-                }));
-            }
-
-            async saveData() {
-                this.saveToLocal();
-                this.renderAll();
-
-                if(!this.db) return;
-                
-                this.updateCloudStatus('saving');
-                try {
-                    await this.db.collection("school_settings").doc("timetable").set({
-                        teachers: this.state.teachers,
-                        periods: this.state.periods,
-                        classes: this.state.classes,
-                        violationTypes: this.state.violationTypes,
-                        supervisionHistory: this.state.supervisionHistory,
-                        evaluationCriteria: this.state.evaluationCriteria,
-                        lastSync: new Date()
-                    }, { merge: true });
-                } catch(e) { 
-                    console.error("Save Error:", e);
-                    this.updateCloudStatus('error'); 
-                }
+                container.innerHTML = `
+                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                        <button @click="open = !open" class="flex items-center gap-2">
+                            <img src="${this.state.currentUser.photoURL}" alt="User" class="w-8 h-8 rounded-full border-2 border-white/30">
+                            <span class="font-bold text-sm hidden md:block">${this.state.currentUser.name}</span>
+                            <i class="fas fa-chevron-down text-xs transition-transform" :class="{'rotate-180': open}"></i>
+                        </button>
+                        <div x-show="open" x-cloak x-transition class="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 overflow-hidden border border-slate-100">
+                            <a href="#" onclick="window.app.handleLogout(); return false;" class="block px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition">
+                                <i class="fas fa-sign-out-alt ml-2"></i>
+                                تسجيل الخروج
+                            </a>
+                        </div>
+                    </div>
+                     <div id="cloudStatusBadge"></div>
+                `;
+                this.updateCloudStatus(this.state.cloudStatus);
             }
 
             updateCloudStatus(status) {
+                this.state.cloudStatus = status;
                 const badge = document.getElementById('cloudStatusBadge');
                 if(!badge) return;
+
                 if(status === 'connected') {
-                    badge.innerHTML = '<i class="fas fa-circle text-[5px] animate-pulse"></i> متصل';
-                    badge.className = "text-[9px] mt-1 bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded-full border border-green-500/30 w-fit flex items-center gap-1";
+                    badge.innerHTML = '<i class="fas fa-circle text-[5px]"></i> متصل';
+                    badge.className = "text-[9px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded-full border border-green-500/30 w-fit flex items-center gap-1";
                 } else if(status === 'saving') {
                     badge.innerHTML = '<i class="fas fa-sync fa-spin text-[6px]"></i> حفظ...';
-                    badge.className = "text-[9px] mt-1 bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-500/30 w-fit flex items-center gap-1";
+                    badge.className = "text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-500/30 w-fit flex items-center gap-1";
+                } else if(status === 'connecting') {
+                     badge.innerHTML = '<i class="fas fa-circle text-[5px]"></i> جاري الاتصال...';
+                    badge.className = "text-[9px] bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded-full border border-sky-500/30 w-fit flex items-center gap-1";
                 } else {
-                    badge.innerHTML = '<i class="fas fa-wifi-slash"></i>';
-                    badge.className = "text-[9px] mt-1 bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full border border-red-500/30 w-fit flex items-center gap-1";
+                    badge.innerHTML = '<i class="fas fa-wifi-slash"></i> خطأ';
+                    badge.className = "text-[9px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full border border-red-500/30 w-fit flex items-center gap-1";
                 }
             }
 
@@ -694,66 +842,66 @@
                 }, 1000);
             }
 
-            addSimulationHour() {
-                this.state.simulationOffset += 3600000;
-                const now = new Date(new Date().getTime() + this.state.simulationOffset);
+            simulateRandomPeriod() {
+                if (this.state.periods.length === 0) {
+                    alert('لا توجد فترات دراسية في الجدول لمحاكاتها. يرجى استيراد جدول أولاً.');
+                    return;
+                }
+                const randomPeriod = this.state.periods[Math.floor(Math.random() * this.state.periods.length)];
+                const [hours, minutes] = randomPeriod.start.split(':').map(Number);
+                const now = new Date();
+                const simulationTargetTime = new Date();
+                simulationTargetTime.setHours(hours, minutes, 0, 0);
+                this.state.simulationOffset = simulationTargetTime.getTime() - now.getTime();
+                const simulatedNow = new Date(new Date().getTime() + this.state.simulationOffset);
                 const el = document.getElementById('clockDisplay');
-                if(el) el.innerText = now.toLocaleTimeString('en-US', {hour12:false});
-                this.renderCurrentPeriod(now);
+                if(el) el.innerText = simulatedNow.toLocaleTimeString('en-US', {hour12:false});
+                this.renderCurrentPeriod(simulatedNow);
+            }
+
+            resetTimeToReal() {
+                this.state.simulationOffset = 0;
+                const realNow = new Date(new Date().getTime() + this.state.simulationOffset);
+                const el = document.getElementById('clockDisplay');
+                if(el) el.innerText = realNow.toLocaleTimeString('en-US', {hour12:false});
+                this.renderCurrentPeriod(realNow);
             }
 
             setView(viewName) {
                 ['now', 'teachers', 'reports', 'supervision', 'supervision-report', 'supervision-history'].forEach(v => {
-                    const el = document.getElementById(`view-${v}`);
-                    if(el) el.classList.add('hidden-view');
+                    document.getElementById(`view-${v}`)?.classList.add('hidden-view');
                     const btn = document.getElementById(`btn-${v}`);
-                    
                     if(btn) {
-                        // Reset to inactive state (Bottom Nav style)
-                        btn.className = "nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group";
+                        btn.classList.remove('text-[rgb(var(--color-primary-700))]');
+                        btn.classList.add('text-slate-400', 'hover:text-[rgb(var(--color-text-base))]');
                         const iconContainer = btn.querySelector('div');
                         if(iconContainer) {
-                             iconContainer.className = "w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors";
+                             iconContainer.classList.remove('bg-[rgb(var(--color-primary-50))]');
+                             iconContainer.classList.add('bg-transparent', 'group-hover:bg-[rgb(var(--color-bg-base))]');
                         }
                     }
                 });
-                
-                // Show View
-                const view = document.getElementById(`view-${viewName}`);
-                if(view) view.classList.remove('hidden-view');
-                
-                // Set Active State
+                document.getElementById(`view-${viewName}`)?.classList.remove('hidden-view');
                 const activeBtn = document.getElementById(`btn-${viewName}`);
                 if(activeBtn) {
-                     activeBtn.className = "nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-indigo-700 transition-all duration-300 group";
+                     activeBtn.classList.add('text-[rgb(var(--color-primary-700))]');
+                     activeBtn.classList.remove('text-slate-400', 'hover:text-[rgb(var(--color-text-base))]');
                      const iconContainer = activeBtn.querySelector('div');
                      if(iconContainer) {
-                         iconContainer.className = "w-10 h-8 flex items-center justify-center rounded-xl bg-indigo-50 group-hover:bg-indigo-100 transition-colors";
+                         iconContainer.classList.add('bg-[rgb(var(--color-primary-50))]');
+                         iconContainer.classList.remove('bg-transparent', 'group-hover:bg-[rgb(var(--color-bg-base))]');
                      }
                 }
-
                 if(viewName === 'teachers') this.renderTeachers();
                 if(viewName === 'reports') this.renderReports();
                 if(viewName === 'supervision-history') this.renderHistory();
             }
 
             renderAll() {
-                // Find active button to determine current view
-                let currentView = 'now';
-                const nowBtn = document.getElementById('btn-now');
-                if(nowBtn && nowBtn.classList.contains('text-indigo-700')) currentView = 'now';
-                else {
-                    const teachBtn = document.getElementById('btn-teachers');
-                    if(teachBtn && teachBtn.classList.contains('text-indigo-700')) currentView = 'teachers';
-                    else {
-                        const repBtn = document.getElementById('btn-reports');
-                        if(repBtn && repBtn.classList.contains('text-indigo-700')) currentView = 'reports';
-                    }
-                }
-                
+                const activeBtn = document.querySelector('.nav-btn.text-\\[rgb\\(var\\(--color-primary-700\\)\\)\\]');
+                let currentView = activeBtn ? activeBtn.id.replace('btn-', '') : 'now';
                 if(currentView === 'now') {
-                     const now = new Date(new Date().getTime() + this.state.simulationOffset);
-                     this.renderCurrentPeriod(now);
+                     this.renderCurrentPeriod(new Date(new Date().getTime() + this.state.simulationOffset));
                 } else if (currentView === 'teachers') {
                     this.renderTeachers();
                 } else if (currentView === 'reports') {
@@ -773,16 +921,15 @@
                 if(infoDiv) {
                     if(currentPeriod) {
                         infoDiv.innerHTML = `
-                            <div class="flex items-center gap-3 bg-indigo-50 px-4 py-2 rounded-lg border border-indigo-100 shadow-sm">
-                                <span class="text-indigo-900 font-bold">الحصة ${currentPeriod.id}</span>
-                                <span class="text-indigo-300">|</span>
-                                <span class="text-indigo-600 font-mono text-sm">${currentPeriod.start} - ${currentPeriod.end}</span>
+                            <div class="flex items-center gap-3 bg-[rgb(var(--color-primary-50))] px-4 py-2 rounded-lg border border-[rgb(var(--color-primary-100))] shadow-sm">
+                                <span class="text-[rgb(var(--color-primary-900))] font-bold">الحصة ${currentPeriod.id}</span>
+                                <span class="text-[rgb(var(--color-primary-300))]">|</span>
+                                <span class="text-[rgb(var(--color-primary-600))] font-mono text-sm">${currentPeriod.start} - ${currentPeriod.end}</span>
                             </div>`;
                     } else {
                         infoDiv.innerHTML = `<div class="bg-amber-50 text-amber-700 px-4 py-2 rounded-lg border border-amber-100 font-bold text-sm">لا توجد حصص نشطة</div>`;
                     }
                 }
-
                 this.renderActiveClasses(now, currentPeriod);
             }
 
@@ -791,13 +938,12 @@
                 if(!grid) return;
                 
                 if(!period) {
-                    grid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-400 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200"><i class="fas fa-coffee text-3xl mb-3 text-slate-300"></i><p class="text-sm">لا توجد حصص في الوقت الحالي</p></div>`;
+                    grid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-400 bg-[rgb(var(--color-bg-base))] rounded-xl border-2 border-dashed border-[rgb(var(--color-border-muted))]"><i class="fas fa-coffee text-3xl mb-3 text-slate-300"></i><p class="text-sm">لا توجد حصص في الوقت الحالي</p></div>`;
                     return;
                 }
 
                 const dayId = now.getDay() + 1;
                 const pId = parseInt(period.id);
-                
                 let active = [];
                 this.state.teachers.forEach(t => {
                     const l = t.lessons.find(ls => ls.day === dayId && ls.period === pId);
@@ -825,7 +971,6 @@
                     const gA = getGrade(a.className);
                     const gB = getGrade(b.className);
                     if (gA !== gB) return gA - gB;
-                    
                     const getSection = (str) => {
                          const nums = str.match(/\d+/g);
                          return nums ? parseInt(nums[nums.length-1]) : 0;
@@ -837,20 +982,20 @@
                 });
 
                 grid.innerHTML = active.map(item => `
-                    <div class="group bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-slate-200 overflow-hidden relative flex flex-col">
-                        <div class="h-1 w-full bg-indigo-500"></div>
+                    <div class="group bg-[rgb(var(--color-surface-base))] rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-[rgb(var(--color-border-muted))] overflow-hidden relative flex flex-col">
+                        <div class="h-1 w-full bg-[rgb(var(--color-primary-500))]"></div>
                         <div class="p-2 flex-1 flex flex-col">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-xs font-bold border border-slate-200 truncate max-w-[70%]">
+                                <span class="bg-[rgb(var(--color-bg-base))] text-[rgb(var(--color-text-base))] px-2 py-0.5 rounded text-xs font-bold border border-[rgb(var(--color-border-muted))] truncate max-w-[70%]">
                                     ${item.className}
                                 </span>
-                                <div class="w-5 h-5 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-[9px] font-bold border border-indigo-100">
+                                <div class="w-5 h-5 rounded-full bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-600))] flex items-center justify-center text-[9px] font-bold border border-[rgb(var(--color-primary-100))]">
                                    ${item.t.short[0] || '?'}
                                 </div>
                             </div>
-                            <h3 class="font-bold text-xs text-slate-700 mb-1 truncate">${item.t.name}</h3>
+                            <h3 class="font-bold text-xs text-[rgb(var(--color-text-base))] mb-1 truncate">${item.t.name}</h3>
                             <div class="flex items-center gap-1 text-[9px] text-slate-400 mb-2"><i class="fas fa-star text-yellow-400"></i> <span>${item.t.score}%</span></div>
-                            <button type="button" onclick="window.app.openActionModal('${item.t.id}', '${item.className}')" class="mt-auto w-full py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[10px] transition-colors flex justify-center items-center gap-1 cursor-pointer"><i class="fas fa-cog"></i> إجراء</button>
+                            <button type="button" onclick="window.app.openActionModal('${item.t.id}', '${item.className}')" class="mt-auto w-full py-1 rounded bg-[rgb(var(--color-primary-50))] hover:bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-700))] font-bold text-[10px] transition-colors flex justify-center items-center gap-1 cursor-pointer"><i class="fas fa-cog"></i> إجراء</button>
                         </div>
                     </div>
                 `).join('');
@@ -868,20 +1013,20 @@
                 grid.innerHTML = filtered.map(t => {
                     let scoreColor = t.score >= 90 ? "bg-emerald-50 text-emerald-600 border-emerald-100" : (t.score >= 70 ? "bg-yellow-50 text-yellow-600 border-yellow-100" : "bg-red-50 text-red-600 border-red-100");
                     return `
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition border border-slate-100 p-5 flex flex-col gap-4">
+                    <div class="bg-[rgb(var(--color-surface-base))] rounded-xl shadow-sm hover:shadow-md transition border border-[rgb(var(--color-border-base))] p-5 flex flex-col gap-4">
                         <div class="flex justify-between items-start">
                             <div class="flex items-center gap-3">
-                                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold shadow-sm">${t.short[0] || '?'}</div>
-                                <div><h3 class="font-bold text-slate-800 line-clamp-1">${t.name}</h3><span class="text-xs text-slate-500">${t.short}</span></div>
+                                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[rgb(var(--color-primary-500))] to-purple-600 text-white flex items-center justify-center font-bold shadow-sm">${t.short[0] || '?'}</div>
+                                <div><h3 class="font-bold text-[rgb(var(--color-text-base))] line-clamp-1">${t.name}</h3><span class="text-xs text-[rgb(var(--color-text-muted))]">${t.short}</span></div>
                             </div>
                             <div class="font-bold text-sm px-2 py-1 rounded-md border ${scoreColor}">${t.score}%</div>
                         </div>
                         <div class="relative group/input">
-                             <i class="fas fa-phone absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-indigo-500 transition-colors"></i>
-                            <input type="tel" value="${t.phone || ''}" onchange="window.app.updatePhone('${t.id}', this.value)" placeholder="أضف رقم الهاتف" class="w-full pr-9 pl-3 py-2 text-sm rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all dir-rtl">
+                             <i class="fas fa-phone absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-[rgb(var(--color-primary-500))] transition-colors"></i>
+                            <input type="tel" value="${t.phone || ''}" onchange="window.app.updatePhone('${t.id}', this.value)" placeholder="أضف رقم الهاتف" class="w-full pr-9 pl-3 py-2 text-sm rounded-lg border border-[rgb(var(--color-border-muted))] bg-[rgb(var(--color-bg-base))] focus:bg-[rgb(var(--color-surface-base))] focus:border-[rgb(var(--color-primary-500))] focus:ring-1 focus:ring-[rgb(var(--color-primary-500))] outline-none transition-all dir-rtl">
                         </div>
-                        <div class="flex gap-2 mt-auto pt-2 border-t border-slate-50">
-                            <button type="button" onclick="window.app.openActionModal('${t.id}')" class="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2 rounded-lg text-xs font-bold transition cursor-pointer">خيارات</button>
+                        <div class="flex gap-2 mt-auto pt-2 border-t border-[rgb(var(--color-border-base))]">
+                            <button type="button" onclick="window.app.openActionModal('${t.id}')" class="flex-1 bg-[rgb(var(--color-surface-base))] hover:bg-[rgb(var(--color-bg-base))] text-[rgb(var(--color-text-muted))] border border-[rgb(var(--color-border-muted))] py-2 rounded-lg text-xs font-bold transition cursor-pointer">خيارات</button>
                              <button type="button" onclick="window.app.openWhatsApp('${t.id}')" class="w-10 flex items-center justify-center bg-green-50 hover:bg-green-100 text-green-600 border border-green-200 rounded-lg transition cursor-pointer"><i class="fab fa-whatsapp"></i></button>
                         </div>
                     </div>`;
@@ -895,10 +1040,10 @@
                     let badge = t.score >= 90 ? "bg-green-100 text-green-700" : (t.score >= 70 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700");
                     let status = t.score < 80 ? '<span class="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded">يحتاج متابعة</span>' : '<span class="text-xs text-green-500 font-bold bg-green-50 px-2 py-1 rounded">ممتاز</span>';
                     return `
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="p-5 font-semibold text-slate-700"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold">${t.short[0] || '?'}</div>${t.name}</div></td>
+                        <tr class="hover:bg-[rgb(var(--color-bg-base))]/50 transition-colors">
+                            <td class="p-5 font-semibold text-[rgb(var(--color-text-base))]"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-600))] flex items-center justify-center text-xs font-bold">${t.short[0] || '?'}</div>${t.name}</div></td>
                             <td class="p-5 text-center"><span class="inline-block px-3 py-1 rounded-full text-xs font-bold ${badge}">${t.score}%</span></td>
-                            <td class="p-5 text-center text-slate-500 font-mono text-sm">${t.phone || '-'}</td>
+                            <td class="p-5 text-center text-[rgb(var(--color-text-muted))] font-mono text-sm">${t.phone || '-'}</td>
                             <td class="p-5 text-center">${status}</td>
                         </tr>`;
                 }).join('');
@@ -907,28 +1052,24 @@
             renderHistory() {
                 const grid = document.getElementById('supervisionHistoryGrid');
                 if(!grid) return;
-                
                 const history = this.state.supervisionHistory || [];
                 if(history.length === 0) {
-                    grid.innerHTML = '<div class="text-center p-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">لا يوجد سجل زيارات حتى الآن</div>';
+                    grid.innerHTML = '<div class="text-center p-10 text-slate-400 bg-[rgb(var(--color-bg-base))] rounded-xl border border-dashed border-[rgb(var(--color-border-muted))]">لا يوجد سجل زيارات حتى الآن</div>';
                     return;
                 }
-
-                // Sort by date desc
                 history.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
                 grid.innerHTML = history.map((visit, index) => `
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-indigo-200 transition">
+                    <div class="bg-[rgb(var(--color-surface-base))] p-4 rounded-xl border border-[rgb(var(--color-border-muted))] shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-[rgb(var(--color-primary-200))] transition">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="font-bold text-slate-800 text-lg">${visit.teacherName}</span>
-                                <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded border border-slate-200">${visit.className}</span>
+                                <span class="font-bold text-[rgb(var(--color-text-base))] text-lg">${visit.teacherName}</span>
+                                <span class="bg-[rgb(var(--color-bg-base))] text-[rgb(var(--color-text-muted))] text-xs px-2 py-0.5 rounded border border-[rgb(var(--color-border-muted))]">${visit.className}</span>
                             </div>
-                            <p class="text-sm text-slate-500 mb-1"><i class="fas fa-book-open ml-1"></i> ${visit.topic || 'بدون عنوان'}</p>
+                            <p class="text-sm text-[rgb(var(--color-text-muted))] mb-1"><i class="fas fa-book-open ml-1"></i> ${visit.topic || 'بدون عنوان'}</p>
                             <span class="text-xs text-slate-400 font-mono">${visit.date}</span>
                         </div>
                         <div class="flex gap-2 w-full md:w-auto">
-                            <button onclick="window.app.loadVisit(${index})" class="flex-1 md:flex-none bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-lg font-bold text-xs transition cursor-pointer">
+                            <button onclick="window.app.loadVisit(${index})" class="flex-1 md:flex-none bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-700))] hover:bg-[rgb(var(--color-primary-100))] px-4 py-2 rounded-lg font-bold text-xs transition cursor-pointer">
                                 <i class="fas fa-eye"></i> عرض
                             </button>
                             <button onclick="window.app.deleteVisit(${index})" class="md:flex-none text-red-400 hover:text-red-600 px-3 py-2 rounded-lg transition cursor-pointer" title="حذف">
@@ -939,7 +1080,6 @@
                 `).join('');
             }
 
-            // --- Actions ---
             updatePhone(id, val) {
                 const t = this.state.teachers.find(x => x.id === id);
                 if(t) { t.phone = val; this.saveData(); }
@@ -949,102 +1089,71 @@
                 this.state.selectedTeacherId = tId;
                 this.state.selectedClassName = className;
                 const t = this.state.teachers.find(x => x.id === tId);
-                
                 if(!t) return;
-
                 document.getElementById('actionModalTitle').innerHTML = `<i class="fas fa-user-edit text-yellow-400"></i> ${t.name}`;
                 document.getElementById('actionModalSubtitle').innerText = className && className !== 'undefined' ? `الحصة الحالية: ${className}` : 'قائمة الإدارة';
                 document.getElementById('currentScoreDisplay').innerText = t.score + '%';
-
                 const remindBtn = document.getElementById('btn-remind');
                 const evaluateBtn = document.getElementById('btn-evaluate');
-                
                 if(className && className !== 'undefined') {
                     remindBtn.disabled = false;
                     remindBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    
-                    // Setup Evaluate Button
-                    evaluateBtn.onclick = () => {
-                        this.closeModal('modal-action');
-                        this.startSupervision(tId, className);
-                    };
+                    evaluateBtn.onclick = () => { this.closeModal('modal-action'); this.startSupervision(tId, className); };
                     evaluateBtn.style.display = 'flex';
                 } else {
                     remindBtn.disabled = true;
                     remindBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                    
-                    // Allow evaluation even if not in class (general eval)
-                    evaluateBtn.onclick = () => {
-                        this.closeModal('modal-action');
-                        this.startSupervision(tId, 'زيارة عامة');
-                    };
+                    evaluateBtn.onclick = () => { this.closeModal('modal-action'); this.startSupervision(tId, 'زيارة عامة'); };
                 }
-                
-                // Render Dynamic Violation Buttons (Existing logic)
                 const container = document.getElementById('violationButtonsContainer');
                 if(container) {
                     container.innerHTML = this.state.violationTypes.map(v => `
-                        <button type="button" onclick="window.app.dockScore('${v.id}')" class="w-full bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-red-700 border border-slate-200 hover:border-red-200 p-3 rounded-lg flex items-center justify-between transition group cursor-pointer">
+                        <button type="button" onclick="window.app.dockScore('${v.id}')" class="w-full bg-[rgb(var(--color-bg-base))] hover:bg-red-50 text-[rgb(var(--color-text-base))] hover:text-red-700 border border-[rgb(var(--color-border-muted))] hover:border-red-200 p-3 rounded-lg flex items-center justify-between transition group cursor-pointer">
                             <span class="flex items-center gap-3 font-bold text-sm">
-                                <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:text-red-500 group-hover:border-red-200 transition">
+                                <div class="w-8 h-8 rounded-full bg-[rgb(var(--color-surface-base))] border border-[rgb(var(--color-border-muted))] flex items-center justify-center text-slate-400 group-hover:text-red-500 group-hover:border-red-200 transition">
                                     <i class="fas ${v.icon}"></i>
                                 </div>
                                 ${v.label}
                             </span>
-                            <span class="bg-white px-2 py-1 rounded text-xs font-bold text-red-500 border border-slate-200 group-hover:border-red-200 shadow-sm">
+                            <span class="bg-[rgb(var(--color-surface-base))] px-2 py-1 rounded text-xs font-bold text-red-500 border border-[rgb(var(--color-border-muted))] group-hover:border-red-200 shadow-sm">
                                 -${v.points}
                             </span>
                         </button>
                     `).join('');
                 }
-
                 document.getElementById('modal-action').classList.remove('hidden-view');
             }
 
-            closeModal(id) { 
-                const el = document.getElementById(id);
-                if(el) el.classList.add('hidden-view'); 
-            }
+            closeModal(id) { document.getElementById(id)?.classList.add('hidden-view'); }
             
-            // --- Supervision Logic ---
             startSupervision(teacherId, className) {
                 const t = this.state.teachers.find(x => x.id === teacherId);
                 if(!t) return;
-
                 document.getElementById('supTeacherName').value = t.name;
                 document.getElementById('supClassName').value = className;
                 document.getElementById('supLessonTopic').value = '';
-                
-                // Reset Ratings
                 this.state.supervisionData = { ratings: {} };
-                
-                // Render Criteria Form with Radio Buttons & Description
                 const list = document.getElementById('supervisionCriteriaList');
                 list.innerHTML = this.state.evaluationCriteria.map((criterion, index) => `
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <h3 class="font-bold text-slate-800 text-base mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
-                            <span class="bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">${index + 1}</span>
+                    <div class="bg-[rgb(var(--color-bg-base))] p-4 rounded-xl border border-[rgb(var(--color-border-muted))]">
+                        <h3 class="font-bold text-[rgb(var(--color-text-base))] text-base mb-4 border-b border-[rgb(var(--color-border-muted))] pb-2 flex items-center gap-2">
+                            <span class="bg-[rgb(var(--color-primary-600))] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">${index + 1}</span>
                             ${criterion.title}
                         </h3>
                         <div class="space-y-3">
                             ${[1,2,3,4,5].map(rating => {
                                 const desc = criterion.items[rating] ? criterion.items[rating].desc : '';
                                 return `
-                                <label class="relative flex items-start gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer bg-white hover:bg-slate-50 transition-colors group">
+                                <label class="relative flex items-start gap-3 p-3 border border-[rgb(var(--color-border-muted))] rounded-lg cursor-pointer bg-[rgb(var(--color-surface-base))] hover:bg-[rgb(var(--color-bg-base))] transition-colors group">
                                     <input type="radio" name="criteria_${criterion.id}" value="${rating}" 
-                                        onchange="window.app.setRating(${criterion.id}, ${rating})" class="sup-radio peer mt-1 accent-indigo-600">
-                                    
-                                    <!-- Custom Radio UI (Optional enhancement can be added via CSS, keeping it simple native for reliability) -->
-                                    
+                                        onchange="window.app.setRating(${criterion.id}, ${rating})" class="sup-radio peer mt-1 accent-[rgb(var(--color-primary-600))]">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-bold text-indigo-700 bg-indigo-50 px-2 rounded text-xs">مستوى ${rating}</span>
+                                            <span class="font-bold text-[rgb(var(--color-primary-700))] bg-[rgb(var(--color-primary-50))] px-2 rounded text-xs">مستوى ${rating}</span>
                                         </div>
-                                        <p class="text-xs text-slate-600 leading-relaxed">${desc}</p>
+                                        <p class="text-xs text-[rgb(var(--color-text-muted))] leading-relaxed">${desc}</p>
                                     </div>
-                                    
-                                    <!-- Checked Indicator -->
-                                    <div class="check-icon hidden text-indigo-600 absolute top-3 left-3">
+                                    <div class="check-icon hidden text-[rgb(var(--color-primary-600))] absolute top-3 left-3">
                                         <i class="fas fa-check-circle"></i>
                                     </div>
                                 </label>
@@ -1053,106 +1162,67 @@
                         </div>
                     </div>
                 `).join('');
-
                 this.setView('supervision');
             }
 
             setRating(criteriaId, rating) {
                 this.state.supervisionData.ratings[criteriaId] = rating;
-                
-                // Add styling to selected parent (handled via CSS :checked)
             }
 
             generateReport(isLoad = false, existingData = null) {
                 const ratings = existingData ? existingData.ratings : this.state.supervisionData.ratings;
-                
                 if(!isLoad && Object.keys(ratings).length < this.state.evaluationCriteria.length) {
                     alert('يرجى استكمال تقييم جميع البنود');
                     return;
                 }
-
                 const tName = isLoad ? existingData.teacherName : document.getElementById('supTeacherName').value;
                 const cName = isLoad ? existingData.className : document.getElementById('supClassName').value;
                 const lTopic = isLoad ? existingData.topic : document.getElementById('supLessonTopic').value || '-';
                 const rDate = isLoad ? existingData.date : new Date().toLocaleDateString('ar-EG');
-
-                // Fill Report Info
                 document.getElementById('repTeacherName').innerText = tName;
                 document.getElementById('repTeacherNameSmall').innerText = tName;
                 document.getElementById('repClassName').innerText = cName;
                 document.getElementById('repLessonTopic').innerText = lTopic;
                 document.getElementById('reportDate').innerText = rDate;
-
-                // Analyze Ratings
                 const analysis = [];
                 this.state.evaluationCriteria.forEach(c => {
                     const r = ratings[c.id];
-                    if(r) {
-                        analysis.push({
-                            id: c.id,
-                            title: c.title,
-                            rating: r,
-                            desc: c.items[r].desc,
-                            rec: c.items[r].rec
-                        });
-                    }
+                    if(r) analysis.push({id: c.id, title: c.title, rating: r, desc: c.items[r].desc, rec: c.items[r].rec});
                 });
-
                 const strengths = [...analysis].sort((a,b) => a.rating - b.rating).slice(0, 3);
-                
-                const improvements = [...analysis]
-                    .filter(a => a.rating > 2)
-                    .sort((a,b) => b.rating - a.rating)
-                    .slice(0, 4);
-
-                // Render Lists
+                const improvements = [...analysis].filter(a => a.rating > 2).sort((a,b) => b.rating - a.rating).slice(0, 4);
                 document.getElementById('repStrengths').innerHTML = strengths.map(s => `<li><span class="font-bold text-emerald-700">${s.title}:</span> ${s.desc}</li>`).join('');
-
                 if(improvements.length > 0) {
                     document.getElementById('repImprovements').innerHTML = improvements.map(s => `<li><span class="font-bold text-amber-700">${s.title}:</span> ${s.desc}</li>`).join('');
                 } else {
                     document.getElementById('repImprovements').innerHTML = '<li class="text-slate-400 italic">لا توجد جوانب تحسين ملحوظة (أداء متميز).</li>';
                 }
-
-                // If loading existing data, use saved recommendations if available
                 if (isLoad && existingData.finalRecommendations) {
                      document.getElementById('repRecommendations').innerHTML = existingData.finalRecommendations;
                 } else {
-                    // Default Recommendations
                     const recSource = improvements.length > 0 ? improvements : strengths; 
                     document.getElementById('repRecommendations').innerHTML = recSource.map(s => `<li>${s.rec}</li>`).join('');
                 }
-
                 this.setView('supervision-report');
             }
 
             saveVisit() {
-                const tName = document.getElementById('repTeacherName').innerText;
-                const cName = document.getElementById('repClassName').innerText;
-                const lTopic = document.getElementById('repLessonTopic').innerText;
-                const rDate = document.getElementById('reportDate').innerText;
-                const recHtml = document.getElementById('repRecommendations').innerHTML;
-
                 const visitData = {
                     id: Date.now().toString(),
-                    teacherName: tName,
-                    className: cName,
-                    topic: lTopic,
-                    date: rDate,
+                    teacherName: document.getElementById('repTeacherName').innerText,
+                    className: document.getElementById('repClassName').innerText,
+                    topic: document.getElementById('repLessonTopic').innerText,
+                    date: document.getElementById('reportDate').innerText,
                     ratings: {...this.state.supervisionData.ratings},
-                    finalRecommendations: recHtml // Save potentially AI-enhanced text
+                    finalRecommendations: document.getElementById('repRecommendations').innerHTML
                 };
-
-                // Add to history
                 if(!this.state.supervisionHistory) this.state.supervisionHistory = [];
                 this.state.supervisionHistory.push(visitData);
-                
                 this.saveData();
                 alert('تم حفظ الزيارة في السجل بنجاح');
             }
 
             loadVisit(index) {
-                // We need to sort the history first to match the display index
                 const sortedHistory = [...this.state.supervisionHistory].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
                 const visit = sortedHistory[index];
                 if(visit) {
@@ -1163,119 +1233,73 @@
 
             deleteVisit(index) {
                 if(confirm('هل أنت متأكد من حذف هذا التقرير؟')) {
-                    // Match sorting logic to find correct index in original array
                     const sortedHistory = [...this.state.supervisionHistory].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
                     const targetId = sortedHistory[index].id;
-                    
                     this.state.supervisionHistory = this.state.supervisionHistory.filter(v => v.id !== targetId);
                     this.saveData();
                     this.renderHistory();
                 }
             }
 
-            // --- AI Enhancement ---
             async enhanceReportWithAI() {
                 const topic = document.getElementById('repLessonTopic').innerText;
                 const recContainer = document.getElementById('repRecommendations');
                 const currentRecs = recContainer.innerText;
-                
                 if(!topic || topic === '-') {
                     alert('يرجى تحديد عنوان الدرس أولاً للحصول على صياغة سياقية.');
                     return;
                 }
-
-                // Show Loading
                 document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
-
                 try {
-                    // --- API Key Retrieval Logic ---
                     let apiKey = '';
-                    
-                    // 1. Try process.env (Node-like environments/Bundlers)
-                    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-                        apiKey = process.env.API_KEY;
-                    } 
-                    
-                    if (!apiKey) {
-                        throw new Error("API Key is missing. Environment variable process.env.API_KEY not found.");
-                    }
-
-                    if (typeof window.GoogleGenAI === 'undefined') {
-                         throw new Error("SDK not loaded from esm.sh");
-                    }
-
+                    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) apiKey = process.env.API_KEY;
+                    if (!apiKey) throw new Error("API Key is missing. Environment variable process.env.API_KEY not found.");
+                    if (typeof window.GoogleGenAI === 'undefined') throw new Error("SDK not loaded from esm.sh");
                     const ai = new window.GoogleGenAI({ apiKey: apiKey });
-                    
                     const response = await ai.models.generateContent({
                         model: 'gemini-2.5-flash',
-                        config: {
-                            systemInstruction: "أنت خبير تربوي وموجه فني متخصص في صياغة التوصيات التربوية للمعلمين."
-                        },
+                        config: { systemInstruction: "أنت خبير تربوي وموجه فني متخصص في صياغة التوصيات التربوية للمعلمين." },
                         contents: `
                         عنوان الدرس: ${topic}
                         الصف: ${document.getElementById('repClassName').innerText}
-                        
                         التوصيات الحالية (عامة):
                         ${currentRecs}
-
-                        المطلوب:
-                        إعادة صياغة هذه التوصيات لتكون "سياقية" ومرتبطة تحديداً بموضوع الدرس "${topic}".
-                        اجعلها عملية وقابلة للتطبيق داخل الحصة.
-                        أعد القائمة كنقاط HTML (li tags) فقط.
-                        `
+                        المطلوب: إعادة صياغة هذه التوصيات لتكون "سياقية" ومرتبطة تحديداً بموضوع الدرس "${topic}". اجعلها عملية وقابلة للتطبيق داخل الحصة. أعد القائمة كنقاط HTML (li tags) فقط.`
                     });
-
                     const text = response.text;
-                    
-                    if (!text) {
-                        throw new Error("Empty response from AI");
-                    }
-
-                    // Clean markdown if present
-                    const cleanHtml = text.replace(/```html/g, '').replace(/```/g, '');
-                    recContainer.innerHTML = cleanHtml;
-                    
+                    if (!text) throw new Error("Empty response from AI");
+                    recContainer.innerHTML = text.replace(/```html/g, '').replace(/```/g, '');
                 } catch (error) {
                     console.error("AI Error Full Details:", error);
                     let msg = "تعذر الاتصال بخدمة الذكاء الاصطناعي.";
-                    if (error.message.includes("API Key")) {
-                        msg += "\nالسبب: مفتاح API غير موجود في البيئة.";
-                    } else if (error.message.includes("SDK")) {
-                        msg += "\nالسبب: مكتبة Google GenAI لم يتم تحميلها.";
-                    } else {
-                        msg += "\nالسبب: " + error.message;
-                    }
+                    if (error.message.includes("API Key")) msg += "\nالسبب: مفتاح API غير موجود في البيئة.";
+                    else if (error.message.includes("SDK")) msg += "\nالسبب: مكتبة Google GenAI لم يتم تحميلها.";
+                    else msg += "\nالسبب: " + error.message;
                     alert(msg);
                 } finally {
                     document.getElementById('aiLoadingOverlay').classList.add('hidden-view');
                 }
             }
 
-            // --- JSON Import for Criteria ---
             handleCriteriaJson(e) {
                 const reader = new FileReader();
                 reader.onload = (evt) => {
                     try {
                         const json = JSON.parse(evt.target.result);
-                        // Basic validation
                         if (Array.isArray(json) && json[0]?.items) {
                             this.state.evaluationCriteria = json;
                             this.saveData();
                             alert('تم تحديث معايير التقييم بنجاح!');
                             this.closeModal('modal-settings');
-                        } else {
-                            alert('صيغة الملف غير متوافقة.');
-                        }
-                    } catch(err) {
-                        console.error(err);
-                        alert('خطأ في ملف JSON');
-                    }
+                        } else alert('صيغة الملف غير متوافقة.');
+                    } catch(err) { console.error(err); alert('خطأ في ملف JSON'); }
                 };
                 reader.readAsText(e.target.files[0]);
             }
 
             openSettings() { 
                 this.renderViolationsSettings();
+                this.renderThemeSelector();
                 document.getElementById('modal-settings').classList.remove('hidden-view'); 
             }
 
@@ -1283,10 +1307,10 @@
                 const list = document.getElementById('violationsList');
                 if(!list) return;
                 list.innerHTML = this.state.violationTypes.map(v => `
-                    <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-100 shadow-sm group hover:border-red-100 transition">
+                    <div class="flex items-center justify-between bg-[rgb(var(--color-surface-base))] p-3 rounded-lg border border-[rgb(var(--color-border-base))] shadow-sm group hover:border-red-100 transition">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fas ${v.icon}"></i></div>
-                            <span class="font-bold text-sm text-slate-700">${v.label}</span>
+                            <div class="w-8 h-8 rounded bg-[rgb(var(--color-bg-base))] text-[rgb(var(--color-text-muted))] flex items-center justify-center"><i class="fas ${v.icon}"></i></div>
+                            <span class="font-bold text-sm text-[rgb(var(--color-text-base))]">${v.label}</span>
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="bg-red-50 text-red-600 text-xs font-bold px-2 py-1 rounded border border-red-100">-${v.points}</span>
@@ -1300,30 +1324,58 @@
                 const labelIn = document.getElementById('newViolationLabel');
                 const pointsIn = document.getElementById('newViolationPoints');
                 if(!labelIn || !pointsIn) return;
-
                 const label = labelIn.value;
                 const points = parseInt(pointsIn.value);
-                
                 if(label && points) {
                     this.state.violationTypes.push({ id: Date.now().toString(), label, points, icon: 'fa-exclamation-circle' });
                     labelIn.value = '';
                     this.saveData();
-                    this.renderViolationsSettings();
                 }
             }
 
             removeViolation(id) {
                 this.state.violationTypes = this.state.violationTypes.filter(v => v.id !== id);
                 this.saveData();
-                this.renderViolationsSettings();
+            }
+
+            setTheme(themeName) {
+                this.state.theme = themeName;
+                this.applyTheme();
+                this.saveData(); // Save theme to user's profile
+                this.renderThemeSelector();
+            }
+
+            applyTheme() {
+                document.body.classList.remove('theme-pink', 'theme-green', 'theme-dark');
+                if (this.state.theme && this.state.theme !== 'default') {
+                    document.body.classList.add(`theme-${this.state.theme}`);
+                }
+            }
+
+            renderThemeSelector() {
+                const container = document.getElementById('themeSelectorContainer');
+                if (!container) return;
+                const themes = [
+                    { id: 'default', name: 'أساسي', colorClass: 'bg-indigo-600', activeClass: 'border-indigo-500' },
+                    { id: 'pink', name: 'زهري', colorClass: 'bg-pink-600', activeClass: 'border-pink-500' },
+                    { id: 'green', name: 'أخضر', colorClass: 'bg-green-600', activeClass: 'border-green-500' },
+                    { id: 'dark', name: 'داكن', colorClass: 'bg-slate-800 border border-slate-600', activeClass: 'border-slate-300' }
+                ];
+                container.innerHTML = themes.map(theme => {
+                    const isActive = this.state.theme === theme.id;
+                    const borderClass = isActive ? theme.activeClass : 'border-transparent';
+                    return `
+                        <button onclick="window.app.setTheme('${theme.id}')" class="p-2 rounded-lg border-2 transition ${borderClass}">
+                            <div class="w-full h-10 rounded ${theme.colorClass}"></div>
+                            <span class="text-xs font-bold mt-2 block text-center text-[rgb(var(--color-text-muted))]">${theme.name}</span>
+                        </button>
+                    `;
+                }).join('');
             }
 
             sendWhatsApp(type) {
                 const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId);
-                if(!t) return; 
-                
-                if(!t.phone) return alert('أضف الهاتف أولاً');
-                
+                if(!t || !t.phone) return alert('أضف الهاتف أولاً');
                 let msg = type === 'summon' 
                     ? `السلام عليكم أستاذ ${t.name}، يرجى التكرم بزيارة مكتب الإدارة.` 
                     : `السلام عليكم أستاذ ${t.name}، تذكير بموعد حصتكم الحالية في الصف ${this.state.selectedClassName}.`;
@@ -1339,7 +1391,6 @@
             dockScore(violationId) {
                 const v = this.state.violationTypes.find(x => x.id === violationId);
                 if(!v) return;
-
                 if(confirm(`تأكيد خصم ${v.points} نقاط بسبب: ${v.label}؟`)) {
                     const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId);
                     if(t) {
@@ -1350,7 +1401,6 @@
                 }
             }
 
-            // --- Imports/Exports ---
             handleXml(e) {
                 const reader = new FileReader();
                 reader.readAsText(e.target.files[0], "windows-1256");
@@ -1363,21 +1413,17 @@
                         const classes = {};
                         xml.querySelectorAll('classes class').forEach(c => classes[c.getAttribute('id')] = c.getAttribute('name'));
                         this.state.classes = classes;
-                        
                         this.state.teachers = Array.from(xml.querySelectorAll('teachers teacher')).map(t => ({
                             id: t.getAttribute('id'), name: t.getAttribute('name'), short: t.getAttribute('short'),
                             score: 100, phone: '', lessons: []
                         }));
-                        
                         xml.querySelectorAll('TimeTableSchedules TimeTableSchedule').forEach(sch => {
                             const t = this.state.teachers.find(x => x.id === sch.getAttribute('TeacherID'));
                             if(t) t.lessons.push({ day: parseInt(sch.getAttribute('DayID')), period: parseInt(sch.getAttribute('Period')), className: classes[sch.getAttribute('ClassID')] || 'نشاط' });
                         });
-
                         this.saveData();
                         this.closeModal('modal-settings');
                         alert('تم استيراد الجدول بنجاح');
-                        this.renderAll();
                     } catch(err) { alert('خطأ في الملف'); console.error(err); }
                 };
             }
@@ -1395,12 +1441,12 @@
                 reader.onload = (evt) => {
                     const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array'});
                     const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                    let updated = false;
                     this.state.teachers.forEach(t => {
                         const row = json.find(r => r['Teacher_ID'] == t.id);
-                        if(row) { t.name = row['Full_Name'] || t.name; t.phone = row['Phone'] ? String(row['Phone']) : t.phone; updated = true; }
+                        if(row) { t.name = row['Full_Name'] || t.name; t.phone = row['Phone'] ? String(row['Phone']) : t.phone; }
                     });
-                    if(updated) { this.saveData(); this.renderAll(); alert('تم التحديث بنجاح'); }
+                    this.saveData(); 
+                    alert('تم التحديث بنجاح');
                     this.closeModal('modal-settings');
                 };
                 reader.readAsArrayBuffer(e.target.files[0]);
@@ -1415,7 +1461,6 @@
             }
         }
 
-        // Attach to window explicitly
         window.app = new SchoolApp();
     </script>
 </body>
