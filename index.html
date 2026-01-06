@@ -621,19 +621,33 @@
                     </div>
                 </div>
 
-                <!-- API Key Section (Cleaned for Built-in feature) -->
+                <!-- API Key Section (Locked for Admin) -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]">
                         <h4 class="font-bold text-[rgb(var(--color-text-base))] flex items-center gap-2">
-                            <i class="fas fa-robot text-purple-500"></i>
-                            إعدادات الذكاء الاصطناعي
+                            <i class="fas fa-key text-yellow-500"></i>
+                            مفتاح ربط الذكاء الاصطناعي (API Key)
                         </h4>
                     </div>
-                    <div class="bg-[rgb(var(--color-bg-base))] p-3 rounded-lg border border-[rgb(var(--color-border-muted))] space-y-2">
-                        <p class="text-xs text-[rgb(var(--color-text-muted))] flex items-center gap-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            مفتاح API مفعل ومدمج في النظام.
-                        </p>
+                    
+                    <!-- Locked State -->
+                    <div id="apiKeyLocked" class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex justify-between items-center">
+                        <div class="text-xs text-yellow-800 font-bold">
+                            <i class="fas fa-lock ml-1"></i> الإعدادات محمية (خاصة بمدير النظام)
+                        </div>
+                        <button onclick="window.app.unlockApiKeySettings()" class="bg-white border border-yellow-200 text-yellow-700 hover:bg-yellow-100 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
+                            فك القفل
+                        </button>
+                    </div>
+
+                    <!-- Unlocked State -->
+                    <div id="apiKeyUnlocked" class="hidden-view bg-[rgb(var(--color-bg-base))] p-4 rounded-xl border border-[rgb(var(--color-border-muted))] space-y-3">
+                        <label class="block text-[10px] font-bold text-[rgb(var(--color-text-muted))]">Google Gemini API Key</label>
+                        <div class="flex gap-2">
+                            <input type="password" id="inputApiKey" placeholder="AIzaSy..." class="flex-1 text-sm p-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none dir-ltr font-mono bg-white text-slate-800">
+                            <button onclick="window.app.saveApiKey()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition cursor-pointer">حفظ</button>
+                        </div>
+                        <p class="text-[9px] text-[rgb(var(--color-text-muted))]">سيتم حفظ المفتاح في السحابة ليكون متاحاً لجميع مستخدمي النظام.</p>
                     </div>
                 </div>
 
@@ -788,6 +802,10 @@
                     if (typeof firebase !== 'undefined') {
                         this.db = firebase.firestore();
                         this.auth = firebase.auth();
+                        
+                        // Immediately try to fetch global settings (API Key) regardless of login
+                        this.fetchGlobalSettings();
+
                         this.auth.onAuthStateChanged(user => {
                             if (user) {
                                 this.state.currentUser = { uid: user.uid, name: user.displayName, photoURL: user.photoURL };
@@ -805,6 +823,22 @@
                         });
                     }
                 } catch (e) { console.error("Firebase Init Error:", e); }
+            }
+
+            // New method to fetch global settings like API Key
+            fetchGlobalSettings() {
+                if(!this.db) return;
+                this.db.collection('settings').doc('global_config').onSnapshot(doc => {
+                    if(doc.exists) {
+                        const data = doc.data();
+                        if(data && data.apiKey) {
+                            this.state.apiKey = data.apiKey;
+                            console.log('Global API Key loaded');
+                        }
+                    }
+                }, error => {
+                    console.error("Error fetching global settings:", error);
+                });
             }
 
             handleGoogleLogin() {
@@ -1211,7 +1245,7 @@
                 const specialization = document.getElementById('repSpecialization').innerText;
                 const apiKey = this.state.apiKey;
                 
-                if (!apiKey) return alert('خطأ: لم يتم العثور على مفتاح API. يرجى التأكد من إعدادات البيئة.');
+                if (!apiKey) return alert('خطأ: لم يتم العثور على مفتاح API. يرجى إضافته من الإعدادات.');
                 if(!topic || topic === '-') return alert('يرجى تحديد عنوان الدرس.');
 
                 // Build detailed prompt context
@@ -1308,6 +1342,37 @@
             }
             openSettings() { this.renderViolationsSettings(); this.renderSpecializationsSettings(); this.renderThemeSelector(); document.getElementById('modal-settings').classList.remove('hidden-view'); }
             
+            // New methods for API Key Management
+            unlockApiKeySettings() {
+                const pin = prompt("يرجى إدخال رمز الحماية الخاص بالمدير:");
+                if (pin === "110812") { // Updated PIN
+                    document.getElementById('apiKeyLocked').classList.add('hidden-view');
+                    document.getElementById('apiKeyUnlocked').classList.remove('hidden-view');
+                    document.getElementById('inputApiKey').value = this.state.apiKey || '';
+                } else {
+                    alert("رمز الحماية غير صحيح");
+                }
+            }
+
+            saveApiKey() {
+                const key = document.getElementById('inputApiKey').value.trim();
+                if(key) {
+                    this.state.apiKey = key;
+                    // Save to Firestore so it's shared globally
+                    if(this.db) {
+                        this.db.collection('settings').doc('global_config').set({ apiKey: key }, { merge: true })
+                        .then(() => {
+                            alert("تم حفظ المفتاح سحابياً بنجاح. سيتمكن جميع المستخدمين من استخدامه.");
+                            document.getElementById('apiKeyLocked').classList.remove('hidden-view');
+                            document.getElementById('apiKeyUnlocked').classList.add('hidden-view');
+                        })
+                        .catch(err => alert("حدث خطأ أثناء الحفظ السحابي: " + err.message));
+                    } else {
+                        alert("تعذر الاتصال بالسحابة لحفظ المفتاح");
+                    }
+                }
+            }
+
             renderViolationsSettings() {
                 const list = document.getElementById('violationsList');
                 if(!list) return;
