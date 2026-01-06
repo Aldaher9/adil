@@ -311,9 +311,14 @@
                     <h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))]">تقارير الأداء</h2>
                     <p class="text-sm text-[rgb(var(--color-text-muted))]">نظرة عامة على انضباط المعلمين</p>
                 </div>
-                <button onclick="window.app.exportReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg shadow-emerald-200">
-                    <i class="fas fa-file-excel"></i> <span>تصدير Excel</span>
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="window.app.setView('supervision-history')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg shadow-indigo-200">
+                        <i class="fas fa-history"></i> <span>سجل الزيارات</span>
+                    </button>
+                    <button onclick="window.app.exportReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg shadow-emerald-200">
+                        <i class="fas fa-file-excel"></i> <span>تصدير</span>
+                    </button>
+                </div>
             </div>
             <div class="bg-[rgb(var(--color-surface-base))] rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))] overflow-hidden">
                 <div class="overflow-x-auto">
@@ -339,6 +344,9 @@
                     <h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))]">سجل الزيارات الإشرافية</h2>
                     <p class="text-sm text-[rgb(var(--color-text-muted))]">أرشيف الزيارات السابقة والتقارير</p>
                 </div>
+                <button onclick="window.app.setView('reports')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg font-bold text-xs transition">
+                    <i class="fas fa-arrow-right"></i> عودة للتقارير
+                </button>
             </div>
             <div id="supervisionHistoryGrid" class="space-y-3"></div>
         </section>
@@ -679,11 +687,10 @@
                         <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleExcel(event)">
                     </div>
                     
-                    <!-- Criteria Import -->
+                    <!-- Criteria Import (Cleaned) -->
                     <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 md:col-span-2">
-                        <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-clipboard-list"></i> معايير التقييم (JSON)</h4>
-                        <button type="button" onclick="document.getElementById('jsonInput').click()" class="w-full bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 py-2 rounded-lg font-bold text-xs transition cursor-pointer">رفع ملف معايير الزيارات (JSON)</button>
-                        <input type="file" id="jsonInput" accept=".json" class="hidden" onchange="window.app.handleCriteriaJson(event)">
+                        <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-clipboard-list"></i> معايير التقييم</h4>
+                        <p class="text-xs text-purple-700 mb-2">تم تحديث قاعدة بيانات بنود التقييم آلياً وفقاً لأحدث المعايير (13 بند مفصل).</p>
                     </div>
                 </div>
             </div>
@@ -805,7 +812,8 @@
                         if (data.violationTypes) this.state.violationTypes = data.violationTypes;
                         if (data.specializations) this.state.specializations = data.specializations; // Load specs
                         if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
-                        if (data.evaluationCriteria) this.state.evaluationCriteria = data.evaluationCriteria;
+                        // Force update criteria to the new robust one if needed, or load if customized. 
+                        // For now, let's keep the hardcoded logic prioritized for this fix.
                         if (data.theme) this.state.theme = data.theme;
                         this.applyTheme();
                         this.renderAll();
@@ -825,9 +833,9 @@
                         tasks: this.state.tasks,
                         agenda: this.state.agenda,
                         violationTypes: this.state.violationTypes,
-                        specializations: this.state.specializations, // Save specs
+                        specializations: this.state.specializations, 
                         supervisionHistory: this.state.supervisionHistory,
-                        evaluationCriteria: this.state.evaluationCriteria,
+                        // evaluationCriteria: this.state.evaluationCriteria, // Don't overwrite cloud with local default if unnecessary
                         theme: this.state.theme,
                         lastSync: new Date(),
                         userName: this.state.currentUser.name 
@@ -835,22 +843,100 @@
                 } catch (e) { this.updateCloudStatus('error'); }
             }
 
-            // ... (Default Criteria - Same as before) ...
             initDefaultCriteria() {
+                // Expanded Criteria based on the attached data
                 this.state.evaluationCriteria = [
-                    { id: 1, title: "التحصيل الدراسي", items: { 1: { desc: "اكتسب جميع الطلبة...", rec: "" }, 2: {desc:"يكتسب معظم...", rec:""}, 3:{desc:"يكتسب أغلب...", rec:""}, 4:{desc:"اكتسب قلة...", rec:""}, 5:{desc:"يكتسب نادر...", rec:""} }},
-                    { id: 2, title: "التقدم الدراسي", items: { 1: { desc: "يتقدم جميع الطلبة...", rec: "" }, 2: {desc:"يتقدم معظم...", rec:""}, 3:{desc:"يتقدم أغلب...", rec:""}, 4:{desc:"اكتسب بعض...", rec:""}, 5:{desc:"يتقدم نادر...", rec:""} }},
-                    { id: 3, title: "مهارات التعلم", items: { 1: { desc: "يطبق جميع الطلبة...", rec: "" }, 2: {desc:"يطبق معظم...", rec:""}, 3:{desc:"يطبق أغلب...", rec:""}, 4:{desc:"اكتسب بعض...", rec:""}, 5:{desc:"يطبق نادر...", rec:""} }},
-                    { id: 4, title: "القيم والسلوك", items: { 1: { desc: "يدرك جميع الطلبة...", rec: "" }, 2: {desc:"يلتزم معظم...", rec:""}, 3:{desc:"يلتزم أغلب...", rec:""}, 4:{desc:"يدرك بعض...", rec:""}, 5:{desc:"يلتزم محدود...", rec:""} }},
-                    { id: 5, title: "جودة بيئة التعلم", items: { 1: { desc: "يتابع جميع جوانب...", rec: "" }, 2: {desc:"يتابع المعلم...", rec:""}, 3:{desc:"يتابع المعلم...", rec:""}, 4:{desc:"يتابع بعض...", rec:""}, 5:{desc:"يتابع نادر...", rec:""} }},
-                    { id: 6, title: "تخطيط المنهاج الدراسي", items: { 1: { desc: "يخطط لجميع...", rec: "" }, 2: {desc:"يخطط معظم...", rec:""}, 3:{desc:"يخطط أغلب...", rec:""}, 4:{desc:"يخطط لبعض...", rec:""}, 5:{desc:"يخطط نادر...", rec:""} }},
-                    { id: 7, title: "إدارة الصف", items: { 1: { desc: "يقوم بإدارة...", rec: "" }, 2: {desc:"يقوم المعلم...", rec:""}, 3:{desc:"يقوم المعلم...", rec:""}, 4:{desc:"يقوم بإدارة...", rec:""}, 5:{desc:"يقوم المعلم...", rec:""} }},
-                    { id: 8, title: "فاعلية التدريس", items: { 1: { desc: "يوظف استراتيجيات...", rec: "" }, 2: {desc:"يوظف المعلم...", rec:""}, 3:{desc:"يوظف المعلم...", rec:""}, 4:{desc:"يوظف استراتيجيات...", rec:""}, 5:{desc:"يوظف المعلم...", rec:""} }},
-                    { id: 9, title: "تفعيل المصادر والموارد", items: { 1: { desc: "يفعل المعلم...", rec: "" }, 2: {desc:"يفعل المعلم...", rec:""}, 3:{desc:"يفعل المعلم...", rec:""}, 4:{desc:"يفعل المعلم...", rec:""}, 5:{desc:"يفعل المعلم...", rec:""} }},
-                    { id: 10, title: "التقويم ومساندة التقدم", items: { 1: { desc: "يوظف أساليب...", rec: "" }, 2: {desc:"يوظف المعلم...", rec:""}, 3:{desc:"يوظف المعلم...", rec:""}, 4:{desc:"يوظف المعلم...", rec:""}, 5:{desc:"يوظف المعلم...", rec:""} }},
-                    { id: 11, title: "قيادة التغيير", items: { 1: { desc: "يُجري تقويماً...", rec: "" }, 2: {desc:"يُجري المعلم...", rec:""}, 3:{desc:"يُجري المعلم...", rec:""}, 4:{desc:"يُجري تقويماً...", rec:""}, 5:{desc:"يُجري المعلم...", rec:""} }},
-                    { id: 12, title: "الحوكمة", items: { 1: { desc: "يطبق السياسات...", rec: "" }, 2: {desc:"يطبق السياسات...", rec:""}, 3:{desc:"يطبق السياسات...", rec:""}, 4:{desc:"يطبق السياسات...", rec:""}, 5:{desc:"يطبق السياسات...", rec:""} }},
-                    { id: 13, title: "المبادرات والأنشطة", items: { 1: { desc: "يقدم مبادرات...", rec: "" }, 2: {desc:"يقدم مبادرات...", rec:""}, 3:{desc:"يقدم مبادرات...", rec:""}, 4:{desc:"يقدم مبادرات...", rec:""}, 5:{desc:"نادراً ما يقدم...", rec:""} }}
+                    { id: 1, title: "التحصيل الدراسي", items: { 
+                        1: { desc: "اكتسب جميع الطلبة المهارات الأساسية والمعارف بصورة فعالة.", rec: "تنفيذ مبادرة تربوية تعزز من اكتساب الطلبة للمهارات والمعارف." },
+                        2: { desc: "يكتسب معظم الطلبة المهارات الأساسية والمعارف بصورة فاعلة.", rec: "تكثيف الأنشطة الإثرائية التي تستهدف الطلبة ذوي المستوى المرتفع." },
+                        3: { desc: "يكتسب أغلب الطلبة المهارات الأساسية بصورة ملائمة.", rec: "التركيز على تصميم أنشطة صفية متمايزة تضمن اكتساب جميع الطلبة للمهارات." },
+                        4: { desc: "اكتسب قلة من الطلبة المهارات الأساسية بصورة محدودة.", rec: "تنفيذ حصص تقوية للطلبة واستغلال حصص الاحتياطي لتكثيف الخطط العلاجية." },
+                        5: { desc: "يكتسب عدد نادر من الطلبة المهارات الأساسية.", rec: "وضع خطة علاجية فورية وشاملة وحصر المهارات المتأخرة." }
+                    }},
+                    { id: 2, title: "التقدم الدراسي", items: {
+                        1: { desc: "يتقدم جميع الطلبة في المعارف والمفاهيم والمهارات بصورة متميزة.", rec: "تنفيذ قراءة موجهة لزملاء العمل لآلية تطبيق هرم بلوم." },
+                        2: { desc: "يتقدم معظم الطلبة دراسياً أثناء الحصة بصورة فاعلة.", rec: "الحرص على مراجعة آليات تفريد التعليم المقدمة للطلبة." },
+                        3: { desc: "يتقدم أغلب الطلبة دراسياً أثناء الحصة بصورة ملائمة.", rec: "ضمان توظيف هرم بلوم للأهداف بفاعلية في صياغة أسئلة الحصة." },
+                        4: { desc: "اكتسب بعض الطلبة المعارف والمفاهيم بصورة محدودة.", rec: "تطبيق مشروع تفريد التعلم وتنفيذ الخطط الفردية." },
+                        5: { desc: "يتقدم عدد نادر من الطلبة دراسياً بصورة محدودة جداً.", rec: "البدء فوراً في تنفيذ الخطط الفردية وتفريد التعلم." }
+                    }},
+                    { id: 3, title: "مهارات التعلم", items: {
+                        1: { desc: "يطبق جميع الطلبة مهارات التعلم الذاتي والتعاوني والرقمي بصورة متميزة.", rec: "تنفيذ قراءة موجهة لآلية طرح أسئلة مثيرة للتفكير." },
+                        2: { desc: "يطبق معظم الطلبة مهارات التعلم بمستوى فاعل.", rec: "تعزيز توظيف المنصات الرقمية لتدريب الطلبة على التعلم الذاتي." },
+                        3: { desc: "يطبق أغلب الطلبة مهارات التعلم بمستوى ملائم.", rec: "إدراج أنشطة صفية محددة تهدف لتنمية مهارات التفكير الناقد." },
+                        4: { desc: "اكتسب بعض الطلبة مهارات التعلم الذاتي بصورة محدودة.", rec: "تنفيذ مشروع يهدف إلى تنمية مهارات التعلم الذاتي والرقمي." },
+                        5: { desc: "يطبق عدد نادر من الطلبة مهارات التعلم بمستوى محدود جداً.", rec: "التركيز على تدريب الطلبة على أبسط مهارات التعلم ودمجها في الدرس." }
+                    }},
+                    { id: 4, title: "القيم والسلوك", items: {
+                        1: { desc: "يدرك جميع الطلبة للحقوق والواجبات ويعتزون بهويتهم العمانية.", rec: "تعزيز وتحفيز الطلبة بنماذج وملصقات تعبر عن الهوية العمانية." },
+                        2: { desc: "يلتزم معظم الطلبة بالقيم الإنسانية المشتركة بمستوى فاعل.", rec: "تصميم أنشطة إثرائية لتعزيز القيم الإيجابية لدى الطلبة." },
+                        3: { desc: "يلتزم أغلب الطلبة بالقيم الإنسانية المشتركة بمستوى ملائم.", rec: "توفير فرص للطلبة لممارسة التعبير عن الذات والحوار بثقة." },
+                        4: { desc: "يدرك بعض الطلبة الحقوق والواجبات بصورة محدودة.", rec: "تنفيذ مشروع يهدف إلى تنمية القيم والسلوك وتعزيز الهوية." },
+                        5: { desc: "يلتزم عدد محدود جداً من الطلبة بالقيم الإنسانية.", rec: "وضع خطة سلوكية مركزة لعلاج حالات عدم الانضباط في الحصة." }
+                    }},
+                    { id: 5, title: "جودة بيئة التعلم", items: {
+                        1: { desc: "يتابع المعلم جميع جوانب الأمن والسلامة والنظافة بصورة متميزة.", rec: "تنفيذ حصة تطبيقية حول جوانب الأمن والسلامة في البيئة الصفية." },
+                        2: { desc: "يتابع المعلم جوانب الأمن والسلامة بصورة جيدة.", rec: "توثيق الممارسات المتميزة في جوانب الأمن والسلامة وتعميمها." },
+                        3: { desc: "يتابع المعلم جوانب الأمن والسلامة بصورة مناسبة.", rec: "التأكد من تطبيق سياسات الأمن والسلامة في جميع الأنشطة الصفية." },
+                        4: { desc: "يتابع بعض جوانب الأمن والسلامة بصورة محدودة.", rec: "الالتزام بتدابير الأمن والسلامة في البيئة الصفية (أسلاك مكشوفة..)." },
+                        5: { desc: "يتابع المعلم جوانب الأمن والسلامة بصورة نادرة.", rec: "اتخاذ إجراءات تصحيحية فورية لضمان سلامة الطلبة." }
+                    }},
+                    { id: 6, title: "تخطيط المنهاج الدراسي", items: {
+                        1: { desc: "يخطط لجميع دروسه متسلسلاً في تنوع الأهداف بصورة متميزة.", rec: "تنفيذ ورشة تدريبية لكيفية التخطيط للدرس بما يتوافق مع الخطة الفصلية." },
+                        2: { desc: "يخطط المعلم معظم دروسه بصورة جيدة.", rec: "تطوير التخطيط اليومي عبر إضافة أنشطة إثرائية وخطط علاجية واضحة." },
+                        3: { desc: "يخطط المعلم أغلب دروسه بصورة مناسبة.", rec: "مراجعة التخطيط للتأكد من ربط الأهداف بنواتج التعلم المحددة." },
+                        4: { desc: "يخطط لبعض دروسه بصورة محدودة.", rec: "الالتزام بتوافق أهداف خطة الدرس مع الخطة الفصلية." },
+                        5: { desc: "يخطط المعلم عدد محدود جداً من دروسه بصورة نادرة.", rec: "الالتزام الفوري بإعداد خطط الدروس اليومية بشكل متكامل." }
+                    }},
+                    { id: 7, title: "إدارة الصف", items: {
+                        1: { desc: "يقوم بإدارة زمن التعلم وإدارة سلوكيات جميع الطلبة بصورة فعالة.", rec: "العمل على تحليل نتائج الطلبة وتوثيق الأسئلة العاصفة للذهن." },
+                        2: { desc: "يقوم المعلم بإدارة زمن التعلم بصورة جيدة.", rec: "إدراج استراتيجيات مبتكرة لإدارة سلوكيات الطلبة وتعزيز دافعيتهم." },
+                        3: { desc: "يقوم المعلم بإدارة زمن التعلم وسلوك طلبته بصورة ملائمة.", rec: "الاستمرار في الإدارة الجيدة للحصة والتركيز على تحويل السلوكيات السلبية." },
+                        4: { desc: "يقوم بإدارة زمن التعلم بصورة محدودة.", rec: "الالتزام بزمن التعلم والعمل على إدارة وقت الحصة بشكل فعال." },
+                        5: { desc: "يقوم المعلم بإدارة زمن التعلم وسلوك طلبته بصورة نادرة.", rec: "تطبيق قواعد صارمة لإدارة الصف والالتزام بالخطة الزمنية." }
+                    }},
+                    { id: 8, title: "فاعلية التدريس", items: {
+                        1: { desc: "يوظف استراتيجيات التدريس والتقنيات الحديثة بصورة فعالة.", rec: "تصميم دليل رقمي لبعض المنصات الرقمية وبرامج الذكاء الاصطناعي." },
+                        2: { desc: "يوظف المعلم استراتيجيات تدريس فعالة يستفيد منها معظم الطلبة.", rec: "توسيع نطاق توظيف برامج الذكاء الاصطناعي في تصميم الأنشطة المتمايزة." },
+                        3: { desc: "يوظف المعلم استراتيجيات تدريس يستفيد منها أغلب الطلبة.", rec: "التنويع في استراتيجيات التدريس لضمان تلبية احتياجات جميع الطلبة." },
+                        4: { desc: "يوظف استراتيجيات التدريس بصورة محدودة (التلقين).", rec: "العمل على التنويع من مصادر التعلم وتحديدها وفقاً لاحتياجات الطلبة." },
+                        5: { desc: "يوظف استراتيجيات تدريس يستفيد منها عدد قليل جداً.", rec: "استبدال استراتيجيات التلقين باستراتيجيات التعلم النشط." }
+                    }},
+                    { id: 9, title: "تفعيل المصادر والموارد", items: {
+                        1: { desc: "يفعل المعلم التقنيات الرقمية بحيث يستفيد منها جميع الطلبة.", rec: "توثيق أفضل ممارسات توظيف التقنيات الرقمية والذكاء الاصطناعي." },
+                        2: { desc: "يفعل المعلم التقنيات الرقمية بحيث يستفيد منها معظم الطلبة.", rec: "تشجيع الطلبة على استخدام التقنيات الرقمية كأداة للإنتاج المعرفي." },
+                        3: { desc: "يفعل المعلم التقنيات الرقمية بحيث يستفيد منها أغلب الطلبة.", rec: "العمل على دمج المصادر الرقمية والتقليدية في خطة الدرس بطريقة فعالة." },
+                        4: { desc: "يفعل المعلم التقنيات الرقمية بصورة محدودة.", rec: "العمل على تنويع المصادر والموارد التعليمية ودمج المنصات." },
+                        5: { desc: "يفعل المعلم التقنيات الرقمية بصورة نادرة أو منعدمة.", rec: "البدء فوراً في تفعيل المصادر والموارد التعليمية المتاحة." }
+                    }},
+                    { id: 10, title: "التقويم ومساندة التقدم", items: {
+                        1: { desc: "يوظف أساليب تقويم متنوعة تراعي التمايز بين جميع الطلبة.", rec: "تشكيل فريق عمل لصياغة مجموعة أنشطة صفية تراعي المستويات الثلاثة." },
+                        2: { desc: "يوظف المعلم أساليب تقويم متنوعة تراعي التمايز بين معظم الطلبة.", rec: "تعميم تجربة توظيف أساليب التقويم المتنوعة على الزملاء." },
+                        3: { desc: "يوظف المعلم أساليب تقويم متنوعة تراعي التمايز بين أغلب الطلبة.", rec: "مراجعة أدوات التقويم المستخدمة للتأكد من تغطيتها المستويات المعرفية." },
+                        4: { desc: "يوظف المعلم أساليب تقويم تراعي التمايز بصورة محدودة.", rec: "التنويع من أساليب تقويم تراعي التمايز بين جميع الطلبة." },
+                        5: { desc: "يوظف المعلم أساليب تقويم تراعي التمايز بصورة نادرة.", rec: "التنويع الفوري في أساليب التقويم (الشفوي، الكتابي، الأداء)." }
+                    }},
+                    { id: 11, title: "قيادة التغيير", items: {
+                        1: { desc: "يُجري تقويماً لأدائه ذاتياً ويوظفه في تحسين تعلم جميع الطلبة.", rec: "تنفيذ مشغل تدريبي للزملاء حول أحد جوانب الإجادة." },
+                        2: { desc: "يُجري المعلم تقويماً لأدائه ذاتياً ويوظفه بصورة جيدة.", rec: "تشجيع الزملاء على تبني ممارساته المتميزة في التقويم الذاتي." },
+                        3: { desc: "يُجري المعلم تقويماً لأدائه ذاتياً ويوظفه بصورة مقبولة.", rec: "الالتزام ببرامج التطوير المهني المتاحة وتطبيق المكتسب منها." },
+                        4: { desc: "يُجري تقويماً لأدائه ذاتياً بشكل محدود.", rec: "الالتزام بالمشاركة المهنية وحضور الورش والمحاضرات." },
+                        5: { desc: "يُجري المعلم تقويماً لأدائه ذاتياً بصورة نادرة.", rec: "الالتزام بحضور الورش والبدء في توثيق ممارساته المهنية." }
+                    }},
+                    { id: 12, title: "الحوكمة", items: {
+                        1: { desc: "يطبق السياسات والأنظمة واللوائح المنظمة للعمل بصورة فعالة.", rec: "الاستمرار بتطبيق اللوائح ومتابعة أثر الانضباط على النتائج." },
+                        2: { desc: "يطبق السياسات والأنظمة واللوائح المنظمة للعمل بصورة فاعلة.", rec: "توثيق الممارسات المتميزة في تطبيق الأنظمة وتعميمها." },
+                        3: { desc: "يطبق السياسات والأنظمة واللوائح بصورة مناسبة.", rec: "التأكد من أن الالتزام باللوائح ينعكس إيجاباً على أداء الطلبة." },
+                        4: { desc: "يطبق السياسات والأنظمة بصورة محدودة.", rec: "الالتزام باللوائح والأنظمة وضرورة المحافظة على زمن التعلم." },
+                        5: { desc: "يطبق السياسات والأنظمة بصورة نادرة.", rec: "الالتزام التام بالدوام الرسمي وضبط زمن التعلم وتطبيق كافة الأنظمة." }
+                    }},
+                    { id: 13, title: "المبادرات والأنشطة", items: {
+                        1: { desc: "يقدم مبادرات فعالة ويتميز بالتفاعل الإيجابي في جميع الأنشطة.", rec: "توثيق مبادرة التحصيل الدراسي بطريقة علمية للمشاركة بها." },
+                        2: { desc: "يقدم مبادرات فاعلة ويتفاعل إيجابياً في معظم الأنشطة.", rec: "التوسع في مجال المبادرة والعمل على توثيق أثرها." },
+                        3: { desc: "يقدم مبادرات ملائمة ويتفاعل إيجابياً في أغلب الأنشطة.", rec: "الاستمرار في تقديم المبادرات وقيادة فريق عمل لتنفيذ إحداها." },
+                        4: { desc: "يقدم مبادرات محدودة ويتفاعل بصورة محدودة.", rec: "الالتزام بحضور الاجتماعات والبرامج والمبادرة بتقديم مقترح." },
+                        5: { desc: "نادراً ما يقدم مبادرات وتفاعله محدود جداً.", rec: "الالتزام التام بحضور الاجتماعات والأنشطة المدرسية." }
+                    }}
                 ];
             }
 
@@ -884,7 +970,8 @@
                         </h3>
                         <div class="space-y-3">
                             ${[1,2,3,4,5].map(rating => {
-                                const desc = criterion.items[rating] ? criterion.items[rating].desc : '';
+                                const item = criterion.items[rating];
+                                const desc = item ? item.desc : '';
                                 return `
                                 <label class="relative flex items-start gap-3 p-3 border border-[rgb(var(--color-border-muted))] rounded-lg cursor-pointer bg-[rgb(var(--color-surface-base))] hover:bg-[rgb(var(--color-bg-base))] transition-colors group">
                                     <input type="radio" name="criteria_${criterion.id}" value="${rating}" 
@@ -940,22 +1027,28 @@
                 this.state.evaluationCriteria.forEach(c => {
                     const r = ratings[c.id];
                     const noteText = notes[c.id] || '-';
-                    // Push to analysis array for sorting
+                    // Careful: items[r] might not exist if data changed
+                    const itemData = c.items[r] || { desc: "", rec: "" };
+                    
                     analysis.push({
                         id: c.id, 
                         title: c.title, 
                         rating: r, 
-                        desc: c.items[r].desc, 
+                        desc: itemData.desc,
+                        rec: itemData.rec,
                         note: notes[c.id] || ''
                     });
                     
-                    // Populate Table
+                    // Populate Table with Description included
                     let ratingBadge = r === 1 ? 'text-emerald-700 bg-emerald-100' : (r === 2 ? 'text-green-600 bg-green-50' : (r === 3 ? 'text-yellow-600 bg-yellow-50' : (r === 4 ? 'text-orange-600 bg-orange-50' : 'text-red-600 bg-red-50')));
                     detailsBody.innerHTML += `
                         <tr class="hover:bg-[rgb(var(--color-bg-base))] transition-colors">
-                            <td class="p-3 border-b border-[rgb(var(--color-border-muted))] font-bold text-[rgb(var(--color-text-base))]">${c.title}</td>
-                            <td class="p-3 border-b border-[rgb(var(--color-border-muted))] text-center"><span class="font-bold px-2 py-1 rounded text-xs border border-transparent ${ratingBadge}">${r}/5</span></td>
-                            <td class="p-3 border-b border-[rgb(var(--color-border-muted))] text-[rgb(var(--color-text-muted))] italic">${noteText}</td>
+                            <td class="p-3 border-b border-[rgb(var(--color-border-muted))] align-top">
+                                <div class="font-bold text-[rgb(var(--color-text-base))] mb-1">${c.title}</div>
+                                <div class="text-xs text-[rgb(var(--color-text-muted))] leading-relaxed bg-[rgb(var(--color-bg-base))] p-2 rounded border border-[rgb(var(--color-border-muted))]">${itemData.desc}</div>
+                            </td>
+                            <td class="p-3 border-b border-[rgb(var(--color-border-muted))] text-center align-top pt-4"><span class="font-bold px-2 py-1 rounded text-xs border border-transparent ${ratingBadge}">${r}/5</span></td>
+                            <td class="p-3 border-b border-[rgb(var(--color-border-muted))] text-[rgb(var(--color-text-muted))] italic text-xs align-top pt-4">${noteText}</td>
                         </tr>
                     `;
                 });
@@ -963,18 +1056,37 @@
                 // Logic: Best 4 (Lowest Rating number = Best)
                 const strengths = [...analysis].sort((a,b) => a.rating - b.rating).slice(0, 4);
                 
-                // Logic: Worst 4 (Highest Rating number = Worst). Filter so we don't show excellent items as bad if everything is excellent.
-                // If rating is 1 or 2, consider it good. We want items > 2. If all are good, show none or "Needs improvement" logic.
-                const improvements = [...analysis].filter(a => a.rating > 1).sort((a,b) => b.rating - a.rating).slice(0, 4);
+                // Logic: Worst 4 (Highest Rating number = Worst). Filter to show items needing improvement (>2)
+                const improvements = [...analysis].filter(a => a.rating > 2).sort((a,b) => b.rating - a.rating).slice(0, 4);
 
                 // Initial Static Render (Before AI)
                 document.getElementById('repStrengths').innerHTML = strengths.map(s => `<li><span class="font-bold text-emerald-700">${s.title}:</span> ${s.desc}</li>`).join('');
-                document.getElementById('repImprovements').innerHTML = improvements.length > 0 ? improvements.map(s => `<li><span class="font-bold text-orange-700">${s.title}:</span> ${s.desc}</li>`).join('') : '<li>لا توجد نقاط ضعف ملحوظة.</li>';
-                document.getElementById('repRecommendations').innerHTML = improvements.length > 0 ? improvements.map(s => `<li>تحسين مستوى ${s.title} من خلال اتباع استراتيجيات حديثة.</li>`).join('') : '<li>الاستمرار في الأداء المتميز.</li>';
+                document.getElementById('repImprovements').innerHTML = improvements.length > 0 ? improvements.map(s => `<li><span class="font-bold text-orange-700">${s.title}:</span> ${s.desc}</li>`).join('') : '<li>لا توجد نقاط ضعف ملحوظة تستدعي التدخل العاجل.</li>';
+                
+                // Use specific recommendations from DB if available, else generic
+                document.getElementById('repRecommendations').innerHTML = improvements.length > 0 ? 
+                    improvements.map(s => `<li>${s.rec || `تحسين مستوى ${s.title} من خلال اتباع استراتيجيات حديثة.`}</li>`).join('') : 
+                    '<li>الاستمرار في الأداء المتميز ومشاركة الخبرات مع الزملاء.</li>';
 
                 // Check for saved AI data
                 if(isLoad && existingData.aiReportContent) {
                     document.getElementById('aiReportContent').innerHTML = existingData.aiReportContent;
+                } else {
+                    // Reset AI content if generating fresh without AI
+                    document.getElementById('aiReportContent').innerHTML = `
+                        <div class="ai-report-section">
+                            <h4><i class="fas fa-star text-emerald-500"></i> أبرز جوانب الإجادة</h4>
+                            <ul class="list-disc pr-5 text-sm text-[rgb(var(--color-text-base))]">${document.getElementById('repStrengths').innerHTML}</ul>
+                        </div>
+                        <div class="ai-report-section">
+                            <h4><i class="fas fa-chart-line text-orange-500"></i> نقاط تحتاج إلى تحسين</h4>
+                            <ul class="list-disc pr-5 text-sm text-[rgb(var(--color-text-base))]">${document.getElementById('repImprovements').innerHTML}</ul>
+                        </div>
+                        <div class="ai-report-section bg-[rgb(var(--color-primary-50))]/50 p-4 rounded-xl border border-[rgb(var(--color-primary-100))]">
+                            <h4><i class="fas fa-lightbulb text-yellow-500"></i> التوصيات والمقترحات الفنية</h4>
+                            <ul class="list-decimal pr-5 text-sm text-[rgb(var(--color-text-base))] space-y-2">${document.getElementById('repRecommendations').innerHTML}</ul>
+                        </div>
+                    `;
                 }
 
                 this.setView('supervision-report');
@@ -1009,11 +1121,15 @@
                 // Build detailed prompt context
                 const analysisItems = [];
                 this.state.evaluationCriteria.forEach(c => {
-                    analysisItems.push({
-                        title: c.title,
-                        rating: this.state.supervisionData.ratings[c.id],
-                        note: this.state.supervisionData.notes[c.id] || ''
-                    });
+                    const r = this.state.supervisionData.ratings[c.id];
+                    // Defensive check in case rating is missing
+                    if (r) {
+                        analysisItems.push({
+                            title: c.title,
+                            rating: r,
+                            note: this.state.supervisionData.notes[c.id] || ''
+                        });
+                    }
                 });
 
                 // Top 4 & Bottom 4 logic for prompt
