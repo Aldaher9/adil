@@ -165,6 +165,9 @@
                 <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="Google icon">
                 تسجيل الدخول باستخدام جوجل
             </button>
+            <button onclick="window.app.skipLogin()" class="w-full mt-3 bg-transparent hover:bg-slate-200 text-slate-500 font-bold py-2 px-4 rounded-xl transition text-sm">
+                الدخول كزائر (حفظ محلي فقط)
+            </button>
         </div>
     </div>
     
@@ -182,6 +185,7 @@
                     <i class="fas fa-clock text-[rgb(var(--color-primary-200))] text-xs"></i>
                     <span id="clockDisplay" class="font-mono font-bold text-green-400 dir-ltr text-sm">00:00:00</span>
                 </div>
+                <div id="cloudStatusIndicator" class="text-[9px] bg-white/10 px-2 py-1 rounded text-slate-300"></div>
                 <button onclick="window.app.simulateRandomPeriod()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="محاكاة حصة عشوائية">
                     <i class="fas fa-wand-magic-sparkles"></i>
                 </button>
@@ -713,7 +717,6 @@
                         { id: 'late', label: 'تأخر عن الحصة', points: 5, icon: 'fa-clock' },
                         { id: 'absent', label: 'غياب عن الحصة', points: 15, icon: 'fa-user-slash' }
                     ],
-                    // Predefined Specializations
                     specializations: [
                         "تربية اسلامية", "لغة عربية", "علوم", "أحياء", "كيمياء", "فيزياء",
                         "الدراسات الاجتماعية", "اللغة الانجليزية", "المهارات الحياتية",
@@ -735,24 +738,37 @@
                 this.auth = null;
                 
                 this.initDefaultCriteria();
+                
+                // 1. Load Local Data First
+                this.loadLocalData();
+                
                 this.initFirebaseAndAuth();
                 this.startClock();
             }
 
-            // ... (Previous Init/Reset methods remain same) ...
+            // New: Load from Local Storage
+            loadLocalData() {
+                const stored = localStorage.getItem('school_data_v1');
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        if (data.teachers) this.state.teachers = data.teachers;
+                        if (data.periods) this.state.periods = data.periods;
+                        if (data.classes) this.state.classes = data.classes;
+                        if (data.tasks) this.state.tasks = data.tasks;
+                        if (data.agenda) this.state.agenda = data.agenda;
+                        if (data.violationTypes) this.state.violationTypes = data.violationTypes;
+                        if (data.specializations) this.state.specializations = data.specializations;
+                        if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
+                        if (data.theme) this.state.theme = data.theme;
+                        this.applyTheme();
+                    } catch(e) { console.error('Local Load Error', e); }
+                }
+            }
+
             resetState() {
-                this.state.teachers = [];
-                this.state.periods = [];
-                this.state.classes = {};
-                this.state.tasks = [];
-                this.state.agenda = [];
-                this.state.violationTypes = [
-                    { id: 'late', label: 'تأخر عن الحصة', points: 5, icon: 'fa-clock' },
-                    { id: 'absent', label: 'غياب عن الحصة', points: 15, icon: 'fa-user-slash' }
-                ];
-                // Reset to default list if cleared, but usually we keep loaded list
-                this.state.supervisionHistory = [];
-                this.state.theme = 'default';
+                // Do not clear critical data on logout anymore, just UI reset
+                // Keeping data allows offline mode
                 this.renderAll();
                 this.applyTheme();
             }
@@ -778,13 +794,13 @@
                                 document.getElementById('login-view').classList.add('hidden-view');
                                 document.getElementById('app-view').classList.remove('hidden-view');
                                 this.renderUserProfile();
-                                this.loadUserData();
+                                this.loadUserData(); // Load cloud data
                             } else {
-                                this.state.currentUser = null;
-                                if(this.state.unsubscribe) this.state.unsubscribe();
-                                this.resetState();
-                                document.getElementById('login-view').classList.remove('hidden-view');
-                                document.getElementById('app-view').classList.add('hidden-view');
+                                // If not logged in, we rely on local data loaded in constructor
+                                if(!document.getElementById('app-view').classList.contains('hidden-view')){
+                                     // user explicitly logged out or session expired while using
+                                     // We can keep them in or show login. Let's show login but keep data ready.
+                                }
                             }
                         });
                     }
@@ -795,7 +811,28 @@
                 const provider = new firebase.auth.GoogleAuthProvider();
                 this.auth.signInWithPopup(provider).catch(e => alert("فشل تسجيل الدخول"));
             }
-            handleLogout() { if(confirm('تسجيل الخروج؟')) this.auth.signOut(); }
+            
+            skipLogin() {
+                document.getElementById('login-view').classList.add('hidden-view');
+                document.getElementById('app-view').classList.remove('hidden-view');
+                this.renderAll();
+                // Ensure profile area is clear or shows 'Guest'
+                document.getElementById('user-profile-container').innerHTML = `
+                    <div class="flex items-center gap-2 text-xs text-slate-300">
+                        <i class="fas fa-user-shield"></i>
+                        <span>وضع الزائر (محلي)</span>
+                    </div>
+                `;
+            }
+
+            handleLogout() { 
+                if(confirm('تسجيل الخروج؟ ستظل بياناتك محفوظة محلياً.')) {
+                    if(this.auth) this.auth.signOut();
+                    this.state.currentUser = null;
+                    document.getElementById('app-view').classList.add('hidden-view');
+                    document.getElementById('login-view').classList.remove('hidden-view');
+                }
+            }
 
             renderUserProfile() {
                 const container = document.getElementById('user-profile-container');
@@ -820,26 +857,56 @@
                 this.state.unsubscribe = this.db.collection("users").doc(this.state.currentUser.uid).onSnapshot(doc => {
                     if (doc.exists) {
                         const data = doc.data();
+                        // Merge cloud data (prefer cloud over local if conflict, or just overwrite)
                         this.state.teachers = data.teachers || [];
                         this.state.periods = data.periods || [];
                         this.state.classes = data.classes || {};
                         this.state.tasks = data.tasks || [];
                         this.state.agenda = data.agenda || [];
                         if (data.violationTypes) this.state.violationTypes = data.violationTypes;
-                        if (data.specializations) this.state.specializations = data.specializations; // Load specs
+                        if (data.specializations) this.state.specializations = data.specializations;
                         if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
-                        // Force update criteria to the new robust one if needed, or load if customized. 
-                        // For now, let's keep the hardcoded logic prioritized for this fix.
                         if (data.theme) this.state.theme = data.theme;
+                        
                         this.applyTheme();
                         this.renderAll();
                         this.updateCloudStatus('connected');
-                    } else { this.updateCloudStatus('connected'); this.renderAll(); }
+                        
+                        // Also update local storage to match cloud
+                        this.saveDataToLocal(); 
+                    } else { 
+                        // First time cloud login, save existing local data to cloud
+                        this.saveData(); 
+                    }
                 }, e => this.updateCloudStatus('error'));
             }
 
+            saveDataToLocal() {
+                try {
+                    localStorage.setItem('school_data_v1', JSON.stringify({
+                        teachers: this.state.teachers,
+                        periods: this.state.periods,
+                        classes: this.state.classes,
+                        tasks: this.state.tasks,
+                        agenda: this.state.agenda,
+                        violationTypes: this.state.violationTypes,
+                        specializations: this.state.specializations,
+                        supervisionHistory: this.state.supervisionHistory,
+                        theme: this.state.theme
+                    }));
+                } catch(e) { console.error('Local Save Error', e); }
+            }
+
             async saveData() {
-                if (!this.state.currentUser) return;
+                // 1. Always Save Locally First
+                this.saveDataToLocal();
+
+                // 2. Save to Cloud if Logged In
+                if (!this.state.currentUser) {
+                    this.updateCloudStatus('local');
+                    return;
+                }
+
                 this.updateCloudStatus('saving');
                 try {
                     await this.db.collection("users").doc(this.state.currentUser.uid).set({
@@ -851,12 +918,21 @@
                         violationTypes: this.state.violationTypes,
                         specializations: this.state.specializations, 
                         supervisionHistory: this.state.supervisionHistory,
-                        // evaluationCriteria: this.state.evaluationCriteria, // Don't overwrite cloud with local default if unnecessary
                         theme: this.state.theme,
                         lastSync: new Date(),
                         userName: this.state.currentUser.name 
                     }, { merge: true });
+                    this.updateCloudStatus('connected');
                 } catch (e) { this.updateCloudStatus('error'); }
+            }
+
+            updateCloudStatus(status) {
+                const el = document.getElementById('cloudStatusIndicator');
+                if(!el) return;
+                if(status === 'connected') el.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> متصل</span>';
+                else if(status === 'saving') el.innerHTML = '<span class="text-yellow-400"><i class="fas fa-sync fa-spin"></i> جاري الحفظ...</span>';
+                else if(status === 'local') el.innerHTML = '<span class="text-slate-400"><i class="fas fa-hdd"></i> حفظ محلي</span>';
+                else el.innerHTML = '<span class="text-red-400"><i class="fas fa-exclamation-triangle"></i> خطأ</span>';
             }
 
             initDefaultCriteria() {
