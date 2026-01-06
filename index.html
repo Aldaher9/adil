@@ -828,11 +828,14 @@
             // New method to fetch global settings like API Key
             fetchGlobalSettings() {
                 if(!this.db) return;
-                this.db.collection('settings').doc('global_config').onSnapshot(doc => {
+                // Changed collection from 'settings' to 'school_settings'
+                this.db.collection('school_settings').doc('global_config').onSnapshot(doc => {
                     if(doc.exists) {
                         const data = doc.data();
                         if(data && data.apiKey) {
                             this.state.apiKey = data.apiKey;
+                            // Also save to local storage for offline backup
+                            localStorage.setItem('school_ai_key', data.apiKey);
                             console.log('Global API Key loaded');
                         }
                     }
@@ -1358,17 +1361,32 @@
                 const key = document.getElementById('inputApiKey').value.trim();
                 if(key) {
                     this.state.apiKey = key;
-                    // Save to Firestore so it's shared globally
+                    // Always save locally first as backup
+                    localStorage.setItem('school_ai_key', key);
+
                     if(this.db) {
-                        this.db.collection('settings').doc('global_config').set({ apiKey: key }, { merge: true })
+                        // Changed collection from 'settings' to 'school_settings'
+                        this.db.collection('school_settings').doc('global_config').set({ apiKey: key }, { merge: true })
                         .then(() => {
                             alert("تم حفظ المفتاح سحابياً بنجاح. سيتمكن جميع المستخدمين من استخدامه.");
                             document.getElementById('apiKeyLocked').classList.remove('hidden-view');
                             document.getElementById('apiKeyUnlocked').classList.add('hidden-view');
                         })
-                        .catch(err => alert("حدث خطأ أثناء الحفظ السحابي: " + err.message));
+                        .catch(err => {
+                            console.error(err);
+                            if(err.code === 'permission-denied') {
+                                alert("تنبيه: تم حفظ المفتاح محلياً فقط. ليس لديك صلاحية التعديل على الإعدادات العامة في السحابة (Permission Denied). سيعمل المفتاح على هذا الجهاز فقط.");
+                            } else {
+                                alert("تم حفظ المفتاح محلياً. حدث خطأ في السحابة: " + err.message);
+                            }
+                            // Close view anyway since local save succeeded
+                            document.getElementById('apiKeyLocked').classList.remove('hidden-view');
+                            document.getElementById('apiKeyUnlocked').classList.add('hidden-view');
+                        });
                     } else {
-                        alert("تعذر الاتصال بالسحابة لحفظ المفتاح");
+                        alert("تم حفظ المفتاح محلياً فقط (غير متصل بالسحابة).");
+                        document.getElementById('apiKeyLocked').classList.remove('hidden-view');
+                        document.getElementById('apiKeyUnlocked').classList.add('hidden-view');
                     }
                 }
             }
