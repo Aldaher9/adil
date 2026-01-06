@@ -729,7 +729,7 @@
                     supervisionHistory: [],
                     evaluationCriteria: [],
                     theme: 'default',
-                    apiKey: localStorage.getItem('school_ai_key') || 'AIzaSyBUjKjCSH2bvqIn5oEqzE6-tjE1GgqGTtc',
+                    apiKey: (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : null,
                     cloudStatus: 'offline', 
                     unsubscribe: null,
                     aiReportData: null 
@@ -1211,7 +1211,7 @@
                 const specialization = document.getElementById('repSpecialization').innerText;
                 const apiKey = this.state.apiKey;
                 
-                if (!apiKey) return alert('خطأ: لم يتم العثور على مفتاح API.');
+                if (!apiKey) return alert('خطأ: لم يتم العثور على مفتاح API. يرجى التأكد من إعدادات البيئة.');
                 if(!topic || topic === '-') return alert('يرجى تحديد عنوان الدرس.');
 
                 // Build detailed prompt context
