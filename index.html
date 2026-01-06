@@ -540,7 +540,7 @@
                     simulationOffset: 0,
                     selectedTeacherId: null,
                     selectedClassName: null,
-                    supervisionData: { ratings: {} },
+                    supervisionData: { ratings: {}, notes: {} },
                     supervisionHistory: [],
                     evaluationCriteria: [],
                     theme: 'default',
@@ -666,6 +666,9 @@
                     }
                 }, error => {
                     console.error("Cloud Error:", error);
+                    if (error.code === 'permission-denied') {
+                        alert("تنبيه: لا تملك صلاحية الوصول للبيانات. يرجى التأكد من إعدادات قواعد الأمان (Rules) في Firebase.\n\nتأكد من نسخ القواعد الصحيحة التي تسمح لك بقراءة وكتابة ملفك الشخصي.");
+                    }
                     this.updateCloudStatus('error');
                 });
             }
@@ -689,6 +692,9 @@
                     // No need to update status, snapshot listener will do it
                 } catch (e) {
                     console.error("Save Error:", e);
+                    if (e.code === 'permission-denied') {
+                         alert("خطأ في الحفظ: ليس لديك صلاحية الكتابة. يرجى مراجعة قواعد Firebase (Firestore Rules).");
+                    }
                     this.updateCloudStatus('error');
                 }
             }
@@ -1132,7 +1138,7 @@
                 document.getElementById('supTeacherName').value = t.name;
                 document.getElementById('supClassName').value = className;
                 document.getElementById('supLessonTopic').value = '';
-                this.state.supervisionData = { ratings: {} };
+                this.state.supervisionData = { ratings: {}, notes: {} };
                 const list = document.getElementById('supervisionCriteriaList');
                 list.innerHTML = this.state.evaluationCriteria.map((criterion, index) => `
                     <div class="bg-[rgb(var(--color-bg-base))] p-4 rounded-xl border border-[rgb(var(--color-border-muted))]">
@@ -1160,6 +1166,14 @@
                                 `;
                             }).join('')}
                         </div>
+                        <!-- Note Field -->
+                        <div class="mt-3">
+                             <input type="text" 
+                                onchange="window.app.setNote(${criterion.id}, this.value)"
+                                placeholder="ملاحظات حول هذا البند (اختياري)..." 
+                                class="w-full text-xs p-2 rounded-lg border border-[rgb(var(--color-border-muted))] bg-[rgb(var(--color-surface-base))] focus:border-[rgb(var(--color-primary-500))] focus:bg-white outline-none transition"
+                             >
+                        </div>
                     </div>
                 `).join('');
                 this.setView('supervision');
@@ -1169,8 +1183,15 @@
                 this.state.supervisionData.ratings[criteriaId] = rating;
             }
 
+            setNote(criteriaId, text) {
+                if(!this.state.supervisionData.notes) this.state.supervisionData.notes = {};
+                this.state.supervisionData.notes[criteriaId] = text;
+            }
+
             generateReport(isLoad = false, existingData = null) {
                 const ratings = existingData ? existingData.ratings : this.state.supervisionData.ratings;
+                const notes = existingData ? (existingData.notes || {}) : (this.state.supervisionData.notes || {});
+                
                 if(!isLoad && Object.keys(ratings).length < this.state.evaluationCriteria.length) {
                     alert('يرجى استكمال تقييم جميع البنود');
                     return;
@@ -1184,19 +1205,25 @@
                 document.getElementById('repClassName').innerText = cName;
                 document.getElementById('repLessonTopic').innerText = lTopic;
                 document.getElementById('reportDate').innerText = rDate;
+                
                 const analysis = [];
                 this.state.evaluationCriteria.forEach(c => {
                     const r = ratings[c.id];
-                    if(r) analysis.push({id: c.id, title: c.title, rating: r, desc: c.items[r].desc, rec: c.items[r].rec});
+                    const note = notes[c.id] ? ` <span class="text-slate-500 font-bold block mt-1 border-r-2 border-slate-300 pr-2 mr-1">ملاحظة: ${notes[c.id]}</span>` : '';
+                    if(r) analysis.push({id: c.id, title: c.title, rating: r, desc: c.items[r].desc + note, rec: c.items[r].rec});
                 });
+                
                 const strengths = [...analysis].sort((a,b) => a.rating - b.rating).slice(0, 3);
                 const improvements = [...analysis].filter(a => a.rating > 2).sort((a,b) => b.rating - a.rating).slice(0, 4);
+                
                 document.getElementById('repStrengths').innerHTML = strengths.map(s => `<li><span class="font-bold text-emerald-700">${s.title}:</span> ${s.desc}</li>`).join('');
+                
                 if(improvements.length > 0) {
                     document.getElementById('repImprovements').innerHTML = improvements.map(s => `<li><span class="font-bold text-amber-700">${s.title}:</span> ${s.desc}</li>`).join('');
                 } else {
                     document.getElementById('repImprovements').innerHTML = '<li class="text-slate-400 italic">لا توجد جوانب تحسين ملحوظة (أداء متميز).</li>';
                 }
+                
                 if (isLoad && existingData.finalRecommendations) {
                      document.getElementById('repRecommendations').innerHTML = existingData.finalRecommendations;
                 } else {
@@ -1214,6 +1241,7 @@
                     topic: document.getElementById('repLessonTopic').innerText,
                     date: document.getElementById('reportDate').innerText,
                     ratings: {...this.state.supervisionData.ratings},
+                    notes: {...this.state.supervisionData.notes},
                     finalRecommendations: document.getElementById('repRecommendations').innerHTML
                 };
                 if(!this.state.supervisionHistory) this.state.supervisionHistory = [];
@@ -1226,7 +1254,7 @@
                 const sortedHistory = [...this.state.supervisionHistory].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
                 const visit = sortedHistory[index];
                 if(visit) {
-                    this.state.supervisionData = { ratings: visit.ratings };
+                    this.state.supervisionData = { ratings: visit.ratings, notes: visit.notes || {} };
                     this.generateReport(true, visit);
                 }
             }
@@ -1245,10 +1273,20 @@
                 const topic = document.getElementById('repLessonTopic').innerText;
                 const recContainer = document.getElementById('repRecommendations');
                 const currentRecs = recContainer.innerText;
+                
                 if(!topic || topic === '-') {
                     alert('يرجى تحديد عنوان الدرس أولاً للحصول على صياغة سياقية.');
                     return;
                 }
+                
+                // Build Context from notes
+                const notesContext = this.state.evaluationCriteria.map(c => {
+                    const r = this.state.supervisionData.ratings[c.id];
+                    const n = this.state.supervisionData.notes?.[c.id];
+                    if(n) return `- ${c.title} (مستوى ${r}): ${n}`;
+                    return null;
+                }).filter(Boolean).join('\n');
+
                 document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
                 try {
                     let apiKey = '';
@@ -1258,13 +1296,18 @@
                     const ai = new window.GoogleGenAI({ apiKey: apiKey });
                     const response = await ai.models.generateContent({
                         model: 'gemini-2.5-flash',
-                        config: { systemInstruction: "أنت خبير تربوي وموجه فني متخصص في صياغة التوصيات التربوية للمعلمين." },
+                        config: { systemInstruction: "أنت خبير تربوي وموجه فني متخصص في صياغة التوصيات التربوية للمعلمين. استخدم ملاحظات المشرف بدقة لبناء توصيات عملية." },
                         contents: `
                         عنوان الدرس: ${topic}
                         الصف: ${document.getElementById('repClassName').innerText}
+                        
+                        ملاحظات المشرف الميدانية (استخدمها كسياق):
+                        ${notesContext}
+
                         التوصيات الحالية (عامة):
                         ${currentRecs}
-                        المطلوب: إعادة صياغة هذه التوصيات لتكون "سياقية" ومرتبطة تحديداً بموضوع الدرس "${topic}". اجعلها عملية وقابلة للتطبيق داخل الحصة. أعد القائمة كنقاط HTML (li tags) فقط.`
+                        
+                        المطلوب: إعادة صياغة التوصيات لتكون "سياقية" ومرتبطة بملاحظات المشرف وموضوع الدرس. اجعلها عملية وقابلة للتطبيق. أعد القائمة كنقاط HTML (li tags) فقط.`
                     });
                     const text = response.text;
                     if (!text) throw new Error("Empty response from AI");
