@@ -646,6 +646,23 @@
                     <div id="violationsList" class="space-y-2"></div>
                 </div>
 
+                <!-- Specialization Management (New) -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]">
+                        <h4 class="font-bold text-[rgb(var(--color-text-base))] text-sm flex items-center gap-2">
+                            <i class="fas fa-graduation-cap text-indigo-500"></i>
+                            إدارة التخصصات
+                        </h4>
+                    </div>
+                    <!-- Add Form -->
+                    <div class="flex gap-2 bg-[rgb(var(--color-bg-base))] p-3 rounded-lg border border-[rgb(var(--color-border-muted))] items-center">
+                        <input type="text" id="newSpecInput" placeholder="أضف تخصص جديد..." class="flex-1 text-sm p-2 rounded border border-slate-300 focus:border-[rgb(var(--color-primary-500))] outline-none bg-[rgb(var(--color-surface-base))] text-[rgb(var(--color-text-base))]">
+                        <button type="button" onclick="window.app.addSpecialization()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white p-2 rounded h-[38px] w-10 flex items-center justify-center transition cursor-pointer"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <!-- List -->
+                    <div id="specializationsList" class="flex flex-wrap gap-2"></div>
+                </div>
+
                 <!-- Imports -->
                 <div class="grid md:grid-cols-2 gap-4">
                     <div class="bg-[rgb(var(--color-primary-50))] p-4 rounded-xl border border-[rgb(var(--color-primary-100))]">
@@ -689,6 +706,12 @@
                         { id: 'late', label: 'تأخر عن الحصة', points: 5, icon: 'fa-clock' },
                         { id: 'absent', label: 'غياب عن الحصة', points: 15, icon: 'fa-user-slash' }
                     ],
+                    // Predefined Specializations
+                    specializations: [
+                        "تربية اسلامية", "لغة عربية", "علوم", "أحياء", "كيمياء", "فيزياء",
+                        "الدراسات الاجتماعية", "اللغة الانجليزية", "المهارات الحياتية",
+                        "الرياضة المدرسية", "الفنون التشكيلية", "الفنون الموسيقية"
+                    ],
                     simulationOffset: 0,
                     selectedTeacherId: null,
                     selectedClassName: null,
@@ -699,7 +722,7 @@
                     apiKey: localStorage.getItem('school_ai_key') || 'AIzaSyBUjKjCSH2bvqIn5oEqzE6-tjE1GgqGTtc',
                     cloudStatus: 'offline', 
                     unsubscribe: null,
-                    aiReportData: null // Store generated AI data
+                    aiReportData: null 
                 };
                 this.db = null;
                 this.auth = null;
@@ -720,6 +743,7 @@
                     { id: 'late', label: 'تأخر عن الحصة', points: 5, icon: 'fa-clock' },
                     { id: 'absent', label: 'غياب عن الحصة', points: 15, icon: 'fa-user-slash' }
                 ];
+                // Reset to default list if cleared, but usually we keep loaded list
                 this.state.supervisionHistory = [];
                 this.state.theme = 'default';
                 this.renderAll();
@@ -779,6 +803,7 @@
                         this.state.tasks = data.tasks || [];
                         this.state.agenda = data.agenda || [];
                         if (data.violationTypes) this.state.violationTypes = data.violationTypes;
+                        if (data.specializations) this.state.specializations = data.specializations; // Load specs
                         if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
                         if (data.evaluationCriteria) this.state.evaluationCriteria = data.evaluationCriteria;
                         if (data.theme) this.state.theme = data.theme;
@@ -800,6 +825,7 @@
                         tasks: this.state.tasks,
                         agenda: this.state.agenda,
                         violationTypes: this.state.violationTypes,
+                        specializations: this.state.specializations, // Save specs
                         supervisionHistory: this.state.supervisionHistory,
                         evaluationCriteria: this.state.evaluationCriteria,
                         theme: this.state.theme,
@@ -828,15 +854,6 @@
                 ];
             }
 
-            // ... (Helper Methods) ...
-            getUniqueSpecializations() {
-                const specs = new Set();
-                this.state.teachers.forEach(t => {
-                    if (t.specialization) specs.add(t.specialization);
-                });
-                return Array.from(specs).sort();
-            }
-
             startSupervision(teacherId, className) {
                 const t = this.state.teachers.find(x => x.id === teacherId);
                 if(!t) return;
@@ -844,10 +861,10 @@
                 document.getElementById('supClassName').value = className;
                 document.getElementById('supLessonTopic').value = '';
                 
-                // Populate Specialization Dropdown
+                // Populate Specialization Dropdown from State
                 const specSelect = document.getElementById('supSpecialization');
                 specSelect.innerHTML = '<option value="">اختر التخصص...</option>';
-                const specs = this.getUniqueSpecializations();
+                const specs = this.state.specializations || [];
                 specs.forEach(s => {
                     const opt = document.createElement('option');
                     opt.value = s;
@@ -1077,7 +1094,8 @@
                 };
                 reader.readAsText(e.target.files[0]);
             }
-            openSettings() { this.renderViolationsSettings(); this.renderThemeSelector(); document.getElementById('modal-settings').classList.remove('hidden-view'); }
+            openSettings() { this.renderViolationsSettings(); this.renderSpecializationsSettings(); this.renderThemeSelector(); document.getElementById('modal-settings').classList.remove('hidden-view'); }
+            
             renderViolationsSettings() {
                 const list = document.getElementById('violationsList');
                 if(!list) return;
@@ -1094,6 +1112,37 @@
                     </div>
                 `).join('');
             }
+
+            renderSpecializationsSettings() {
+                const list = document.getElementById('specializationsList');
+                if(!list) return;
+                list.innerHTML = (this.state.specializations || []).map((s, index) => `
+                    <div class="flex items-center gap-2 bg-[rgb(var(--color-surface-base))] px-3 py-1.5 rounded-full border border-[rgb(var(--color-border-muted))] shadow-sm text-xs font-bold text-[rgb(var(--color-text-base))] group">
+                        ${s}
+                        <button onclick="window.app.removeSpecialization(${index})" class="text-slate-400 hover:text-red-500 transition cursor-pointer"><i class="fas fa-times"></i></button>
+                    </div>
+                `).join('');
+            }
+
+            addSpecialization() {
+                const input = document.getElementById('newSpecInput');
+                const val = input.value.trim();
+                if(val && !this.state.specializations.includes(val)) {
+                    this.state.specializations.push(val);
+                    input.value = '';
+                    this.saveData();
+                    this.renderSpecializationsSettings();
+                }
+            }
+
+            removeSpecialization(index) {
+                if(confirm('حذف هذا التخصص؟')) {
+                    this.state.specializations.splice(index, 1);
+                    this.saveData();
+                    this.renderSpecializationsSettings();
+                }
+            }
+
             addViolation() {
                 const label = document.getElementById('newViolationLabel').value;
                 const points = parseInt(document.getElementById('newViolationPoints').value);
