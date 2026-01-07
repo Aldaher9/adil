@@ -1278,17 +1278,16 @@
                     const r = this.state.supervisionData.ratings[c.id];
                     // Defensive check in case rating is missing
                     if (r) {
+                        const itemData = c.items[r] || { desc: "لا يوجد وصف للبند.", rec: "" };
                         analysisItems.push({
                             title: c.title,
                             rating: r,
+                            description: itemData.desc, // The full description including the prevalence term
+                            recommendation: itemData.rec, // The default recommendation for context
                             note: this.state.supervisionData.notes[c.id] || ''
                         });
                     }
                 });
-
-                // Top 4 & Bottom 4 logic for prompt
-                const top4 = [...analysisItems].sort((a,b) => a.rating - b.rating).slice(0, 4);
-                const bottom4 = [...analysisItems].sort((a,b) => b.rating - a.rating).slice(0, 4);
 
                 document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
                 
@@ -1298,7 +1297,7 @@
                     const response = await ai.models.generateContent({
                         model: 'gemini-2.5-flash',
                         config: { 
-                            systemInstruction: "أنت خبير تربوي وموجه فني أول متخصص. مهمتك صياغة تقرير زيارة صفية احترافي وشامل بناءً على البيانات المقدمة."
+                            systemInstruction: "أنت خبير تربوي وموجه فني أول متخصص. مهمتك صياغة تقرير زيارة صفية احترافي وشامل بناءً على البيانات المقدمة، مع التركيز على استخدام مصطلحات الانتشار (مثل 'جميع'، 'معظم'، 'أغلب') الموجودة في وصف كل بند."
                         },
                         contents: `
                         المعلم/ة: تخصص (${specialization})
@@ -1306,14 +1305,21 @@
                         
                         ${genderInstruction}
 
-                        بيانات التقييم (من 1 ممتاز إلى 5 ضعيف):
+                        بيانات التقييم المفصلة (من 1 ممتاز إلى 5 ضعيف). حقل 'description' هو الأهم ويحتوي على الوصف السلوكي الكامل ونسبة الانتشار.
                         ${JSON.stringify(analysisItems)}
 
-                        المطلوب: قم بصياغة تقرير HTML (فقط div و ul و p) يحتوي على الأقسام التالية بدقة لغوية عالية وموجهة للتخصص:
-                        1. فقرة "وصف الأداء العام": تصف سير الحصة بشكل سردي مهني.
-                        2. قائمة "أبرز جوانب الإجادة": أعد صياغة أفضل 4 نقاط (${JSON.stringify(top4)}) لتكون عبارات وصفية قوية ومحددة للتخصص.
-                        3. قائمة "نقاط تحتاج إلى تحسين": أعد صياغة أقل 4 نقاط (${JSON.stringify(bottom4)}) بلغة تربوية بناءة.
-                        4. قائمة "التوصيات الفنية": قدم حلولاً عملية وعلمية دقيقة لنقاط التحسين المذكورة، مع ربطها بمادة ${specialization}.
+                        المطلوب: قم بصياغة تقرير HTML (فقط div و ul و p و li) يحتوي على الأقسام التالية بدقة لغوية عالية وموجهة للتخصص:
+
+                        1.  **فقرة "وصف الأداء العام"**: صف سير الحصة بشكل سردي مهني، مستفيداً من البيانات الكاملة.
+
+                        2.  **قائمة "أبرز جوانب الإجادة"**: استخرج أفضل 4 نقاط (الأقل في قيمة rating). لكل نقطة، يجب أن تلتزم **بالصياغة الحرفية التالية**:
+                            \`- [عنوان البند]: بدليل [الوصف السلوكي الكامل من حقل 'description']، بدليل [ملاحظة إضافية من حقل 'note' إن وجدت، أو استنتاج إضافي تربطه بعنوان الدرس].\`
+                            مثال للصياغة المطلوبة: \`- التحصيل الدراسي: بدليل اكتسب جميع الطلبة المهارات الأساسية والمعارف بصورة فعالة، بدليل تفاعلهم الإيجابي مع أنشطة الدرس.\`
+                            **مهم جداً: لا تختصر أبداً الوصف السلوكي من حقل 'description'.**
+
+                        3.  **قائمة "نقاط تحتاج إلى تحسين"**: استخرج أسوأ 4 نقاط (الأعلى في قيمة rating). لكل نقطة، اتبع **نفس الصياغة الحرفية الإلزامية** المذكورة في البند السابق.
+
+                        4.  **قائمة "التوصيات الفنية"**: قدم حلولاً عملية وعلمية دقيقة لنقاط التحسين، مستفيداً من حقل 'recommendation' كأساس واقتراحات إضافية مرتبطة بمادة ${specialization}.
 
                         تنسيق المخرجات المطلوب (HTML):
                         <div class="ai-report-section">
