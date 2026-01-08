@@ -1666,5 +1666,34 @@
 
         window.app = new SchoolApp();
     </script>
+
+<script>
+(function() {
+  const AI_FUNCTION_URL = "https://us-central1-school-9416e.cloudfunctions.net/improveText";
+  function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+  ready(function() {
+    const btn = document.getElementById('aiImproveBtn') || document.querySelector('[data-ai-improve]');
+    const textarea = document.getElementById('visitNotes') || document.querySelector('textarea');
+    if (!btn || !textarea) return;
+    btn.addEventListener('click', async function() {
+      const originalText = textarea.value.trim();
+      if (originalText.length < 5) { alert('يرجى كتابة ملاحظة أطول قبل التحسين'); return; }
+      btn.disabled = true; const oldText = btn.textContent; btn.textContent = 'جارٍ التحسين بالذكاء الاصطناعي...';
+      try {
+        const res = await fetch(AI_FUNCTION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: originalText })
+        });
+        const data = await res.json();
+        if (data && data.result) textarea.value = data.result;
+        else alert('لم يتم توليد نص');
+      } catch(e) { alert('حدث خطأ أثناء الاتصال بالخدمة'); }
+      finally { btn.disabled = false; btn.textContent = oldText || '✨ تحسين بالذكاء الاصطناعي (Gemini)'; }
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
