@@ -138,18 +138,13 @@
     "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
     "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
     "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
-    "@angular/common": "https://esm.sh/@angular/common@^21.0.6?external=rxjs",
-    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.6?external=rxjs",
-    "@angular/forms": "https://esm.sh/@angular/forms@^21.0.6?external=rxjs",
-    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.6?external=rxjs",
-    "@angular/core": "https://esm.sh/@angular/core@^21.0.6?external=rxjs",
-    "@google/genai": "https://esm.sh/@google/genai"
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.7?external=rxjs",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.7?external=rxjs",
+    "@angular/core": "https://esm.sh/@angular/core@^21.0.7?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.0.7?external=rxjs",
+    "@angular/forms": "https://esm.sh/@angular/forms@^21.0.7?external=rxjs"
   }
 }
-</script>
-<script type="module">
-    import { GoogleGenAI } from "@google/genai";
-    window.GoogleGenAI = GoogleGenAI;
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
@@ -479,7 +474,7 @@
                 <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view rounded-xl">
                     <i class="fas fa-spinner fa-spin text-4xl text-[rgb(var(--color-primary-600))] mb-3"></i>
                     <span class="text-sm font-bold text-[rgb(var(--color-primary-900))]">جاري صياغة التقرير الاحترافي...</span>
-                    <span class="text-xs text-[rgb(var(--color-text-muted))] mt-1">يتم تحليل التخصص وعنوان الدرس وملاحظات الزيارة</span>
+                    <span class="text-xs text-[rgb(var(--color-text-muted))] mt-1">قد يستغرق الأمر ثوانٍ قليلة</span>
                 </div>
             </div>
 
@@ -637,33 +632,22 @@
                     </div>
                 </div>
 
-                <!-- API Key Section (Locked for Admin) -->
+                <!-- API Key Section (Restored/Updated) -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]">
                         <h4 class="font-bold text-[rgb(var(--color-text-base))] flex items-center gap-2">
-                            <i class="fas fa-key text-yellow-500"></i>
-                            مفتاح ربط الذكاء الاصطناعي (API Key)
+                            <i class="fas fa-robot text-purple-500"></i>
+                            إعدادات الذكاء الاصطناعي
                         </h4>
                     </div>
-                    
-                    <!-- Locked State -->
-                    <div id="apiKeyLocked" class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex justify-between items-center">
-                        <div class="text-xs text-yellow-800 font-bold">
-                            <i class="fas fa-lock ml-1"></i> الإعدادات محمية (خاصة بمدير النظام)
-                        </div>
-                        <button onclick="window.app.unlockApiKeySettings()" class="bg-white border border-yellow-200 text-yellow-700 hover:bg-yellow-100 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">
-                            فك القفل
-                        </button>
-                    </div>
-
-                    <!-- Unlocked State -->
-                    <div id="apiKeyUnlocked" class="hidden-view bg-[rgb(var(--color-bg-base))] p-4 rounded-xl border border-[rgb(var(--color-border-muted))] space-y-3">
-                        <label class="block text-[10px] font-bold text-[rgb(var(--color-text-muted))]">Google Gemini API Key</label>
-                        <div class="flex gap-2">
-                            <input type="password" id="inputApiKey" placeholder="AIzaSy..." class="flex-1 text-sm p-2 rounded-lg border border-slate-300 focus:border-indigo-500 outline-none dir-ltr font-mono bg-white text-slate-800">
-                            <button onclick="window.app.saveApiKey()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition cursor-pointer">حفظ</button>
-                        </div>
-                        <p class="text-[9px] text-[rgb(var(--color-text-muted))]">سيتم حفظ المفتاح في حسابك السحابي الخاص. في وضع الزائر، سيتم الحفظ محلياً فقط.</p>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-[rgb(var(--color-text-muted))]">رابط الدالة السحابية (Cloud Function URL)</label>
+                        <input type="text" id="settingCloudUrl" onchange="window.app.saveAISettings()" class="w-full text-xs p-2 rounded border border-[rgb(var(--color-border-muted))] bg-[rgb(var(--color-bg-base))] dir-ltr text-left">
+                        <p class="text-[9px] text-slate-400">إذا واجهت خطأ "Failed to fetch"، تأكد من أن الرابط صحيح أو استخدم المفتاح الاحتياطي أدناه.</p>
+                        
+                        <label class="text-[10px] font-bold text-[rgb(var(--color-text-muted))] mt-2 block">مفتاح API (احتياطي / Gemini Direct)</label>
+                        <input type="password" id="settingApiKey" onchange="window.app.saveAISettings()" placeholder="AIzaSy..." class="w-full text-xs p-2 rounded border border-[rgb(var(--color-border-muted))] bg-[rgb(var(--color-bg-base))] dir-ltr text-left">
+                        <p class="text-[9px] text-slate-400">سيتم استخدام هذا المفتاح في حال تعذر الاتصال بالسحابة.</p>
                     </div>
                 </div>
 
@@ -760,10 +744,11 @@
                     evaluationCriteria: [],
                     theme: 'default',
                     defaultSchoolGender: 'male',
-                    apiKey: localStorage.getItem('school_ai_key') || null,
                     cloudStatus: 'offline', 
                     unsubscribe: null,
-                    aiReportData: null 
+                    aiReportData: null,
+                    cloudFunctionUrl: "https://us-central1-school-9416e.cloudfunctions.net/improveText", // Default
+                    apiKey: "" // Backup Direct Key
                 };
                 this.db = null;
                 this.auth = null;
@@ -793,6 +778,8 @@
                         if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
                         if (data.theme) this.state.theme = data.theme;
                         if (data.defaultSchoolGender) this.state.defaultSchoolGender = data.defaultSchoolGender;
+                        if (data.cloudFunctionUrl) this.state.cloudFunctionUrl = data.cloudFunctionUrl;
+                        if (data.apiKey) this.state.apiKey = data.apiKey;
                         this.applyTheme();
                     } catch(e) { console.error('Local Load Error', e); }
                 }
@@ -901,7 +888,6 @@
                         if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
                         if (data.theme) this.state.theme = data.theme;
                         if (data.defaultSchoolGender) this.state.defaultSchoolGender = data.defaultSchoolGender;
-                        this.state.apiKey = data.apiKey || null; // Load user-specific API key
                         
                         this.applyTheme();
                         this.renderAll();
@@ -928,7 +914,9 @@
                         specializations: this.state.specializations,
                         supervisionHistory: this.state.supervisionHistory,
                         theme: this.state.theme,
-                        defaultSchoolGender: this.state.defaultSchoolGender
+                        defaultSchoolGender: this.state.defaultSchoolGender,
+                        cloudFunctionUrl: this.state.cloudFunctionUrl,
+                        apiKey: this.state.apiKey
                     }));
                 } catch(e) { console.error('Local Save Error', e); }
             }
@@ -956,7 +944,6 @@
                         supervisionHistory: this.state.supervisionHistory,
                         theme: this.state.theme,
                         defaultSchoolGender: this.state.defaultSchoolGender,
-                        apiKey: this.state.apiKey, // Save user-specific API key
                         lastSync: new Date(),
                         userName: this.state.currentUser.name 
                     }, { merge: true });
@@ -1259,101 +1246,147 @@
             async enhanceReportWithAI() {
                 const topic = document.getElementById('repLessonTopic').innerText;
                 const specialization = document.getElementById('repSpecialization').innerText;
-                const apiKey = this.state.apiKey;
                 const gender = this.state.supervisionData.gender;
+                // Use stored URL or default if missing
+                const CLOUD_FUNCTION_URL = this.state.cloudFunctionUrl || "https://us-central1-school-9416e.cloudfunctions.net/improveText";
 
-                let genderInstruction = "";
-                if (gender === 'male') {
-                    genderInstruction = "ملاحظة هامة: قم بصياغة التقرير بالكامل بصيغة المذكر، موجهاً الحديث للمعلم (وليس المعلمة) والطلاب (وليس الطالبات).";
-                } else {
-                    genderInstruction = "ملاحظة هامة: قم بصياغة التقرير بالكامل بصيغة المؤنث، موجهاً الحديث للمعلمة (وليس المعلم) والطالبات (وليس الطلاب).";
-                }
-                
-                if (!apiKey) return alert('خطأ: لم يتم العثور على مفتاح API. يرجى إضافته من الإعدادات.');
+                // Check Basic Requirements
                 if(!topic || topic === '-') return alert('يرجى تحديد عنوان الدرس.');
 
-                // Build detailed prompt context
-                const analysisItems = [];
+                // Context Variables for Gender Accuracy
+                const isMale = gender === 'male';
+                const context = {
+                    teacher: isMale ? "المعلم" : "المعلمة",
+                    student: isMale ? "الطالب" : "الطالبة",
+                    students: isMale ? "الطلاب" : "الطالبات",
+                    pronounSubj: isMale ? "هو" : "هي",
+                    pronounObj: isMale ? "ـه" : "ـها",
+                    address: isMale ? "مدرسة بنين" : "مدرسة بنات"
+                };
+
+                // Subject-Specific Technical Persona
+                let role = "موجه فني عام";
+                let focus = "التركيز على جودة التعليم والتعلم وإدارة الصف.";
+                const s = specialization.toLowerCase();
+                
+                if(s.includes('رياضيات') || s.includes('math')) {
+                    role = "موجه أول رياضيات";
+                    focus = "التركيز على التدرج المنطقي في حل المسائل، الانتقال من المحسوس للمجرد، وصحة المفاهيم الرياضية.";
+                } else if(s.includes('علوم') || s.includes('فيزياء') || s.includes('كيمياء') || s.includes('أحياء')) {
+                    role = "موجه أول علوم";
+                    focus = "التركيز على المنهجية العلمية، الاستقصاء، وإجراءات الأمن والسلامة أثناء التجارب.";
+                } else if(s.includes('عربية') || s.includes('arabic')) {
+                    role = "موجه أول لغة عربية";
+                    focus = "التركيز على الفصاحة، سلامة اللغة، مهارات التحدث، وجودة الإلقاء.";
+                } else if(s.includes('إسلامية')) {
+                    role = "موجه تربية إسلامية";
+                    focus = "التركيز على صحة التلاوة، تعزيز القيم، وربط الدرس بالحياة الواقعية.";
+                } else if(s.includes('نجليز')) {
+                    role = "Senior English Supervisor";
+                    focus = "Focus on student talking time (STT), pronunciation, and active usage of the language.";
+                }
+
+                // Collect Data
+                const items = [];
                 this.state.evaluationCriteria.forEach(c => {
                     const r = this.state.supervisionData.ratings[c.id];
-                    // Defensive check in case rating is missing
-                    if (r) {
-                        const itemData = c.items[r] || { desc: "لا يوجد وصف للبند.", rec: "" };
-                        analysisItems.push({
-                            title: c.title,
-                            rating: r,
-                            description: itemData.desc, // The full description including the prevalence term
-                            recommendation: itemData.rec, // The default recommendation for context
-                            note: this.state.supervisionData.notes[c.id] || ''
-                        });
-                    }
+                    if(r) items.push({ title: c.title, rating: r, desc: c.items[r]?.desc, note: this.state.supervisionData.notes[c.id] || '' });
                 });
 
-                document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
+                // Construct Prompt
+                const prompt = `
+                الدور: تصرف بصفتك ${role} ذو خبرة عالية.
+                المهمة: كتابة تقرير زيارة صفية فني وواقعي جداً.
                 
+                سياق الزيارة:
+                - التخصص: ${specialization}
+                - عنوان الدرس: "${topic}" (يجب دمج هذا العنوان في الأمثلة والملاحظات).
+                - نوع المدرسة: ${context.address}.
+                
+                تعليمات لغوية صارمة (Gender & Grammar):
+                - المعلم: استخدم لفظ "${context.teacher}" حصراً.
+                - الطلاب: استخدم لفظ "${context.students}" حصراً.
+                - الصياغة: التزم بصيغة ${isMale ? "المذكر" : "المؤنث"} في جميع الأفعال والضمائر.
+                
+                التركيز الفني (${focus}):
+                استخدم مصطلحات تخصصية دقيقة تناسب مادة ${specialization} وموضوع الدرس "${topic}".
+                
+                بيانات التقييم:
+                ${JSON.stringify(items)}
+                
+                المطلوب (HTML Format):
+                1. <div class="ai-report-section">...</div> يحتوي على "وصف الأداء العام": فقرة تصف كيف قدم ${context.teacher} درس "${topic}" لـ ${context.students}.
+                2. <div class="ai-report-section">...</div> يحتوي على "جوانب الإجادة": اختر أفضل 4 نقاط. لكل نقطة، اكتب دليلاً واقعياً متخيلاً يرتبط بدرس "${topic}".
+                3. <div class="ai-report-section">...</div> يحتوي على "نقاط التحسين": اختر أبرز نقاط الضعف إن وجدت.
+                4. <div class="ai-report-section">...</div> يحتوي على "توصيات فنية": 3 نصائح عملية لتحسين تدريس موضوع "${topic}" تحديداً.
+                `;
+
+                // UI Loading
+                document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
+
                 try {
-                    if (typeof window.GoogleGenAI === 'undefined') throw new Error("SDK error");
-                    const ai = new window.GoogleGenAI({ apiKey: apiKey });
-                    const response = await ai.models.generateContent({
-                        model: 'gemini-2.5-flash',
-                        config: { 
-                            systemInstruction: "أنت خبير تربوي وموجه فني أول متخصص. مهمتك صياغة تقرير زيارة صفية احترافي وشامل بناءً على البيانات المقدمة، مع التركيز على استخدام مصطلحات الانتشار (مثل 'جميع'، 'معظم'، 'أغلب') الموجودة في وصف كل بند."
-                        },
-                        contents: `
-                        المعلم/ة: تخصص (${specialization})
-                        عنوان الدرس: ${topic}
+                    // Attempt 1: Cloud Function
+                    if (this.state.currentUser) {
+                        const token = await this.auth.currentUser.getIdToken();
+                        const res = await fetch(CLOUD_FUNCTION_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                            body: JSON.stringify({ text: prompt })
+                        });
                         
-                        ${genderInstruction}
-
-                        بيانات التقييم المفصلة (من 1 ممتاز إلى 5 ضعيف). حقل 'description' هو الأهم ويحتوي على الوصف السلوكي الكامل ونسبة الانتشار.
-                        ${JSON.stringify(analysisItems)}
-
-                        المطلوب: قم بصياغة تقرير HTML (فقط div و ul و p و li) يحتوي على الأقسام التالية بدقة لغوية عالية وموجهة للتخصص:
-
-                        1.  **فقرة "وصف الأداء العام"**: صف سير الحصة بشكل سردي مهني، مستفيداً من البيانات الكاملة.
-
-                        2.  **قائمة "أبرز جوانب الإجادة"**: استخرج أفضل 4 نقاط (الأقل في قيمة rating). لكل نقطة، يجب أن تلتزم **بالصياغة الحرفية التالية**:
-                            \`- [عنوان البند]: بدليل [الوصف السلوكي الكامل من حقل 'description']، بدليل [ملاحظة إضافية من حقل 'note' إن وجدت، أو استنتاج إضافي تربطه بعنوان الدرس].\`
-                            مثال للصياغة المطلوبة: \`- التحصيل الدراسي: بدليل اكتسب جميع الطلبة المهارات الأساسية والمعارف بصورة فعالة، بدليل تفاعلهم الإيجابي مع أنشطة الدرس.\`
-                            **مهم جداً: لا تختصر أبداً الوصف السلوكي من حقل 'description'.**
-
-                        3.  **قائمة "نقاط تحتاج إلى تحسين"**: استخرج أسوأ 4 نقاط (الأعلى في قيمة rating). لكل نقطة، اتبع **نفس الصياغة الحرفية الإلزامية** المذكورة في البند السابق.
-
-                        4.  **قائمة "التوصيات الفنية"**: قدم حلولاً عملية وعلمية دقيقة لنقاط التحسين، مستفيداً من حقل 'recommendation' كأساس واقتراحات إضافية مرتبطة بمادة ${specialization}.
-
-                        تنسيق المخرجات المطلوب (HTML):
-                        <div class="ai-report-section">
-                            <h4><i class="fas fa-info-circle text-blue-500"></i> وصف الأداء العام</h4>
-                            <p>...النص هنا...</p>
-                        </div>
-                        <div class="ai-report-section">
-                            <h4><i class="fas fa-star text-emerald-500"></i> أبرز جوانب الإجادة</h4>
-                            <ul><li>...</li></ul>
-                        </div>
-                        <div class="ai-report-section">
-                            <h4><i class="fas fa-chart-line text-orange-500"></i> نقاط تحتاج إلى تحسين</h4>
-                            <ul><li>...</li></ul>
-                        </div>
-                        <div class="ai-report-section bg-[rgb(var(--color-primary-50))]/50 p-4 rounded-xl border border-[rgb(var(--color-primary-100))]">
-                            <h4><i class="fas fa-lightbulb text-yellow-500"></i> التوصيات والمقترحات الفنية</h4>
-                            <ul class="list-decimal pr-5"><li>...</li></ul>
-                        </div>
-                        `
-                    });
+                        if (!res.ok) throw new Error("Cloud fetch failed");
+                        
+                        const data = await res.json();
+                        const cleanHtml = (data.result || "").replace(/```html/g, '').replace(/```/g, '');
+                        document.getElementById('aiReportContent').innerHTML = cleanHtml;
+                    } else {
+                        throw new Error("User not logged in");
+                    }
                     
-                    const text = response.text;
-                    if (!text) throw new Error("Empty AI response");
+                } catch(e) {
+                    console.warn("Cloud connection failed, trying direct API fallback...", e);
                     
-                    // Clean markdown code blocks if present
-                    const cleanHtml = text.replace(/```html/g, '').replace(/```/g, '');
-                    document.getElementById('aiReportContent').innerHTML = cleanHtml;
-
-                } catch (error) {
-                    console.error(error);
-                    alert("تعذر الاتصال بالذكاء الاصطناعي. " + error.message);
+                    // Attempt 2: Direct API Key (Fallback)
+                    if (this.state.apiKey) {
+                        try {
+                            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.state.apiKey}`;
+                            const res = await fetch(url, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{ parts: [{ text: prompt }] }]
+                                })
+                            });
+                            
+                            const data = await res.json();
+                            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                            const cleanHtml = text.replace(/```html/g, '').replace(/```/g, '');
+                            
+                            if(cleanHtml) {
+                                document.getElementById('aiReportContent').innerHTML = cleanHtml;
+                                // Add a subtle note about direct mode
+                                document.getElementById('aiReportContent').insertAdjacentHTML('beforeend', '<div class="text-[9px] text-slate-400 mt-2 text-center border-t border-slate-100 pt-1">تم التوليد باستخدام المفتاح المباشر (وضع غير متصل بالسحابة)</div>');
+                            } else {
+                                throw new Error("Empty response");
+                            }
+                        } catch (apiErr) {
+                            alert("فشل الاتصال: " + apiErr.message + "\nتأكد من مفتاح API في الإعدادات.");
+                        }
+                    } else {
+                        // Failure: No Cloud & No Key
+                        alert(`فشل الاتصال بالخدمة السحابية (CORS أو خطأ في الرابط).\n\nلحل المشكلة:\n1. اذهب للإعدادات.\n2. تأكد من "رابط الدالة السحابية".\n3. أو أضف "مفتاح API" احتياطي للعمل المباشر.`);
+                    }
                 } finally {
                     document.getElementById('aiLoadingOverlay').classList.add('hidden-view');
                 }
+            }
+
+            saveAISettings() {
+                const url = document.getElementById('settingCloudUrl').value;
+                const key = document.getElementById('settingApiKey').value;
+                this.state.cloudFunctionUrl = url;
+                this.state.apiKey = key;
+                this.saveData(); // Save to local/cloud
             }
 
             // ... (Rest of the class methods: handleCriteriaJson, openSettings, etc. remain unchanged) ...
@@ -1377,6 +1410,10 @@
                 this.renderSpecializationsSettings(); 
                 this.renderThemeSelector(); 
                 this.renderSchoolGenderSettings();
+                // Render AI Settings
+                document.getElementById('settingCloudUrl').value = this.state.cloudFunctionUrl || '';
+                document.getElementById('settingApiKey').value = this.state.apiKey || '';
+                
                 document.getElementById('modal-settings').classList.remove('hidden-view'); 
             }
             
@@ -1668,36 +1705,3 @@
     </script>
 </body>
 </html>
-<!-- === AI OVERRIDE PATCH (Firebase Cloud Function) === -->
-<script>
-(function(){
-  const AI_URL = "https://us-central1-school-9416e.cloudfunctions.net/improveText";
-  async function enhanceViaCloud(){
-    try{
-      const auth = firebase.auth();
-      const user = auth.currentUser;
-      if(!user){ alert("يجب تسجيل الدخول أولاً"); return; }
-      const token = await user.getIdToken();
-      const content = document.getElementById('aiReportContent') || document.body;
-      const text = content.innerText || "";
-      const res = await fetch(AI_URL,{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "Authorization":"Bearer "+token
-        },
-        body: JSON.stringify({ text })
-      });
-      const data = await res.json();
-      if(data.error){ alert(data.error); }
-      else{
-        content.innerHTML = data.result;
-        alert("المتبقي اليوم: "+data.remaining);
-      }
-    }catch(e){
-      alert("فشل الاتصال بالذكاء الاصطناعي");
-    }
-  }
-  if(window.app){ window.app.enhanceReportWithAI = enhanceViaCloud; }
-})();
-</script>
