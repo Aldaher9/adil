@@ -1695,5 +1695,98 @@
 })();
 </script>
 
+
+<script>
+(function() {
+  const AI_FUNCTION_URL = "https://us-central1-school-9416e.cloudfunctions.net/improveText";
+  const COOLDOWN_MS = 15000; // 15 seconds
+  const MAX_PER_DAY = 50;
+
+  function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+
+  function todayKey() {
+    const d = new Date();
+    return 'ai_count_' + d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+  }
+
+  function getCount() {
+    return parseInt(localStorage.getItem(todayKey()) || '0', 10);
+  }
+
+  function incCount() {
+    localStorage.setItem(todayKey(), String(getCount()+1));
+  }
+
+  ready(function() {
+    const textarea = document.getElementById('visitNotes') || document.querySelector('textarea');
+    const btn = document.getElementById('aiImproveBtn') || document.querySelector('[data-ai-improve]');
+    if (!textarea || !btn) return;
+
+    // Role selector (Manager / Supervisor)
+    let roleSelect = document.getElementById('aiRole');
+    if (!roleSelect) {
+      roleSelect = document.createElement('select');
+      roleSelect.id = 'aiRole';
+      roleSelect.innerHTML = `
+        <option value="manager">مدير مدرسة</option>
+        <option value="supervisor">مشرف تربوي</option>
+      `;
+      roleSelect.style.margin = '0 0 10px 0';
+      btn.parentNode.insertBefore(roleSelect, btn);
+    }
+
+    let lastClick = 0;
+
+    btn.addEventListener('click', async function() {
+      const now = Date.now();
+      if (now - lastClick < COOLDOWN_MS) {
+        alert('يرجى الانتظار قليلًا قبل إعادة الاستخدام');
+        return;
+      }
+      if (getCount() >= MAX_PER_DAY) {
+        alert('تم الوصول إلى الحد اليومي لاستخدام الذكاء الاصطناعي');
+        return;
+      }
+
+      const originalText = textarea.value.trim();
+      if (originalText.length < 5) {
+        alert('يرجى كتابة ملاحظة أطول قبل التحسين');
+        return;
+      }
+
+      lastClick = now;
+      btn.disabled = true;
+      const oldText = btn.textContent;
+      btn.textContent = 'جارٍ التحسين بالذكاء الاصطناعي...';
+
+      const role = roleSelect.value;
+      const prefix = role === 'manager'
+        ? 'حسّن العبارة التالية بصياغة إدارية رسمية مناسبة لمدير مدرسة:'
+        : 'حسّن العبارة التالية بصياغة إشرافية تربوية مناسبة لمشرف تربوي:';
+
+      try {
+        const res = await fetch(AI_FUNCTION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: prefix + "\n\n" + originalText })
+        });
+        const data = await res.json();
+        if (data && data.result) {
+          textarea.value = data.result;
+          incCount();
+        } else {
+          alert('لم يتم توليد نص');
+        }
+      } catch(e) {
+        alert('حدث خطأ أثناء الاتصال بالخدمة');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = oldText || '✨ تحسين بالذكاء الاصطناعي (Gemini)';
+      }
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
