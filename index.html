@@ -28,7 +28,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     
     <!-- Excel Export/Import -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -72,7 +71,7 @@
         .ai-report-section li { margin-bottom: 0.5rem; line-height: 1.6; }
         .ai-report-section p { line-height: 1.8; text-align: justify; margin-bottom: 1rem; }
     </style>
-<script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
@@ -97,11 +96,11 @@
             <i class="fas fa-university text-5xl text-indigo-500 mb-4"></i>
             <h1 class="text-3xl font-bold text-slate-800">مدير المدرسة الذكي</h1>
             <p class="text-slate-500 mt-2 mb-8">مساحتك الخاصة لإدارة مدرستك بفاعلية.</p>
-            <button onclick="window.app.handleGoogleLogin()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-xl shadow-md border border-slate-200 flex items-center justify-center gap-3 transition">
+            <button onclick="window.app.handleGoogleLogin()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-xl shadow-md border border-slate-200 flex items-center justify-center gap-3 transition cursor-pointer">
                 <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="Google icon">
                 تسجيل الدخول باستخدام جوجل
             </button>
-            <button onclick="window.app.skipLogin()" class="w-full mt-3 bg-transparent hover:bg-slate-200 text-slate-500 font-bold py-2 px-4 rounded-xl transition text-sm">
+            <button onclick="window.app.skipLogin()" class="w-full mt-3 bg-transparent hover:bg-slate-200 text-slate-500 font-bold py-2 px-4 rounded-xl transition text-sm cursor-pointer">
                 الدخول كزائر (حفظ محلي فقط)
             </button>
         </div>
@@ -119,9 +118,9 @@
                     <span id="clockDisplay" class="font-mono font-bold text-green-400 dir-ltr text-sm">00:00:00</span>
                 </div>
                 <div id="cloudStatusIndicator" class="text-[9px] bg-white/10 px-2 py-1 rounded text-slate-300"></div>
-                <button onclick="window.app.simulateRandomPeriod()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="محاكاة حصة عشوائية"><i class="fas fa-wand-magic-sparkles"></i></button>
-                <button onclick="window.app.resetTimeToReal()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="الوقت الفعلي"><i class="fas fa-clock-rotate-left"></i></button>
-                 <button onclick="window.app.openSettings()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="الإعدادات"><i class="fas fa-cog"></i></button>
+                <button onclick="window.app.simulateRandomPeriod()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white cursor-pointer" title="محاكاة حصة عشوائية"><i class="fas fa-wand-magic-sparkles"></i></button>
+                <button onclick="window.app.resetTimeToReal()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white cursor-pointer" title="الوقت الفعلي"><i class="fas fa-clock-rotate-left"></i></button>
+                 <button onclick="window.app.openSettings()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white cursor-pointer" title="الإعدادات"><i class="fas fa-cog"></i></button>
             </div>
         </div>
     </header>
@@ -174,23 +173,14 @@
                     <div class="text-3xl font-extrabold text-[rgb(var(--color-text-base))]" id="hubAvgScore">0%</div>
                 </div>
                 <div class="bg-[rgb(var(--color-surface-base))] p-5 rounded-2xl border border-[rgb(var(--color-border-base))] shadow-sm flex flex-col justify-center gap-3">
-                    <button onclick="window.app.setView('supervision-history')" class="w-full bg-[rgb(var(--color-bg-base))] hover:bg-[rgb(var(--color-border-base))] text-[rgb(var(--color-text-base))] py-3 rounded-xl font-bold text-sm transition flex items-center justify-between px-4"><span>سجل الزيارات الكامل</span><i class="fas fa-arrow-left text-slate-400"></i></button>
-                    <button onclick="window.app.setView('reports')" class="w-full bg-[rgb(var(--color-bg-base))] hover:bg-[rgb(var(--color-border-base))] text-[rgb(var(--color-text-base))] py-3 rounded-xl font-bold text-sm transition flex items-center justify-between px-4"><span>تقارير الأداء العام</span><i class="fas fa-arrow-left text-slate-400"></i></button>
+                    <button onclick="window.app.setView('supervision-history')" class="w-full bg-[rgb(var(--color-bg-base))] hover:bg-[rgb(var(--color-border-base))] text-[rgb(var(--color-text-base))] py-3 rounded-xl font-bold text-sm transition flex items-center justify-between px-4 cursor-pointer"><span>سجل الزيارات الكامل</span><i class="fas fa-arrow-left text-slate-400"></i></button>
+                    <button onclick="window.app.setView('reports')" class="w-full bg-[rgb(var(--color-bg-base))] hover:bg-[rgb(var(--color-border-base))] text-[rgb(var(--color-text-base))] py-3 rounded-xl font-bold text-sm transition flex items-center justify-between px-4 cursor-pointer"><span>تقارير الأداء العام</span><i class="fas fa-arrow-left text-slate-400"></i></button>
                 </div>
             </div>
             <div class="bg-[rgb(var(--color-surface-base))] rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))] overflow-hidden">
                 <div class="p-4 border-b border-[rgb(var(--color-border-base))]"><h3 class="font-bold text-[rgb(var(--color-text-base))]">أحدث الزيارات</h3></div>
                 <div id="hubRecentList" class="divide-y divide-[rgb(var(--color-border-base))]"></div>
             </div>
-        </section>
-
-        <!-- View: Agenda -->
-        <section id="view-agenda" class="fade-in space-y-6 hidden-view">
-            <div class="flex flex-col md:flex-row justify-between gap-4 bg-[rgb(var(--color-surface-base))] p-6 rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))]">
-                <div class="flex items-center gap-3"><div class="bg-amber-100 text-amber-700 w-12 h-12 rounded-xl flex items-center justify-center text-xl"><i class="fas fa-calendar-check"></i></div><div><h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))]">الأجندة العامة</h2></div></div>
-                <div class="flex gap-2"><button onclick="window.app.verifyAdminAndImportAgenda()" class="bg-[rgb(var(--color-surface-base))] hover:bg-[rgb(var(--color-bg-base))] text-[rgb(var(--color-text-base))] border border-[rgb(var(--color-border-muted))] px-4 py-2 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i class="fas fa-lock text-red-400"></i><span>استيراد</span></button><input type="file" id="agendaInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleAgendaExcel(event)"></div>
-            </div>
-            <div class="bg-[rgb(var(--color-surface-base))] rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))] overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-right"><thead class="bg-[rgb(var(--color-bg-base))] border-b border-[rgb(var(--color-border-base))] text-[rgb(var(--color-text-muted))] text-sm uppercase"><tr><th class="p-4 w-16 text-center">#</th><th class="p-4 w-48">التاريخ</th><th class="p-4">الحدث</th></tr></thead><tbody id="agendaBody" class="divide-y divide-[rgb(var(--color-border-base))]"></tbody></table></div></div>
         </section>
 
         <!-- View: Tasks -->
@@ -207,7 +197,7 @@
         <section id="view-reports" class="fade-in space-y-6 hidden-view">
             <div class="flex justify-between items-center bg-[rgb(var(--color-surface-base))] p-6 rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))]">
                 <div><h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))]">تقارير الأداء</h2></div>
-                <div class="flex gap-2"><button onclick="window.app.setView('supervision-history')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg"><i class="fas fa-history"></i><span>سجل الزيارات</span></button><button onclick="window.app.exportReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg"><i class="fas fa-file-excel"></i><span>تصدير</span></button></div>
+                <div class="flex gap-2"><button onclick="window.app.setView('supervision-history')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg cursor-pointer"><i class="fas fa-history"></i><span>سجل الزيارات</span></button><button onclick="window.app.exportReports()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg cursor-pointer"><i class="fas fa-file-excel"></i><span>تصدير</span></button></div>
             </div>
             <div class="bg-[rgb(var(--color-surface-base))] rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))] overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-right"><thead class="bg-[rgb(var(--color-bg-base))] border-b border-[rgb(var(--color-border-base))] text-[rgb(var(--color-text-muted))] text-sm uppercase"><tr><th class="p-5 font-bold">المعلم</th><th class="p-5 font-bold text-center">التقييم</th><th class="p-5 font-bold text-center">الهاتف</th><th class="p-5 font-bold text-center">الحالة</th></tr></thead><tbody id="reportsBody" class="divide-y divide-[rgb(var(--color-border-base))]"></tbody></table></div></div>
         </section>
@@ -216,7 +206,7 @@
         <section id="view-supervision-history" class="fade-in space-y-6 hidden-view">
             <div class="flex justify-between items-center bg-[rgb(var(--color-surface-base))] p-6 rounded-2xl shadow-sm border border-[rgb(var(--color-border-base))]">
                 <div><h2 class="text-2xl font-bold text-[rgb(var(--color-text-base))]">سجل الزيارات الإشرافية</h2></div>
-                <button onclick="window.app.setView('supervision-hub')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg font-bold text-xs transition"><i class="fas fa-arrow-right"></i> عودة</button>
+                <button onclick="window.app.setView('supervision-hub')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-arrow-right"></i> عودة</button>
             </div>
             <div id="supervisionHistoryGrid" class="space-y-3"></div>
         </section>
@@ -246,7 +236,7 @@
             <div class="mb-8 relative">
                 <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-[rgb(var(--color-primary-700))] flex items-center gap-2 bg-[rgb(var(--color-primary-50))] w-fit px-3 py-1 rounded-lg border border-[rgb(var(--color-primary-100))]"><i class="fas fa-robot"></i> التحليل النوعي والتوصيات</h3><button onclick="window.app.enhanceReportWithAI()" class="text-xs bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-md hover:shadow-lg transition cursor-pointer no-print"><i class="fas fa-wand-magic-sparkles"></i><span class="font-bold">تحسين شامل بالذكاء الاصطناعي</span></button></div>
                 <div id="aiReportContent" class="space-y-6"></div>
-                <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view rounded-xl"><i class="fas fa-spinner fa-spin text-4xl text-[rgb(var(--color-primary-600))] mb-3"></i><span class="text-sm font-bold text-[rgb(var(--color-primary-900))]">جاري صياغة التقرير الاحترافي...</span><span class="text-xs text-[rgb(var(--color-text-muted))] mt-1">قد يستغرق الأمر ثوانٍ قليلة</span></div>
+                <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view rounded-xl"><i class="fas fa-spinner fa-spin text-4xl text-[rgb(var(--color-primary-600))] mb-3"></i><span class="text-sm font-bold text-[rgb(var(--color-primary-900))]">جاري صياغة التقرير الاحترافي...</span><span class="text-xs text-[rgb(var(--color-text-muted))] mt-1">يتم الآن الاتصال بالسحابة أو API...</span></div>
             </div>
             <div class="flex gap-4 mt-12 no-print"><button onclick="window.print()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer"><i class="fas fa-print"></i> طباعة / PDF</button><button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer"><i class="fas fa-save"></i> حفظ في السجل</button><button onclick="window.app.setView('supervision')" class="flex-1 bg-[rgb(var(--color-surface-base))] border border-slate-300 text-[rgb(var(--color-text-muted))] hover:bg-[rgb(var(--color-bg-base))] py-3 rounded-xl font-bold transition cursor-pointer">تعديل</button><button onclick="window.app.setView('supervision-history')" class="flex-1 bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 py-3 rounded-xl font-bold transition cursor-pointer">إغلاق</button></div>
         </section>
@@ -269,7 +259,7 @@
     <div id="modal-action" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-action')"></div>
         <div class="bg-[rgb(var(--color-surface-base))] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-in modal-content mb-20">
-            <div class="bg-slate-800 p-4 text-white flex justify-between items-start"><div><h3 class="text-lg font-bold flex items-center gap-2" id="actionModalTitle"></h3><p id="actionModalSubtitle" class="text-slate-300 text-xs mt-1"></p></div><button type="button" onclick="window.app.closeModal('modal-action')" class="text-white/50 hover:text-white"><i class="fas fa-times text-lg"></i></button></div>
+            <div class="bg-slate-800 p-4 text-white flex justify-between items-start"><div><h3 class="text-lg font-bold flex items-center gap-2" id="actionModalTitle"></h3><p id="actionModalSubtitle" class="text-slate-300 text-xs mt-1"></p></div><button type="button" onclick="window.app.closeModal('modal-action')" class="text-white/50 hover:text-white cursor-pointer"><i class="fas fa-times text-lg"></i></button></div>
             <div class="p-4 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
                 <button type="button" id="btn-evaluate" class="w-full bg-[rgb(var(--color-primary-50))] hover:bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-700))] border border-[rgb(var(--color-primary-200))] p-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer mb-2"><i class="fas fa-clipboard-list text-xl"></i><span>تقييم زيارة إشرافية</span></button>
                 <div class="h-px bg-[rgb(var(--color-border-base))] mb-2"></div>
@@ -284,7 +274,7 @@
     <div id="modal-settings" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-settings')"></div>
         <div class="bg-[rgb(var(--color-surface-base))] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[80vh] modal-content mb-16">
-            <div class="bg-slate-800 text-white p-5 flex justify-between items-center shrink-0"><h3 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-cog"></i> الإعدادات</h3><button type="button" onclick="window.app.closeModal('modal-settings')" class="text-white/70 hover:text-white"><i class="fas fa-times text-xl"></i></button></div>
+            <div class="bg-slate-800 text-white p-5 flex justify-between items-center shrink-0"><h3 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-cog"></i> الإعدادات</h3><button type="button" onclick="window.app.closeModal('modal-settings')" class="text-white/70 hover:text-white cursor-pointer"><i class="fas fa-times text-xl"></i></button></div>
             <div class="p-6 overflow-y-auto custom-scrollbar space-y-8">
                 <div class="space-y-4"><div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]"><h4 class="font-bold text-[rgb(var(--color-text-base))] flex items-center gap-2"><i class="fas fa-palette text-sky-500"></i> المظهر</h4></div><div id="themeSelectorContainer" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div></div>
                 <div class="space-y-4"><div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]"><h4 class="font-bold text-[rgb(var(--color-text-base))] flex items-center gap-2"><i class="fas fa-venus-mars text-cyan-500"></i> نوع المدرسة (افتراضي)</h4></div><div id="schoolGenderSelectorContainer" class="flex gap-4 items-center bg-[rgb(var(--color-bg-base))] border border-[rgb(var(--color-border-muted))] rounded-lg p-3"><label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="defaultSchoolGender" value="male" onchange="window.app.setDefaultSchoolGender('male')" class="accent-[rgb(var(--color-primary-600))]"><span class="text-sm font-bold text-[rgb(var(--color-text-base))]">بنين</span></label><label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="defaultSchoolGender" value="female" onchange="window.app.setDefaultSchoolGender('female')" class="accent-pink-600"><span class="text-sm font-bold text-[rgb(var(--color-text-base))]">بنات</span></label></div></div>
@@ -294,17 +284,17 @@
                     <div class="flex items-center justify-between pb-2 border-b border-red-200">
                         <h4 class="font-bold text-red-900 flex items-center gap-2"><i class="fas fa-shield-alt text-red-500"></i> إعدادات المطور (آمن)</h4>
                         <div class="flex gap-2">
-                             <button onclick="window.app.enableDevEdit()" class="text-xs bg-white text-red-600 px-2 py-1 rounded border border-red-200 hover:bg-red-100 transition" title="تفعيل التعديل"><i class="fas fa-lock-open"></i> تعديل</button>
+                             <button onclick="window.app.enableDevEdit()" class="text-xs bg-white text-red-600 px-2 py-1 rounded border border-red-200 hover:bg-red-100 transition cursor-pointer" title="تفعيل التعديل"><i class="fas fa-lock-open"></i> تعديل</button>
                         </div>
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-bold text-red-800">رابط الدالة السحابية (Cloud Function URL)</label>
                         <input type="text" id="settingCloudUrl" disabled class="w-full text-xs p-2 rounded border border-red-200 bg-white/50 text-slate-600 dir-ltr text-left disabled:opacity-70 disabled:cursor-not-allowed">
                         
-                        <label class="text-[10px] font-bold text-red-800 mt-2 block">مفتاح API (Gemini Direct)</label>
+                        <label class="text-[10px] font-bold text-red-800 mt-2 block">مفتاح API (Gemini Direct - للخطة البديلة)</label>
                         <input type="password" id="settingApiKey" disabled placeholder="AIzaSy..." class="w-full text-xs p-2 rounded border border-red-200 bg-white/50 text-slate-600 dir-ltr text-left disabled:opacity-70 disabled:cursor-not-allowed">
                         
-                        <button onclick="window.app.saveDevSettings()" class="w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs shadow-sm transition"><i class="fas fa-save"></i> حفظ الإعدادات الأمنية</button>
+                        <button onclick="window.app.saveDevSettings()" class="w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs shadow-sm transition cursor-pointer"><i class="fas fa-save"></i> حفظ الإعدادات الأمنية</button>
                     </div>
                 </div>
 
@@ -312,6 +302,12 @@
                 <div class="space-y-4"><div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]"><h4 class="font-bold text-[rgb(var(--color-text-base))] text-sm flex items-center gap-2"><i class="fas fa-graduation-cap text-indigo-500"></i> إدارة التخصصات</h4></div><div class="flex gap-2 bg-[rgb(var(--color-bg-base))] p-3 rounded-lg border border-[rgb(var(--color-border-muted))] items-center"><input type="text" id="newSpecInput" placeholder="أضف تخصص جديد..." class="flex-1 text-sm p-2 rounded border border-slate-300 focus:border-[rgb(var(--color-primary-500))] outline-none bg-[rgb(var(--color-surface-base))] text-[rgb(var(--color-text-base))]"><button type="button" onclick="window.app.addSpecialization()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white p-2 rounded h-[38px] w-10 flex items-center justify-center transition cursor-pointer"><i class="fas fa-plus"></i></button></div><div id="specializationsList" class="flex flex-wrap gap-2"></div></div>
                 <div class="space-y-4"><div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]"><h4 class="font-bold text-[rgb(var(--color-text-base))] text-sm flex items-center gap-2"><i class="fas fa-user-tie text-orange-500"></i> أدوات المشرف التربوي</h4></div><div class="bg-orange-50 p-4 rounded-xl border border-orange-100"><p class="text-xs text-orange-800 mb-3 leading-relaxed">استيراد معلمين من مدارس مختلفة (Excel).</p><div class="flex gap-2"><button type="button" onclick="window.app.exportTeacherTemplate()" class="flex-1 bg-white border border-orange-200 text-orange-700 hover:bg-orange-100 py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-download"></i> نموذج المشرف</button><button type="button" onclick="document.getElementById('excelInput').click()" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-upload"></i> استيراد القائمة</button></div></div></div>
                 <div class="grid md:grid-cols-2 gap-4"><div class="bg-[rgb(var(--color-primary-50))] p-4 rounded-xl border border-[rgb(var(--color-primary-100))]"><h4 class="font-bold text-[rgb(var(--color-primary-900))] mb-2 flex items-center gap-2 text-sm"><i class="fas fa-calendar-alt"></i> جدول الحصص (XML)</h4><button type="button" onclick="document.getElementById('xmlInput').click()" class="w-full bg-[rgb(var(--color-surface-base))] hover:bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-700))] border border-[rgb(var(--color-primary-200))] py-2 rounded-lg font-bold text-xs transition cursor-pointer">رفع ملف XML</button><input type="file" id="xmlInput" accept=".xml" class="hidden" onchange="window.app.handleXml(event)"></div><div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100"><h4 class="font-bold text-emerald-900 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-users"></i> بيانات المعلمين (Excel)</h4><button type="button" onclick="document.getElementById('excelInput').click()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-upload"></i> استيراد ملف Excel</button><input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleExcel(event)"></div></div>
+                
+                <!-- Danger Zone -->
+                <div class="mt-8 pt-4 border-t border-[rgb(var(--color-border-base))]">
+                    <h4 class="font-bold text-red-600 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-exclamation-triangle"></i> منطقة الخطر</h4>
+                    <button onclick="window.app.deleteData()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 py-3 rounded-lg font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"><i class="fas fa-trash-alt"></i> حذف جميع البيانات وإعادة تعيين</button>
+                </div>
             </div>
         </div>
     </div>
@@ -374,8 +370,8 @@
             }
 
             handleGoogleLogin() { const provider = new firebase.auth.GoogleAuthProvider(); this.auth.signInWithPopup(provider).catch(e => alert("فشل تسجيل الدخول")); }
-            skipLogin() { document.getElementById('login-view').classList.add('hidden-view'); document.getElementById('app-view').classList.remove('hidden-view'); this.renderAll(); document.getElementById('user-profile-container').innerHTML = `<div class="flex items-center gap-2 text-xs text-slate-300"><i class="fas fa-user-shield"></i><span>وضع الزائر (محلي)</span></div>`; }
-            handleLogout() { if(confirm('تسجيل الخروج؟ ستظل بياناتك محفوظة محلياً.')) { if(this.auth) this.auth.signOut(); this.state.currentUser = null; document.getElementById('app-view').classList.add('hidden-view'); document.getElementById('login-view').classList.remove('hidden-view'); } }
+            skipLogin() { document.getElementById('login-view').classList.add('hidden-view'); document.getElementById('app-view').classList.remove('hidden-view'); this.renderAll(); document.getElementById('user-profile-container').innerHTML = `<div class="flex items-center gap-3 bg-white/10 px-3 py-1 rounded-lg border border-white/10 backdrop-blur-md"><div class="text-xs text-slate-300 flex items-center gap-2"><i class="fas fa-user-shield"></i><span>زائر</span></div><div class="h-4 w-px bg-white/20 mx-1"></div><button onclick="window.app.handleLogout()" class="text-red-300 hover:text-red-100 transition cursor-pointer" title="خروج"><i class="fas fa-sign-out-alt"></i></button></div>`; }
+            handleLogout() { if(confirm('هل تريد تسجيل الخروج؟')) { if(this.auth && this.state.currentUser) this.auth.signOut().catch(()=>{}); this.state.currentUser = null; document.getElementById('app-view').classList.add('hidden-view'); document.getElementById('login-view').classList.remove('hidden-view'); document.getElementById('user-profile-container').innerHTML = ''; } }
             
             renderUserProfile() {
                 const container = document.getElementById('user-profile-container'); if(!container) return;
@@ -387,7 +383,7 @@
                                 <div class="font-bold">${this.state.currentUser.name}</div>
                             </div>
                             <div class="h-4 w-px bg-white/20 mx-1"></div>
-                            <button onclick="window.app.handleLogout()" class="text-red-300 hover:text-red-100 transition" title="تسجيل خروج">
+                            <button onclick="window.app.handleLogout()" class="text-red-300 hover:text-red-100 transition cursor-pointer" title="تسجيل خروج">
                                 <i class="fas fa-sign-out-alt"></i>
                             </button>
                         </div>`;
@@ -535,22 +531,57 @@
             renderAIReport(content) { const cleanHtml = (content || "").replace(/```html/g, '').replace(/```/g, ''); document.getElementById('aiReportContent').innerHTML = cleanHtml; }
 
             async enhanceReportWithAI() {
-                const topic = document.getElementById('repLessonTopic').innerText; const specialization = document.getElementById('repSpecialization').innerText; if(!topic || topic === '-') return alert('يرجى تحديد عنوان الدرس.');
+                const topic = document.getElementById('repLessonTopic').innerText; 
+                const specialization = document.getElementById('repSpecialization').innerText; 
+                
+                if(!topic || topic === '-' || topic === 'عام') return alert('يرجى تحديد عنوان الدرس وتخصص المعلم بدقة للحصول على تقرير ذكي.');
+
                 try {
                     document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
-                    const reportText = this.buildPlainTextReport(); const gender = this.state.supervisionData.gender;
-                    if (this.auth && this.auth.currentUser) {
-                        const token = await this.auth.currentUser.getIdToken(true);
-                        const url = this.state.cloudFunctionUrl || "https://us-central1-school-9416e.cloudfunctions.net/improveText";
-                        const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ text: reportText, gender: gender, specialization: specialization, topic: topic }) });
-                        if (!response.ok) { if (response.status === 401) throw new Error("جلسة العمل غير صالحة، يرجى إعادة تسجيل الدخول."); const errText = await response.text(); throw new Error(`خطأ من السحابة: ${errText}`); }
-                        const data = await response.json(); const resultText = data.result || data.text || data.content; if (!resultText) throw new Error("لم يتم استلام نص من الخادم"); this.renderAIReport(resultText);
-                    } else if (this.state.apiKey) {
-                        if (typeof window.GoogleGenAI === 'undefined') throw new Error("SDK غير محمل");
-                        const ai = new window.GoogleGenAI({ apiKey: this.state.apiKey }); const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash', systemInstruction: `أنت موجه فني تربوي خبير في تخصص ${specialization}. قم بصياغة تقرير زيارة صفية احترافي بصيغة HTML.` });
-                        const result = await model.generateContent(reportText); const text = result.response.text(); this.renderAIReport(text);
-                    } else { throw new Error("يجب تسجيل الدخول لاستخدام المعالجة السحابية الآمنة، أو إضافة مفتاح API في الإعدادات للاستخدام المحلي."); }
-                } catch (e) { console.error("AI Process Error:", e); alert("فشل المعالجة: " + e.message); } finally { document.getElementById('aiLoadingOverlay').classList.add('hidden-view'); }
+                    const reportText = this.buildPlainTextReport(); 
+                    const gender = this.state.supervisionData.gender;
+
+                    if (!this.auth || !this.auth.currentUser) {
+                         throw new Error("يجب تسجيل الدخول لاستخدام الميزات السحابية المتقدمة.");
+                    }
+
+                    // الحصول على التوكن للمصادقة مع Cloud Function
+                    const token = await this.auth.currentUser.getIdToken(true);
+                    const url = this.state.cloudFunctionUrl || "https://us-central1-school-9416e.cloudfunctions.net/improveText";
+                    
+                    const response = await fetch(url, { 
+                        method: "POST", 
+                        headers: { 
+                            "Content-Type": "application/json", 
+                            "Authorization": `Bearer ${token}` 
+                        }, 
+                        body: JSON.stringify({ 
+                            text: reportText, 
+                            gender: gender, 
+                            specialization: specialization, 
+                            topic: topic 
+                        }) 
+                    });
+
+                    if (!response.ok) { 
+                        const errJson = await response.json().catch(() => ({}));
+                        console.warn("Cloud Function Failed:", errJson);
+                        throw new Error(errJson.message || errJson.error || "خطأ في الاتصال بالخدمة السحابية"); 
+                    }
+                    
+                    const data = await response.json(); 
+                    const resultHtml = data.result || data.text;
+
+                    if (!resultHtml) throw new Error("لم يتم استلام أي نص من الذكاء الاصطناعي.");
+                    
+                    this.renderAIReport(resultHtml);
+
+                } catch (e) { 
+                    console.error("AI Process Error:", e); 
+                    alert("فشل المعالجة السحابية: " + e.message); 
+                } finally { 
+                    document.getElementById('aiLoadingOverlay').classList.add('hidden-view'); 
+                }
             }
 
             saveAISettings() { /* Deprecated for auto-save, logic moved to saveDevSettings */ }
@@ -569,6 +600,23 @@
                 alert('تم تحديث الإعدادات الأمنية بنجاح.');
             }
 
+            deleteData() {
+                if (confirm('تحذير: سيتم حذف جميع البيانات المخزنة (المعلمين، السجل، المهام) وإعادة التطبيق لحالة المصنع.\n\nهل أنت متأكد تماماً؟')) {
+                    if (confirm('تأكيد نهائي: هل ترغب بحذف كل شيء؟')) {
+                        localStorage.removeItem('school_data_v1');
+                        if (this.state.currentUser && this.db) {
+                            this.db.collection("users").doc(this.state.currentUser.uid).set({
+                                teachers: [], periods: [], classes: {}, tasks: [], agenda: [],
+                                violationTypes: this.state.violationTypes, 
+                                supervisionHistory: []
+                            }, { merge: true });
+                        }
+                        alert('تم حذف البيانات بنجاح.');
+                        location.reload();
+                    }
+                }
+            }
+
             renderAll() { const activeBtn = document.querySelector('.nav-btn.text-\\[rgb\\(var\\(--color-primary-700\\)\\)\\]'); let currentView = activeBtn ? activeBtn.id.replace('btn-', '') : 'now'; if(currentView === 'now') this.renderCurrentPeriod(new Date(new Date().getTime() + this.state.simulationOffset)); else if (currentView === 'teachers') this.renderTeachers(); else if (currentView === 'reports') this.renderReports(); else if (currentView === 'tasks') this.renderTasks(); else if (currentView === 'agenda') this.renderAgenda(); else if (currentView === 'supervision-hub') this.renderSupervisionHub(); }
             
             renderCurrentPeriod(now) { 
@@ -581,7 +629,6 @@
                 const infoDiv = document.getElementById('currentPeriodInfo'); 
                 if(infoDiv) {
                     if (currentPeriod) {
-                         // Countdown Logic
                         const [eh, em] = currentPeriod.end.split(':').map(Number);
                         const endTime = new Date(now);
                         endTime.setHours(eh, em, 0, 0);
@@ -589,7 +636,6 @@
                         const m = Math.floor(diff / 60);
                         const s = diff % 60;
                         const countdown = `${m}:${s < 10 ? '0'+s : s}`;
-
                         infoDiv.innerHTML = `<div class="flex items-center gap-3 bg-[rgb(var(--color-primary-50))] px-4 py-2 rounded-lg border border-[rgb(var(--color-primary-100))] shadow-sm"><span class="text-[rgb(var(--color-primary-900))] font-bold">الحصة ${currentPeriod.id}</span><span class="text-[rgb(var(--color-primary-300))]">|</span><span class="text-[rgb(var(--color-primary-600))] font-mono text-sm">${currentPeriod.start} - ${currentPeriod.end}</span><span class="text-[rgb(var(--color-primary-300))]">|</span><span class="text-red-500 font-mono font-bold text-sm flex items-center gap-1"><i class="fas fa-hourglass-half text-xs"></i> ${countdown}</span></div>`; 
                     } else {
                         infoDiv.innerHTML = `<div class="bg-amber-50 text-amber-700 px-4 py-2 rounded-lg border border-amber-100 font-bold text-sm">لا توجد حصص نشطة</div>`;
@@ -619,7 +665,33 @@
             dockScore(vId) { const v = this.state.violationTypes.find(x => x.id === vId); if(v && confirm(`خصم ${v.points}؟`)) { const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId); if(t) { t.score = Math.max(0, t.score - v.points); this.saveData(); this.closeModal('modal-action'); } } }
             handleXml(e) { const reader = new FileReader(); reader.readAsText(e.target.files[0], "windows-1256"); reader.onload = (evt) => { try { const xml = new DOMParser().parseFromString(evt.target.result, "text/xml"); this.state.periods = Array.from(xml.querySelectorAll('periods period')).map(p => ({ id: p.getAttribute('period'), start: p.getAttribute('starttime'), end: p.getAttribute('endtime') })); const classes = {}; xml.querySelectorAll('classes class').forEach(c => classes[c.getAttribute('id')] = c.getAttribute('name')); this.state.classes = classes; this.state.teachers = Array.from(xml.querySelectorAll('teachers teacher')).map(t => ({ id: t.getAttribute('id'), name: t.getAttribute('name'), short: t.getAttribute('short'), score: 100, phone: '', lessons: [] })); xml.querySelectorAll('TimeTableSchedules TimeTableSchedule').forEach(sch => { const t = this.state.teachers.find(x => x.id === sch.getAttribute('TeacherID')); if(t) t.lessons.push({ day: parseInt(sch.getAttribute('DayID')), period: parseInt(sch.getAttribute('Period')), className: classes[sch.getAttribute('ClassID')] || 'نشاط' }); }); this.saveData(); this.closeModal('modal-settings'); alert('تم'); } catch(err) { alert('خطأ'); } }; }
             exportTeacherTemplate() { const data = this.state.teachers.map(t => ({ 'Teacher_ID': t.id, 'Short_Name': t.short, 'Full_Name': t.name, 'Phone': t.phone, 'School_Name': t.school || '', 'Specialization': t.specialization || '' })); const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Teachers_Data"); XLSX.writeFile(wb, "Teachers_Supervisor_Data.xlsx"); }
-            handleExcel(e) { const reader = new FileReader(); reader.onload = (evt) => { const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array'}); const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); this.state.teachers.forEach(t => { const row = json.find(r => r['Teacher_ID'] == t.id); if(row) { t.name = row['Full_Name'] || t.name; t.phone = row['Phone'] ? String(row['Phone']) : t.phone; if(row['Specialization'] || row['التخصص']) t.specialization = row['Specialization'] || row['التخصص']; if(row['School_Name'] || row['المدرسة']) t.school = row['School_Name'] || row['المدرسة']; } }); this.saveData(); alert('تم'); this.closeModal('modal-settings'); }; reader.readAsArrayBuffer(e.target.files[0]); }
+            handleExcel(e) { 
+                const reader = new FileReader(); 
+                reader.onload = (evt) => { 
+                    try {
+                        const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array'}); 
+                        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); 
+                        let added = 0; let updated = 0;
+                        json.forEach(row => {
+                            const tId = row['Teacher_ID'] || row['الرقم_الوظيفي'] || row['id'];
+                            if (!tId) return;
+                            const idStr = String(tId).trim();
+                            const existingIndex = this.state.teachers.findIndex(t => t.id === idStr);
+                            const name = row['Full_Name'] || row['الاسم_الكامل'] || row['name'] || 'معلم بدون اسم';
+                            const phone = row['Phone'] || row['الهاتف'] || '';
+                            const school = row['School_Name'] || row['المدرسة'] || '';
+                            const spec = row['Specialization'] || row['التخصص'] || '';
+                            const short = row['Short_Name'] || name.split(' ').slice(0, 2).join(' ');
+                            if (existingIndex > -1) { const t = this.state.teachers[existingIndex]; t.name = name; if (phone) t.phone = String(phone); if (spec) t.specialization = spec; if (school) t.school = school; updated++; } 
+                            else { this.state.teachers.push({ id: idStr, name: name, short: short, phone: String(phone), specialization: spec, school: school, score: 100, lessons: [] }); added++; }
+                        });
+                        this.saveData(); this.renderTeachers(); 
+                        alert(`تمت العملية بنجاح.\n- تم تحديث: ${updated} معلم.\n- تم إضافة: ${added} معلم جديد.`); 
+                        this.closeModal('modal-settings'); document.getElementById('excelInput').value = '';
+                    } catch (err) { console.error(err); alert('حدث خطأ أثناء معالجة الملف. تأكد من صحة التنسيق.'); }
+                }; 
+                reader.readAsArrayBuffer(e.target.files[0]); 
+            }
             exportReports() { const data = this.state.teachers.map(t => ({ 'المعلم': t.name, 'التقييم': t.score+'%', 'الهاتف': t.phone||'-' })); const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Reports"); XLSX.writeFile(wb, "School_Report.xlsx"); }
             simulateRandomPeriod() { if(!this.state.periods.length) return alert('لا يوجد جدول'); const r = this.state.periods[Math.floor(Math.random()*this.state.periods.length)]; const [h,m] = r.start.split(':').map(Number); const t = new Date(); t.setHours(h,m,0,0); this.state.simulationOffset = t.getTime() - new Date().getTime(); this.renderCurrentPeriod(t); }
             resetTimeToReal() { this.state.simulationOffset = 0; this.renderCurrentPeriod(new Date()); }
@@ -640,8 +712,6 @@
                 this.renderSpecializationsSettings(); 
                 this.renderThemeSelector(); 
                 this.renderSchoolGenderSettings(); 
-                
-                // Secure Settings Logic
                 const devSection = document.getElementById('developerSettingsSection');
                 if (this.state.currentUser && this.state.currentUser.email === 'alsaher9@gmail.com') {
                     devSection.classList.remove('hidden-view');
@@ -650,7 +720,6 @@
                 } else {
                     devSection.classList.add('hidden-view');
                 }
-
                 document.getElementById('modal-settings').classList.remove('hidden-view'); 
             }
         }
