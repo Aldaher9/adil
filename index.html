@@ -301,6 +301,25 @@
                 <div class="space-y-4"><div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]"><h4 class="font-bold text-[rgb(var(--color-text-base))] text-sm flex items-center gap-2"><i class="fas fa-gavel text-red-500"></i> إدارة المخالفات</h4></div><div class="flex gap-2 bg-[rgb(var(--color-bg-base))] p-3 rounded-lg border border-[rgb(var(--color-border-muted))] items-end"><div class="flex-1 space-y-1"><label class="text-[10px] font-bold text-[rgb(var(--color-text-muted))]">اسم المخالفة</label><input type="text" id="newViolationLabel" placeholder="مثلاً: عدم تحضير" class="w-full text-sm p-2 rounded border border-slate-300 focus:border-[rgb(var(--color-primary-500))] outline-none bg-[rgb(var(--color-surface-base))] text-[rgb(var(--color-text-base))]"></div><div class="w-24 space-y-1"><label class="text-[10px] font-bold text-[rgb(var(--color-text-muted))]">الخصم</label><input type="number" id="newViolationPoints" value="5" class="w-full text-sm p-2 rounded border border-slate-300 focus:border-[rgb(var(--color-primary-500))] outline-none text-center bg-[rgb(var(--color-surface-base))] text-[rgb(var(--color-text-base))]"></div><button type="button" onclick="window.app.addViolation()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white p-2 rounded h-[38px] w-10 flex items-center justify-center transition cursor-pointer"><i class="fas fa-plus"></i></button></div><div id="violationsList" class="space-y-2"></div></div>
                 <div class="space-y-4"><div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]"><h4 class="font-bold text-[rgb(var(--color-text-base))] text-sm flex items-center gap-2"><i class="fas fa-graduation-cap text-indigo-500"></i> إدارة التخصصات</h4></div><div class="flex gap-2 bg-[rgb(var(--color-bg-base))] p-3 rounded-lg border border-[rgb(var(--color-border-muted))] items-center"><input type="text" id="newSpecInput" placeholder="أضف تخصص جديد..." class="flex-1 text-sm p-2 rounded border border-slate-300 focus:border-[rgb(var(--color-primary-500))] outline-none bg-[rgb(var(--color-surface-base))] text-[rgb(var(--color-text-base))]"><button type="button" onclick="window.app.addSpecialization()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white p-2 rounded h-[38px] w-10 flex items-center justify-center transition cursor-pointer"><i class="fas fa-plus"></i></button></div><div id="specializationsList" class="flex flex-wrap gap-2"></div></div>
                 <div class="space-y-4"><div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]"><h4 class="font-bold text-[rgb(var(--color-text-base))] text-sm flex items-center gap-2"><i class="fas fa-user-tie text-orange-500"></i> أدوات المشرف التربوي</h4></div><div class="bg-orange-50 p-4 rounded-xl border border-orange-100"><p class="text-xs text-orange-800 mb-3 leading-relaxed">استيراد معلمين من مدارس مختلفة (Excel).</p><div class="flex gap-2"><button type="button" onclick="window.app.exportTeacherTemplate()" class="flex-1 bg-white border border-orange-200 text-orange-700 hover:bg-orange-100 py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-download"></i> نموذج المشرف</button><button type="button" onclick="document.getElementById('excelInput').click()" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-upload"></i> استيراد القائمة</button></div></div></div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-[rgb(var(--color-border-base))]">
+                        <h4 class="font-bold text-[rgb(var(--color-text-base))] text-sm flex items-center gap-2">
+                            <i class="fas fa-database text-purple-600"></i> قاعدة بيانات الزيارات (Excel)
+                        </h4>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                        <p class="text-xs text-purple-800 mb-3 leading-relaxed">
+                            استيراد معايير الزيارات الإشرافية الخاصة بك.<br>
+                            <span class="font-bold text-[10px]">الترتيب المطلوب للأعمدة: (المعيار | وصف المعيار | الحكم | الوصف السلوكي | التوصيات)</span>
+                        </p>
+                        <button type="button" onclick="document.getElementById('criteriaExcelInput').click()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-bold text-xs transition cursor-pointer">
+                            <i class="fas fa-upload"></i> استيراد قاعدة المعايير
+                        </button>
+                        <input type="file" id="criteriaExcelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleCriteriaExcel(event)">
+                    </div>
+                </div>
+
                 <div class="grid md:grid-cols-2 gap-4"><div class="bg-[rgb(var(--color-primary-50))] p-4 rounded-xl border border-[rgb(var(--color-primary-100))]"><h4 class="font-bold text-[rgb(var(--color-primary-900))] mb-2 flex items-center gap-2 text-sm"><i class="fas fa-calendar-alt"></i> جدول الحصص (XML)</h4><button type="button" onclick="document.getElementById('xmlInput').click()" class="w-full bg-[rgb(var(--color-surface-base))] hover:bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-700))] border border-[rgb(var(--color-primary-200))] py-2 rounded-lg font-bold text-xs transition cursor-pointer">رفع ملف XML</button><input type="file" id="xmlInput" accept=".xml" class="hidden" onchange="window.app.handleXml(event)"></div><div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100"><h4 class="font-bold text-emerald-900 mb-2 flex items-center gap-2 text-sm"><i class="fas fa-users"></i> بيانات المعلمين (Excel)</h4><button type="button" onclick="document.getElementById('excelInput').click()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold text-xs transition cursor-pointer"><i class="fas fa-upload"></i> استيراد ملف Excel</button><input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleExcel(event)"></div></div>
                 
                 <!-- Danger Zone -->
@@ -347,6 +366,7 @@
                         if (data.defaultSchoolGender) this.state.defaultSchoolGender = data.defaultSchoolGender;
                         if (data.cloudFunctionUrl) this.state.cloudFunctionUrl = data.cloudFunctionUrl;
                         if (data.apiKey) this.state.apiKey = data.apiKey;
+                        if (data.evaluationCriteria && data.evaluationCriteria.length > 0) this.state.evaluationCriteria = data.evaluationCriteria;
                         this.applyTheme();
                     } catch(e) { console.error('Local Load Error', e); }
                 }
@@ -402,16 +422,17 @@
                         this.state.teachers = data.teachers || []; this.state.periods = data.periods || []; this.state.classes = data.classes || {}; this.state.tasks = data.tasks || []; this.state.agenda = data.agenda || [];
                         if (data.violationTypes) this.state.violationTypes = data.violationTypes; if (data.specializations) this.state.specializations = data.specializations; if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
                         if (data.theme) this.state.theme = data.theme; if (data.defaultSchoolGender) this.state.defaultSchoolGender = data.defaultSchoolGender;
+                        if (data.evaluationCriteria) this.state.evaluationCriteria = data.evaluationCriteria;
                         this.applyTheme(); this.renderAll(); this.updateCloudStatus('connected'); this.saveDataToLocal();
                     } else { this.saveData(); }
                 }, e => this.updateCloudStatus('error'));
             }
 
-            saveDataToLocal() { localStorage.setItem('school_data_v1', JSON.stringify({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, cloudFunctionUrl: this.state.cloudFunctionUrl, apiKey: this.state.apiKey })); }
+            saveDataToLocal() { localStorage.setItem('school_data_v1', JSON.stringify({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, cloudFunctionUrl: this.state.cloudFunctionUrl, apiKey: this.state.apiKey, evaluationCriteria: this.state.evaluationCriteria })); }
             async saveData() {
                 this.saveDataToLocal(); if (!this.state.currentUser) { this.updateCloudStatus('local'); return; }
                 this.updateCloudStatus('saving');
-                try { await this.db.collection("users").doc(this.state.currentUser.uid).set({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, lastSync: new Date(), userName: this.state.currentUser.name }, { merge: true }); this.updateCloudStatus('connected'); } catch (e) { this.updateCloudStatus('error'); }
+                try { await this.db.collection("users").doc(this.state.currentUser.uid).set({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, evaluationCriteria: this.state.evaluationCriteria, lastSync: new Date(), userName: this.state.currentUser.name }, { merge: true }); this.updateCloudStatus('connected'); } catch (e) { this.updateCloudStatus('error'); }
             }
 
             updateCloudStatus(status) { const el = document.getElementById('cloudStatusIndicator'); if(!el) return; if(status === 'connected') el.innerHTML = '<span class="text-green-400"><i class="fas fa-check-circle"></i> متصل</span>'; else if(status === 'saving') el.innerHTML = '<span class="text-yellow-400"><i class="fas fa-sync fa-spin"></i> جاري الحفظ...</span>'; else if(status === 'local') el.innerHTML = '<span class="text-slate-400"><i class="fas fa-hdd"></i> حفظ محلي</span>'; else el.innerHTML = '<span class="text-red-400"><i class="fas fa-exclamation-triangle"></i> خطأ</span>'; }
@@ -599,6 +620,69 @@
                 inputs.forEach(input => input.disabled = true);
                 alert('تم تحديث الإعدادات الأمنية بنجاح.');
             }
+            
+            handleCriteriaExcel(e) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array'});
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        // We use header:1 to get array of arrays (rows)
+                        const json = XLSX.utils.sheet_to_json(ws, {header: 1});
+                        
+                        // Parse logic for structure: Criteria | DescCriteria | Rating | BehaviorDesc | Recs
+                        const criteriaMap = {};
+                        let importCount = 0;
+
+                        // Skip header row (index 0), start from 1
+                        for (let i = 1; i < json.length; i++) {
+                            const row = json[i];
+                            if (!row || row.length < 3) continue;
+
+                            const title = row[0]; // Col A: المعيار
+                            if (!title) continue;
+
+                            const subtitle = row[1] || ""; // Col B: وصف المعيار
+                            let ratingVal = row[2]; // Col C: الحكم (1-5)
+                            const desc = row[3] || ""; // Col D: الوصف السلوكي
+                            const rec = row[4] || ""; // Col E: التوصيات
+
+                            // Extract number from rating (e.g., "مستوى 5" -> 5)
+                            const ratingMatch = String(ratingVal).match(/\d+/);
+                            const rating = ratingMatch ? parseInt(ratingMatch[0]) : 0;
+
+                            if (!criteriaMap[title]) {
+                                criteriaMap[title] = {
+                                    id: Date.now() + i, // Unique ID gen
+                                    title: title,
+                                    subtitle: subtitle,
+                                    items: {}
+                                };
+                            }
+
+                            if (rating >= 1 && rating <= 5) {
+                                criteriaMap[title].items[rating] = { desc, rec };
+                                importCount++;
+                            }
+                        }
+
+                        const newCriteriaList = Object.values(criteriaMap);
+                        if (newCriteriaList.length > 0) {
+                            this.state.evaluationCriteria = newCriteriaList;
+                            this.saveData();
+                            alert(`تم استيراد قاعدة البيانات بنجاح!\nعدد المعايير: ${newCriteriaList.length}\nعدد البنود: ${importCount}`);
+                            this.closeModal('modal-settings');
+                        } else {
+                            alert("لم يتم العثور على بيانات صالحة في الملف. يرجى التأكد من ترتيب الأعمدة.");
+                        }
+
+                    } catch (err) {
+                        console.error("Excel Import Error:", err);
+                        alert("حدث خطأ أثناء قراءة الملف. تأكد من أنه ملف Excel صالح.");
+                    }
+                };
+                reader.readAsArrayBuffer(e.target.files[0]);
+            }
 
             deleteData() {
                 if (confirm('تحذير: سيتم حذف جميع البيانات المخزنة (المعلمين، السجل، المهام) وإعادة التطبيق لحالة المصنع.\n\nهل أنت متأكد تماماً؟')) {
@@ -608,7 +692,8 @@
                             this.db.collection("users").doc(this.state.currentUser.uid).set({
                                 teachers: [], periods: [], classes: {}, tasks: [], agenda: [],
                                 violationTypes: this.state.violationTypes, 
-                                supervisionHistory: []
+                                supervisionHistory: [],
+                                evaluationCriteria: [] // Reset criteria too
                             }, { merge: true });
                         }
                         alert('تم حذف البيانات بنجاح.');
