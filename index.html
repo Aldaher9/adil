@@ -77,7 +77,8 @@
         .duty-actions { opacity: 0; transition: opacity 0.2s; }
         @media (max-width: 768px) { .duty-actions { opacity: 1; } }
     </style>
-    <script type="importmap">
+    <link rel="stylesheet" href="/index.css">
+<script type="importmap">
 {
   "imports": {
     "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
@@ -86,13 +87,12 @@
     "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
     "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
     "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
-    "@angular/common": "https://esm.sh/@angular/common@^21.0.8?external=rxjs",
     "@angular/core": "https://esm.sh/@angular/core@^21.0.8?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.0.8?external=rxjs",
     "@angular/forms": "https://esm.sh/@angular/forms@^21.0.8?external=rxjs"
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body class="bg-[rgb(var(--color-bg-base))] text-[rgb(var(--color-text-base))] antialiased selection:bg-brand-100 selection:text-brand-900 pb-28">
 
@@ -395,7 +395,7 @@
                     dutyLocations: ["البوابة الرئيسية", "الساحة الأمامية", "المقصف", "الممرات"],
                     dutySchedule: {}, // Structure: { dayIndex (0-4): { locationIndex: teacherId } }
                     
-                    theme: 'default', defaultSchoolGender: 'male', cloudStatus: 'offline', unsubscribe: null, aiReportData: null, cloudFunctionUrl: "https://us-central1-school-9416e.cloudfunctions.net/improveText", apiKey: ""
+                    theme: 'default', defaultSchoolGender: 'male', cloudStatus: 'offline', unsubscribe: null, aiReportData: null, cloudFunctionUrl: "https://improvetext-cewovb6fwq-uc.a.run.app", apiKey: ""
                 };
                 this.db = null; this.auth = null;
                 this.initDefaultCriteria();
@@ -524,7 +524,7 @@
                 const ab = document.getElementById(`btn-${v}`); 
                 if(ab) { ab.classList.add('text-[rgb(var(--color-primary-700))]'); ab.classList.remove('text-slate-400'); ab.querySelector('div').classList.add('bg-[rgb(var(--color-primary-50))]'); ab.querySelector('div').classList.remove('bg-transparent'); } 
                 if(v==='teachers') this.renderTeachers(); if(v==='reports') this.renderReports(); if(v==='supervision-history') this.renderHistory(); if(v==='tasks') this.renderTasks(); if(v==='agenda') this.renderAgenda(); if(v==='supervision-hub') this.renderSupervisionHub(); if(v==='duty') this.renderDutyTable();
-                if(v==='now') this.renderDailyDutyWidget(new Date()); // Refresh duty widget
+                if(v==='now') { this.renderCurrentPeriod(new Date(new Date().getTime() + this.state.simulationOffset)); this.renderDailyDutyWidget(new Date(new Date().getTime() + this.state.simulationOffset)); } 
             }
 
             renderSupervisionHub() {
@@ -628,7 +628,7 @@
 
                     // الحصول على التوكن للمصادقة مع Cloud Function
                     const token = await this.auth.currentUser.getIdToken(true);
-                    const url = this.state.cloudFunctionUrl || "https://us-central1-school-9416e.cloudfunctions.net/improveText";
+                    const url = this.state.cloudFunctionUrl || "https://improvetext-cewovb6fwq-uc.a.run.app";
                     
                     const response = await fetch(url, { 
                         method: "POST", 
