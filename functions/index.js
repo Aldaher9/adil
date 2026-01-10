@@ -81,8 +81,9 @@ exports.improveText = onRequest({ cors: true, secrets: ["GEMINI_API_KEY"] }, asy
     `;
 
     // 6. استدعاء Gemini 
+    // تم التحديث إلى gemini-1.5-flash لضمان الاستقرار والتوافق
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: [
         {
             role: "user",
