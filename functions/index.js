@@ -1,6 +1,6 @@
 /**
  * School Manager Pro - Cloud Functions
- * Vertex AI Implementation with Debugging
+ * Vertex AI Implementation
  */
 
 const { onRequest } = require("firebase-functions/v2/https");
@@ -33,16 +33,17 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1' }, async (re
     const { text, gender, specialization, topic } = req.body;
     if (!text) return res.status(400).json({ error: "BAD_REQUEST", message: "No text provided" });
 
-    // 3. DEBUG LOGGING
-    const projectId = process.env.GCLOUD_PROJECT || admin.instanceId().app.options.projectId;
+    // 3. DEBUG LOGGING (تتبع المشكلة)
+    const projectId = process.env.GCLOUD_PROJECT || "school-9416e";
     const location = 'us-central1';
-    const modelId = 'gemini-1.5-flash'; // or gemini-1.0-pro
+    const modelId = 'gemini-1.5-flash';
     
-    console.log(`--- AI Request Debug ---`);
-    console.log(`Project: ${projectId}`);
+    console.log(`--- AI Request Debug Info ---`);
+    console.log(`Project ID: ${projectId}`);
+    console.log(`Location: ${location}`);
     console.log(`Model: ${modelId}`);
     
-    // Initialize Vertex AI
+    // محاولة تهيئة Vertex AI
     const vertex_ai = new VertexAI({
         project: projectId, 
         location: location
@@ -58,51 +59,47 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1' }, async (re
 
     const contextGender = gender === 'female' ? 'مؤنث (معلمة/طالبات)' : 'مذكر (معلم/طلاب)';
     const prompt = `
-      دورك: موجه فني تربوي خبير.
-      المهمة: إعادة صياغة وتحسين الملاحظات الصفية التالية لتكون في صورة نقاط مهنية، تربوية، ومحفزة.
-      السياق: تخصص ${specialization || 'عام'} - درس بعنوان ${topic || 'عام'} - مدرسة ${contextGender}.
-      المخرجات: HTML فقط. استخدم تنسيق <ul> و <li> و <strong> للعناوين. لا تضف أي مقدمات أو خاتمات خارج الـ HTML.
-      
-      النص الأصلي:
-      ${text}
+      System Instruction: بصفتك موجهاً فنياً، صغ تقرير زيارة صفية.
+      السياق: ${specialization || 'عام'} - ${topic || 'عام'} - ${contextGender}.
+      المطلوب: HTML فقط (div class="ai-report-section").
+      البيانات: ${text}
     `;
 
-    console.log("Sending to Vertex AI...");
+    console.log("Sending request to Vertex AI...");
     
     const resp = await generativeModel.generateContent(prompt);
     const contentResponse = await resp.response;
     
     if (!contentResponse.candidates || !contentResponse.candidates.length) {
-        throw new Error("AI returned no candidates.");
+        throw new Error("No candidates returned from AI.");
     }
 
     let aiText = contentResponse.candidates[0].content.parts[0].text;
-    // Clean markdown if present
     let cleanText = aiText.replace(/```html/g, '').replace(/```/g, '').trim();
     
-    console.log("Success.");
+    console.log("Success! Sending response.");
     return res.status(200).json({ result: cleanText });
 
   } catch (error) {
-    console.error("AI ERROR DETAILS:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    // طباعة الخطأ كاملاً في سجلات Firebase Console
+    console.error("CRITICAL AI ERROR:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
     
-    let userMessage = "حدث خطأ أثناء الاتصال بالذكاء الاصطناعي.";
-    let debugInfo = error.message;
+    // إرسال تفاصيل الخطأ للواجهة الأمامية للمساعدة في التشخيص
+    let errorMessage = error.message || "Unknown Error";
+    let errorCode = "INTERNAL_ERROR";
 
-    // تحسين رسائل الخطأ الشائعة
-    if (error.message.includes("404")) {
-        userMessage = "الموديل غير موجود أو API غير مفعل.";
-        debugInfo = "تأكد من تفعيل Vertex AI API في Google Cloud Console للمشروع: " + (process.env.GCLOUD_PROJECT || 'unknown');
-    } else if (error.message.includes("403") || error.message.includes("Permission denied")) {
-        userMessage = "تصريح الوصول مرفوض.";
-        debugInfo = "حساب الخدمة (Service Account) لا يملك صلاحية Vertex AI User.";
+    if (errorMessage.includes("404")) {
+        errorCode = "VERTEX_AI_404";
+        errorMessage = "لم يتم العثور على الموديل. تأكد من تفعيل Vertex AI API في المشروع الصحيح (us-central1).";
+    } else if (errorMessage.includes("403") || errorMessage.includes("Permission denied")) {
+        errorCode = "PERMISSION_DENIED";
+        errorMessage = "حساب الخدمة (App Engine Default Service Account) لا يملك صلاحية 'Vertex AI User'.";
     }
 
     return res.status(500).json({ 
-        error: "AI_ERROR", 
-        message: userMessage,
-        debug: debugInfo,
-        raw: error.toString()
+        error: errorCode, 
+        message: errorMessage,
+        raw: error.toString() 
     });
   }
 });

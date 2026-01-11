@@ -607,13 +607,13 @@
                             <div class="text-xs text-emerald-700">ملف Excel</div>
                         </div>
 
-                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 cursor-pointer hover:bg-purple-100 transition group md:col-span-2" onclick="document.getElementById('jsonInput').click()">
+                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 cursor-pointer hover:bg-purple-100 transition group md:col-span-2" onclick="document.getElementById('criteriaExcelInput').click()">
                              <div class="flex justify-between items-start mb-2">
                                 <i class="fas fa-clipboard-list text-purple-600 text-2xl group-hover:scale-110 transition"></i>
                                 <i class="fas fa-upload text-purple-300"></i>
                             </div>
-                            <div class="font-bold text-purple-900">معايير التقييم</div>
-                            <div class="text-xs text-purple-700">ملف JSON للإشراف</div>
+                            <div class="font-bold text-purple-900">معايير التقييم (Excel)</div>
+                            <div class="text-xs text-purple-700">تحديث بنود الزيارات</div>
                         </div>
                     </div>
                 </div>
@@ -635,7 +635,7 @@
              <!-- Hidden Inputs -->
              <input type="file" id="xmlInput" accept=".xml" class="hidden" onchange="window.app.handleXml(event)">
              <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleExcel(event)">
-             <input type="file" id="jsonInput" accept=".json" class="hidden" onchange="window.app.handleJson(event)">
+             <input type="file" id="criteriaExcelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleCriteriaExcel(event)">
         </div>
     </div>
 
@@ -660,10 +660,12 @@
 
             initCriteria() {
                 // Default Criteria if empty
-                this.state.evaluationCriteria = [
-                    { id: 1, title: "التمكن العلمي", items: { 1: {desc: "متمكن جداً", rec: "نشر الخبرة"}, 3: {desc: "متوسط", rec: "يحتاج اطلاع"}, 5: {desc: "ضعيف", rec: "خطة علاجية"} } },
-                    { id: 2, title: "إدارة الصف", items: { 1: {desc: "ممتاز", rec: ""}, 5: {desc: "فوضى", rec: "ضبط انفعالي"} } }
-                ];
+                if(this.state.evaluationCriteria.length === 0) {
+                    this.state.evaluationCriteria = [
+                        { id: 1, title: "التمكن العلمي", items: { 1: {desc: "متمكن جداً", rec: "نشر الخبرة"}, 3: {desc: "متوسط", rec: "يحتاج اطلاع"}, 5: {desc: "ضعيف", rec: "خطة علاجية"} } },
+                        { id: 2, title: "إدارة الصف", items: { 1: {desc: "ممتاز", rec: ""}, 5: {desc: "فوضى", rec: "ضبط انفعالي"} } }
+                    ];
+                }
             }
 
             initFirebase() {
@@ -798,30 +800,68 @@
                 if(viewId === 'duty') this.renderDuty();
             }
 
-            // --- Render Logic (Simplified for brevity but functional) ---
+            // --- Render Logic ---
             renderCurrentPeriod(now) {
-                // (Logic similar to original, implemented with new DOM IDs)
                 const grid = document.getElementById('activeClassesGrid');
+                if(!grid) return;
                 grid.innerHTML = '';
-                // ... logic to find current period ...
-                // For demo/fallback if empty:
+                
                 if(!this.state.teachers.length) {
-                    grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">لا توجد بيانات.. قم باستيراد جدول الحصص من الإعدادات</div>`;
+                    grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">لا توجد بيانات.. قم باستيراد جدول الحصص من الإعدادات</div>`;
+                    return;
+                }
+
+                const currentMins = now.getHours() * 60 + now.getMinutes();
+                const dayId = now.getDay() + 1;
+
+                const currentPeriod = this.state.periods.find(p => {
+                    const [sh, sm] = p.start.split(':').map(Number);
+                    const [eh, em] = p.end.split(':').map(Number);
+                    return currentMins >= (sh*60+sm) && currentMins <= (eh*60+em);
+                });
+
+                if(currentPeriod) {
+                    document.getElementById('currentPeriodInfo').innerHTML = `<span class="font-bold text-lg text-white">الحصة ${currentPeriod.id}</span><br><span class="text-sm text-blue-100">${currentPeriod.start} - ${currentPeriod.end}</span>`;
+                    
+                    const active = this.state.teachers.filter(t => t.lessons.some(l => l.day == dayId && l.period == currentPeriod.id));
+                    
+                    if(active.length === 0) {
+                        grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">لا توجد حصص مسجلة لهذه الفترة</div>`;
+                    } else {
+                        grid.innerHTML = active.map(t => {
+                            const lesson = t.lessons.find(l => l.day == dayId && l.period == currentPeriod.id);
+                            return `
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-indigo-500 hover:shadow-md transition">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="bg-indigo-50 text-indigo-700 px-2 py-1 rounded text-xs font-bold">${lesson.className}</span>
+                                        <span class="text-[10px] text-slate-400">${t.score}%</span>
+                                    </div>
+                                    <h4 class="font-bold text-slate-700 text-sm mb-3 truncate">${t.name}</h4>
+                                    <button onclick="window.app.openActionModal('${t.id}', '${lesson.className}')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 py-2 rounded-lg text-xs font-bold transition">إجراء سريع</button>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } else {
+                    document.getElementById('currentPeriodInfo').innerHTML = `<span class="font-bold text-white">خارج الدوام</span>`;
+                    grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">لا توجد حصة حالياً</div>`;
                 }
             }
 
             renderTeachers() {
                 const grid = document.getElementById('teachersGrid');
+                if(!grid) return;
                 const term = document.getElementById('teacherSearch')?.value.toLowerCase() || '';
                 grid.innerHTML = this.state.teachers
                     .filter(t => t.name.toLowerCase().includes(term))
+                    .sort((a,b) => a.name.localeCompare(b.name, 'ar'))
                     .map(t => `
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition group">
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm border border-slate-200">${t.name[0]}</div>
                                 <div>
-                                    <h4 class="font-bold text-slate-800 text-sm">${t.name}</h4>
+                                    <h4 class="font-bold text-slate-800 text-sm line-clamp-1">${t.name}</h4>
                                     <p class="text-[10px] text-slate-400">${t.phone || 'لا يوجد هاتف'}</p>
                                 </div>
                             </div>
@@ -834,6 +874,174 @@
                     </div>`).join('');
             }
             
+            // --- Handlers: Import Logic Restored ---
+            
+            handleXml(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(evt.target.result, "text/xml");
+                    
+                    const periods = Array.from(xmlDoc.getElementsByTagName('period')).map(p => ({
+                        id: p.getAttribute('name'),
+                        start: p.getAttribute('starttime'),
+                        end: p.getAttribute('endtime')
+                    }));
+
+                    const teachersMap = {};
+                    Array.from(xmlDoc.getElementsByTagName('teacher')).forEach(t => {
+                        teachersMap[t.getAttribute('id')] = {
+                            id: t.getAttribute('id'),
+                            name: t.getAttribute('name'),
+                            short: t.getAttribute('short'),
+                            score: 100,
+                            phone: "",
+                            lessons: []
+                        };
+                    });
+                    
+                    const classesMap = {};
+                    Array.from(xmlDoc.getElementsByTagName('class')).forEach(c => {
+                        classesMap[c.getAttribute('id')] = c.getAttribute('name');
+                    });
+                    
+                    Array.from(xmlDoc.getElementsByTagName('lesson')).forEach(l => {
+                        const tIds = l.getAttribute('teacherids').split(',');
+                        const cIds = l.getAttribute('classids').split(',');
+                        const periodAttr = l.getAttribute('periods') || l.getAttribute('period'); // Some XMLs vary
+                        if(!periodAttr) return; // Skip if no period info
+                        
+                        // Parse period string (e.g., "1,1001,1002")
+                        // Usually format: day,period,day,period...
+                        // Note: aSc XML structure for 'periods' attribute is complex. 
+                        // Simplified Assumption: <lesson ... ><lesson_period id=".." period="1" day="1" /></lesson> OR extracting from cards.
+                        // Let's check for <card> children which is standard aSc export.
+                    });
+                    
+                    // Robust aSc Logic: Iterate Cards
+                    Array.from(xmlDoc.getElementsByTagName('card')).forEach(card => {
+                        const lessonId = card.getAttribute('lessonid');
+                        const period = card.getAttribute('period');
+                        const day = parseInt(card.getAttribute('day')) + 1; // 0-based to 1-based (Sunday=1)
+                        
+                        // Find lesson parent
+                        const lessonNode = Array.from(xmlDoc.getElementsByTagName('lesson')).find(l => l.getAttribute('id') === lessonId);
+                        if(lessonNode) {
+                            const tIds = lessonNode.getAttribute('teacherids').split(',');
+                            const cIds = lessonNode.getAttribute('classids').split(',');
+                            
+                            tIds.forEach(tid => {
+                                if(teachersMap[tid]) {
+                                    cIds.forEach(cid => {
+                                        if(classesMap[cid]) {
+                                            teachersMap[tid].lessons.push({
+                                                day: day,
+                                                period: parseInt(period),
+                                                className: classesMap[cid]
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    this.state.periods = periods;
+                    this.state.teachers = Object.values(teachersMap);
+                    this.state.classes = classesMap;
+                    this.saveData();
+                    this.renderAll();
+                    alert('تم استيراد الجدول بنجاح!');
+                };
+                reader.readAsText(file);
+                e.target.value = '';
+            }
+
+            handleExcel(e) {
+                const file = e.target.files[0];
+                if(!file) return;
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const workbook = XLSX.read(evt.target.result, {type: 'binary'});
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet);
+                    
+                    let count = 0;
+                    json.forEach(row => {
+                        // Try to find teacher by name
+                        const name = row['الاسم'] || row['name'] || row['Name'];
+                        const phone = row['الهاتف'] || row['phone'] || row['Phone'];
+                        
+                        if(name) {
+                            const teacher = this.state.teachers.find(t => t.name.includes(name) || name.includes(t.name));
+                            if(teacher) {
+                                teacher.phone = phone || '';
+                                count++;
+                            }
+                        }
+                    });
+                    this.saveData();
+                    this.renderTeachers();
+                    alert(`تم تحديث بيانات ${count} معلم.`);
+                };
+                reader.readAsBinaryString(file);
+                e.target.value = '';
+            }
+
+            handleCriteriaExcel(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const workbook = XLSX.read(evt.target.result, {type: 'binary'});
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet);
+                    
+                    // Expected Format: Title | 1-Desc | 1-Rec | 2-Desc | 2-Rec ... 
+                    // Or simple vertical: ID, MainTitle, SubTitle, Level1, Rec1, Level2, Rec2...
+                    
+                    const newCriteria = [];
+                    json.forEach((row, idx) => {
+                        // Flexible Key Matching
+                        const title = row['المعيار'] || row['المجال'] || row['Title'];
+                        if(title) {
+                            const criterion = {
+                                id: idx + 1,
+                                title: title,
+                                items: {}
+                            };
+                            
+                            // Map levels 1 to 5
+                            [1, 2, 3, 4, 5].forEach(level => {
+                                const desc = row[`وصف ${level}`] || row[`Desc ${level}`] || row[level];
+                                const rec = row[`توصية ${level}`] || row[`Rec ${level}`] || "";
+                                if(desc) {
+                                    criterion.items[level] = { desc: desc, rec: rec };
+                                }
+                            });
+                            
+                            if(Object.keys(criterion.items).length > 0) {
+                                newCriteria.push(criterion);
+                            }
+                        }
+                    });
+
+                    if(newCriteria.length > 0) {
+                        this.state.evaluationCriteria = newCriteria;
+                        this.saveData();
+                        alert(`تم استيراد ${newCriteria.length} معيار تقييم بنجاح.`);
+                    } else {
+                        alert('لم يتم العثور على بيانات مطابقة. تأكد من أسماء الأعمدة (المعيار، وصف 1، توصية 1...).');
+                    }
+                };
+                reader.readAsBinaryString(file);
+                e.target.value = '';
+            }
+
+            // --- Other UI Logic ---
             openActionModal(tId, className = null) {
                 const t = this.state.teachers.find(x => x.id === tId);
                 if(!t) return;
@@ -1043,31 +1251,6 @@ ${notes.join('\n')}
                 }
             }
 
-            handleJson(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                    try {
-                        const json = JSON.parse(evt.target.result);
-                        // Validation check
-                        if (Array.isArray(json) && (json[0]?.items || json[0]?.title)) {
-                            this.state.evaluationCriteria = json;
-                            this.saveData();
-                            alert('تم تحديث معايير التقييم بنجاح!');
-                            // Close modal to refresh UI if needed or just notify
-                        } else {
-                            alert('صيغة الملف غير صحيحة. يجب أن يكون ملف JSON يحتوي على مصفوفة معايير.');
-                        }
-                    } catch(err) {
-                        console.error(err);
-                        alert('حدث خطأ أثناء قراءة الملف. تأكد من صحة التنسيق.');
-                    }
-                };
-                reader.readAsText(file);
-                e.target.value = ''; // Reset input
-            }
-
             enableDevEdit() { document.getElementById('settingCloudUrl').disabled = false; document.getElementById('settingCloudUrl').focus(); }
             saveDevSettings() {
                 this.state.cloudFunctionUrl = document.getElementById('settingCloudUrl').value;
@@ -1092,10 +1275,6 @@ ${notes.join('\n')}
             renderAll() {
                 if(this.currentView) this.setView(this.currentView);
             }
-            
-            // Excel/XML Handlers (Placeholders for brevity, functionality maintained from previous logic)
-            handleXml(e) { alert('XML Import Logic Here'); }
-            handleExcel(e) { alert('Excel Import Logic Here'); }
         }
 
         // Init
