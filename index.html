@@ -548,24 +548,67 @@
     <div id="modal-settings" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="window.app.closeModal('modal-settings')"></div>
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 flex flex-col max-h-[85vh]">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center shrink-0">
                 <h3 class="text-xl font-bold text-slate-800">الإعدادات</h3>
                 <button onclick="window.app.closeModal('modal-settings')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200"><i class="fas fa-times"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-8">
-                <!-- Settings Content Same as Logic -->
+            <div class="p-6 overflow-y-auto space-y-8 custom-scrollbar">
+                
+                <!-- Section: Violations -->
+                <div class="space-y-4">
+                     <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <h4 class="font-bold text-slate-700 text-sm uppercase tracking-wide">إدارة المخالفات</h4>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-full">تخصيص النقاط</span>
+                    </div>
+
+                    <!-- Add New -->
+                    <div class="flex gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 items-end">
+                        <div class="flex-1">
+                            <input type="text" id="settingNewVioLabel" placeholder="اسم المخالفة (مثلاً: عدم تحضير)" class="w-full text-sm p-2 rounded-lg border border-slate-200 focus:border-blue-500 outline-none bg-white">
+                        </div>
+                        <div class="w-20">
+                            <input type="number" id="settingNewVioPoints" value="5" class="w-full text-sm p-2 rounded-lg border border-slate-200 focus:border-blue-500 outline-none bg-white text-center">
+                        </div>
+                        <button onclick="window.app.addViolation()" class="bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 rounded-lg flex items-center justify-center transition shadow-sm">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <!-- List -->
+                    <div id="settingsViolationsList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+
+                <!-- Section: Data Management -->
                 <div class="space-y-4">
                     <h4 class="font-bold text-slate-700 text-sm uppercase tracking-wide border-b pb-2">البيانات الأساسية</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 cursor-pointer hover:bg-blue-100 transition" onclick="document.getElementById('xmlInput').click()">
-                            <i class="fas fa-calendar-alt text-blue-600 text-2xl mb-2"></i>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 cursor-pointer hover:bg-blue-100 transition group" onclick="document.getElementById('xmlInput').click()">
+                            <div class="flex justify-between items-start mb-2">
+                                <i class="fas fa-calendar-alt text-blue-600 text-2xl group-hover:scale-110 transition"></i>
+                                <i class="fas fa-upload text-blue-300"></i>
+                            </div>
                             <div class="font-bold text-blue-900">جدول الحصص</div>
-                            <div class="text-xs text-blue-700">استيراد ملف XML</div>
+                            <div class="text-xs text-blue-700">ملف aSc Timetables (XML)</div>
                         </div>
-                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition" onclick="document.getElementById('excelInput').click()">
-                            <i class="fas fa-users text-emerald-600 text-2xl mb-2"></i>
+                        
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition group" onclick="document.getElementById('excelInput').click()">
+                             <div class="flex justify-between items-start mb-2">
+                                <i class="fas fa-users text-emerald-600 text-2xl group-hover:scale-110 transition"></i>
+                                <i class="fas fa-upload text-emerald-300"></i>
+                            </div>
                             <div class="font-bold text-emerald-900">بيانات المعلمين</div>
-                            <div class="text-xs text-emerald-700">استيراد Excel</div>
+                            <div class="text-xs text-emerald-700">ملف Excel</div>
+                        </div>
+
+                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 cursor-pointer hover:bg-purple-100 transition group md:col-span-2" onclick="document.getElementById('jsonInput').click()">
+                             <div class="flex justify-between items-start mb-2">
+                                <i class="fas fa-clipboard-list text-purple-600 text-2xl group-hover:scale-110 transition"></i>
+                                <i class="fas fa-upload text-purple-300"></i>
+                            </div>
+                            <div class="font-bold text-purple-900">معايير التقييم</div>
+                            <div class="text-xs text-purple-700">ملف JSON للإشراف</div>
                         </div>
                     </div>
                 </div>
@@ -587,6 +630,7 @@
              <!-- Hidden Inputs -->
              <input type="file" id="xmlInput" accept=".xml" class="hidden" onchange="window.app.handleXml(event)">
              <input type="file" id="excelInput" accept=".xlsx, .xls" class="hidden" onchange="window.app.handleExcel(event)">
+             <input type="file" id="jsonInput" accept=".json" class="hidden" onchange="window.app.handleJson(event)">
         </div>
     </div>
 
@@ -675,6 +719,9 @@
                         if(data.classes) this.state.classes = data.classes;
                         if(data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
                         if(data.cloudFunctionUrl) this.state.cloudFunctionUrl = data.cloudFunctionUrl;
+                        if(data.violationTypes) this.state.violationTypes = data.violationTypes;
+                        if(data.evaluationCriteria) this.state.evaluationCriteria = data.evaluationCriteria;
+
                         this.saveLocal();
                         this.renderAll();
                         this.updateCloudIndicator('online');
@@ -695,6 +742,8 @@
                         classes: this.state.classes,
                         supervisionHistory: this.state.supervisionHistory,
                         cloudFunctionUrl: this.state.cloudFunctionUrl,
+                        violationTypes: this.state.violationTypes,
+                        evaluationCriteria: this.state.evaluationCriteria,
                         lastUpdate: new Date()
                     }, {merge: true});
                     this.updateCloudIndicator('online');
@@ -879,7 +928,93 @@
             }
 
             // --- Settings ---
-            openSettings() { document.getElementById('modal-settings').classList.remove('hidden-view'); }
+            openSettings() { 
+                this.renderSettingsViolations();
+                document.getElementById('modal-settings').classList.remove('hidden-view'); 
+            }
+            
+            renderSettingsViolations() {
+                const list = document.getElementById('settingsViolationsList');
+                if(!list) return;
+                if(this.state.violationTypes.length === 0) {
+                    list.innerHTML = '<div class="text-center text-slate-400 text-xs py-2">لا توجد مخالفات مضافة</div>';
+                    return;
+                }
+                list.innerHTML = this.state.violationTypes.map(v => `
+                    <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-100 shadow-sm hover:border-red-100 transition group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-100 group-hover:text-red-500 transition">
+                                <i class="fas ${v.icon}"></i>
+                            </div>
+                            <span class="font-bold text-sm text-slate-700">${v.label}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="bg-red-50 text-red-600 text-xs font-bold px-2 py-1 rounded border border-red-100">-${v.points}</span>
+                            <button onclick="window.app.removeViolation('${v.id}')" class="text-slate-300 hover:text-red-500 transition px-2">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            addViolation() {
+                const labelInp = document.getElementById('settingNewVioLabel');
+                const pointsInp = document.getElementById('settingNewVioPoints');
+                const label = labelInp.value;
+                const points = parseInt(pointsInp.value);
+                
+                if(!label) return alert('الرجاء إدخال اسم المخالفة');
+                
+                const newV = {
+                    id: 'vio_' + Date.now(),
+                    label: label,
+                    points: points || 5,
+                    icon: 'fa-exclamation-circle'
+                };
+                
+                this.state.violationTypes.push(newV);
+                this.saveData();
+                this.renderSettingsViolations();
+                
+                // Reset inputs
+                labelInp.value = '';
+                pointsInp.value = '5';
+            }
+
+            removeViolation(id) {
+                if(confirm('هل أنت متأكد من حذف هذا النوع من المخالفات؟')) {
+                    this.state.violationTypes = this.state.violationTypes.filter(v => v.id !== id);
+                    this.saveData();
+                    this.renderSettingsViolations();
+                }
+            }
+
+            handleJson(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        const json = JSON.parse(evt.target.result);
+                        // Validation check
+                        if (Array.isArray(json) && (json[0]?.items || json[0]?.title)) {
+                            this.state.evaluationCriteria = json;
+                            this.saveData();
+                            alert('تم تحديث معايير التقييم بنجاح!');
+                            // Close modal to refresh UI if needed or just notify
+                        } else {
+                            alert('صيغة الملف غير صحيحة. يجب أن يكون ملف JSON يحتوي على مصفوفة معايير.');
+                        }
+                    } catch(err) {
+                        console.error(err);
+                        alert('حدث خطأ أثناء قراءة الملف. تأكد من صحة التنسيق.');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = ''; // Reset input
+            }
+
             enableDevEdit() { document.getElementById('settingCloudUrl').disabled = false; document.getElementById('settingCloudUrl').focus(); }
             saveDevSettings() {
                 this.state.cloudFunctionUrl = document.getElementById('settingCloudUrl').value;
