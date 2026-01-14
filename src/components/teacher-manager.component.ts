@@ -30,16 +30,28 @@ import { FormsModule } from '@angular/forms';
             @for (t of filteredTeachers(); track t.id) {
                 <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition border border-slate-100 p-5 flex flex-col gap-4">
                     <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-3">
-                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold shadow-sm">
+                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold shadow-sm shrink-0">
                                 {{ t.short ? t.short[0] : '?' }}
                             </div>
-                            <div>
-                                <h3 class="font-bold text-slate-800 line-clamp-1">{{ t.name }}</h3>
-                                <span class="text-xs text-slate-500">{{ t.short }}</span>
+                            <div class="flex-1 min-w-0">
+                                <input 
+                                    type="text" 
+                                    [value]="t.name" 
+                                    (change)="updateTeacher(t.id, 'name', $event)"
+                                    placeholder="اسم المعلم"
+                                    class="w-full bg-transparent font-bold text-slate-800 focus:bg-slate-50 focus:ring-1 focus:ring-indigo-500 rounded p-1 -m-1 transition outline-none"
+                                >
+                                <input 
+                                    type="text" 
+                                    [value]="t.short" 
+                                    (change)="updateTeacher(t.id, 'short', $event)"
+                                    placeholder="الاسم المختصر"
+                                    class="w-full bg-transparent text-xs text-slate-500 focus:bg-slate-50 focus:ring-1 focus:ring-indigo-500 rounded p-1 -m-1 mt-1 transition outline-none"
+                                >
                             </div>
                         </div>
-                        <div [class]="getScoreClass(t.score)">
+                        <div [class]="getScoreClass(t.score)" class="ml-2 shrink-0">
                             {{ t.score }}%
                         </div>
                     </div>
@@ -50,9 +62,9 @@ import { FormsModule } from '@angular/forms';
                         <input 
                             type="tel" 
                             [value]="t.phone" 
-                            (change)="updatePhone(t.id, $event)"
+                            (change)="updateTeacher(t.id, 'phone', $event)"
                             placeholder="أضف رقم الهاتف" 
-                            class="w-full pr-9 pl-3 py-2 text-sm rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all dir-rtl"
+                            class="w-full pr-9 pl-3 py-2 text-sm rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all dir-ltr text-right"
                         >
                     </div>
 
@@ -90,9 +102,9 @@ export class TeacherManagerComponent {
     return list.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
   });
 
-  updatePhone(id: string, event: Event) {
-    const val = (event.target as HTMLInputElement).value;
-    this.store.updateTeacherPhone(id, val);
+  updateTeacher(id: string, field: 'name' | 'short' | 'phone', event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.store.updateTeacher(id, { [field]: value });
   }
 
   getScoreClass(score: number): string {

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
+<html lang="ar" dir="rtl" data-beasties-container>
+<head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مدير المدرسة الذكي</title>
     
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>@font-face{font-family:'Cairo';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}</style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
@@ -74,12 +74,24 @@
         .print-only { display: none; }
         @media print {
             body * { visibility: hidden; }
-            #printable-substitution-sheet, #printable-substitution-sheet * { visibility: visible; }
-            #printable-substitution-sheet { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; z-index: 9999; }
-            #view-supervision-report, #view-supervision-report * { visibility: visible; }
-            #view-supervision-report { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 0; margin: 0; background: white; }
             .no-print { display: none !important; }
             .print-only { display: block; }
+
+            body.printing-subs #printable-substitution-sheet,
+            body.printing-subs #printable-substitution-sheet * {
+                visibility: visible;
+            }
+            body.printing-subs #printable-substitution-sheet {
+                position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; z-index: 9999;
+            }
+
+            body.printing-supervision #view-supervision-report,
+            body.printing-supervision #view-supervision-report * {
+                visibility: visible;
+            }
+            body.printing-supervision #view-supervision-report {
+                position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 0; margin: 0; background: white;
+            }
         }
         
         .task-checkbox:checked + div { text-decoration: line-through; color: var(--text-muted); opacity: 0.6; }
@@ -121,19 +133,21 @@
         <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
         
         <div class="w-full max-w-sm text-center relative z-10 bg-white/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/40">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAeISURBVHja7Jt7bFRVFMd/59w7s7ML2V3YBGhBgSgKFYmPEklUFEohGqMhGoSgj1AaEQ2JhMZgY0CUiDE+sERifKAmJmoQCQkEY4yHIaAKoSoYUcACraW92N2d3TtnzjHDdne3O9tdAhP/yWazc3Jz7jnf+c537g3+VzKE8L0g0D+A/8d5A/h3vB+A/cBhwFPAIcC9wGfAl8DXgHHAqcB2YAPwJPAI8EfgCeB+4GngIeBz4B8F3gN+DvwE+BHYDjwGbAduAg4DzgPOAg4DjgGuAm4BbgXuBz4FvgP+R9V/AfgX+DfwI/A/gP93wBHAzcCdwE/A/cChwAHAecD7gS8A/1y+9wYw16eBLwH3AZ+g+n8BPgY+BrwE/B/4e/s/BdwIXAXcCdwHXA9cC3wGfA9cC3wNfB74G/A+8D7gUeAnwBPAn4AngeoH4HngYeAvwHPA44A/gbcBXwN+At4FXgM+BL4FPge+BV4E3gZeBH4EPgf+B14H/hr4G8FvAf8H/hb4dwJ/J/CPBP4J/A38zcjvA/8J/JHAPwL/A/gT+CXwm8A/AP4G/A38DfzN7u4T4C8C/wH4dwP/CPyLwC+BXwW+Bv4K/APgr8G/Bv4b8A/APwF+APwN/A38Dfxt9/cD/gD8DfzN4O4F/h/4J8A/BH8V+BfArwT+BP4x8HeA/w38Afhv5PcDfwL/DPw7ge8AfwP+CfzN4O4D/wH4B8G/Bv5U5DeB/wH8KeA3gn8G/hv4P4B/JPAPgP8M/Fvgv4O/A/8J/JHA3wz+juAfBb4M/CXy+4M/g38K/Evg/wH+KPAvgL8O/DXw14B/Av8E8TeB/1f5dwD+Z/APgn8G/hT4KPA74M8EfyrwL4A/DPwH4B8CfzPy+4vAXwZ/C/wd4O8D/yjwc+DPJH4n8A+Av1H+H+C/B/8e+Cvgn5L4J/DXyO8d+H7y+4S/B/4R+B/AvwL8V+AfAv8I/CvAPwn8Afhv4PcD/wb8MvI7Af8H8A+BfwL4QeA3gd8E/gnw7wV/Af+H4P8kvo/8/lnhv9/y+w9/FPi3Afw08HuR3wv+bvCHyO8A/xT4d/c/Af+H4N9L/Bngj5Df5+D/AP5I4M8kfgv4Q+Tv5+D/Av4I8GcA/yjwy8DvI78X/J3A/wj8A+A/Av8U+A3g/yJ+A/j/AP4Q+CfJHwL+eZDf6eGvI78X/L0gnwM+F/z95HcC/xTwG8Bf7h9LfAv4QeC35PcQ/L3gX4B/HPzN+B8Cf+y+h/z9A3gBeBb4Q+AnwL9R+N/9TwG/H/gXgf+J+L3B3wf+IfJ3gH8C/APgvwT+EeA3I793gD8E/C/ye4x8J+A/Av5Y/z7gb+7/k/hb4DeAvyXwH4HfhH5M4D8G/xj5BwS4F/ge+Bq4GrgO+HkZl+7z1wMPAg8BTwK/B84C/gUuBF4A/gDeBb4GfAXcDlwIXAscCPxP6d+BLwLPAM8ATwHvAHsA1wFbgQ2AFcBxwCHAXcBRwFnAZuAW4A7gXOD3yV/fAP69A7sT+DfIHwDeAZ4BtgGrgC3AbcDdwEHAf28hQf9e4C7gDuBy4EDgX+T/tSgP/j3AfuA34N8H/D8U2AncCZwCHAbsAx4DPgIeA94EPga8AzwOvBH4DPgW+AZ4HXgV+An4B+CPwGeA54A3gDeBHYDdgD3ADsAJwAHAFcAGwDVgH7AeuA/YBPwGfAL8DXwM/AZ8AnwF/AD8DPwX+B/4N/B+4FXgD+AD4GPAa8A7wMPAj8A/AfcBjwNPAQ4AfgDnA78DngQ+Bb4GfgP8F/BH4K/Ab4HfgG2A7sB+4D7gXuB+4A7gfuAS4AlgL/A78HvjviWqfA/4UeAX4V+A3ge8Gfg98Bfh3B3YngP/hvwH8O+D/AP4+8G/2dwf+D/xHwN+K/F7gbwT+EfgH+D92B/An4E8D/gH4N5DfA/69ye/vBP4v4HcC/gzw7yW/r+5/Bvw98HeAvwT+Y/AfgP8n8P9W+WcK/O3A/xH5/YfgH+z/Av7/gL913wP8J/Afgv9O/gzwfwX+Cvhb8HcDPxH8Y+D/APg78A+Av1j+/4R8vgbw7wP+JvD/DPhfgX8U+Hfl/wD8j/z/L/n9WcB/IvA7gR8Afwz8BPAH+98r/DcCv8k/V+P/jHwc+G+S39f3/0P+LwL/KPBfJv5N/u1G/r/O/3dF/1eBX0/8Df898DcA/wH4BwT4P2M0L8y/0r/T/zv+vyJ/5+D/JvDHAf8H4O8Dv6//317/74H/HvhHAn8H+F8h/xfgfwz8Y34/jvz/Dvh/gP+K4AfBv4f8DfhfAP4A/Avgnwn8Me9/Pfh/gv8j8rfg/wn8IfDPg/+e/P4vBP8u8F8Dfwd+h/z9LwT/GPhD/n4O/L3APwb8Efgn+P935O/Bf1vg/wLwT4E/BvwU+DvAvwf+I/AP+b8P/H/0/2f8f87//wT/R+B/Af4C+BPgbwH/FPgPgL8D/BX8X4V/rP+n4P8L/JfJfxH5P4B/JPAPgb8B/AnwP7v/IeBvAf+d/Bngv2z+7Xb/D/APgn8c+JnA/wj8VwR/AvwT4PcAfwT4C8C/APxH4N8G/i/yP4B/AvwH4A/B/x74D4K/EvlfgH+I/BngHwL/WPBvJX8V+P+u+A8H/gbwF4B/i/z7G8D/gX8Y+EfhHxX+vwr/DPCv+b+D//+T/L+A/138L+Tv3/X/I/IvAv8A/Cjw9/xfgv8vgb8T+Hvk/wr8nZ/+CvgPgf8K/Ifgfwn+Eflf+38Z/3/k3+b/m/z/3+R/Ff+f+X/w/zP/HwD+D+D/g/83yV+B/xP5t+AfAP8D8L9E/h34V/p/2fx7lP8G/m3z7wb8T/LfDvzb/h+G/w/wf/j7l/+f+b/R/6vAPyDwr6/+HwD8Tfz/iPw/j/xrwH/s/u/x30v+/w/43+v/WPAHgD8A/Evj/w/wz7f/h/8/wP9f1/9t/D8K/APgd/z3P/iP+A8H/sN//4L/+S//+wT/b/L/Xvx3I/8+8f+d+L8B/Af+X/7/X/9fIPBP+P/5vwf+vYn/1+Hfg/8e4H8V/x/G/wP4n/V/CP4Dgr8k/3fJv5H4W4b/Bvgbgv8k8J8DfyrwB4L/y/z/DP6/G/n3I/8Q+Ef8P0/+/+f8XwD+t/i3F/n34H+x/D/D/xv4DwD+d/L/d+Hfhf8O/D+H/w/8H8D/g/8v8X/3/xf+H/f/VfLfA/hPw397k3+b/wjwP+h/BPw/if9/+t+E/zDw7wN+F/+nkn8r+R/Ev0f+I/BP+H8T/v+O/D+DfwT8t/oPAv4H4H8I/i/1/2n63zH+H+S/APgn5b8D/MP+HwL8U/L/LfgPgH+I/EfgnwL/Gfi/+D+j/L+L/APAPwD4T+n/+vjfIv8A4J9+/4vgvwL/L+G/yfw/+b9L/h+L/zHyDwb+IfhHDP8Y+M/iXwT/IfBPI/4g+AfhHwH/IfgHgH+Q/B8B/0Pwf+QfBfyH8J/F/gnwz+j/KPBPCf4B+Kcj/n+H/wDwv9L/Efj/BPCz3f7P4v8V/B+O/IeCPwj8o8A/BP6/Ev4A+Kco/+38H2r8H/D/P/7/Wfxj4L+Lfw78H4P/Hvwjwb8J/m/1fwL8Y+BvF/kH+P+U/3b+7/H/yfwHgP8A+A/AvwL8V+Q/Av4J4D8C/xTwU+A/Av9w//8v4V/2/w/wn6z/l+VfCv5b8A/APyH4DwD+j/3/Gf4t+P8m/APAj/h/+P+H/4+D/+39PwT8h+VfDvwrhD/i/5H4R8L/T/p/l/8M/EPgv3P/T/Lf0f8J8Ef8v+b/N+GfEvgPgD8g8N8F/EPgPwr8M/APwv8D/JfhPwH8E/D/wPwvgv8G/Jfhf/3+B/9v/w8U/z9l/68Bf3r4D0/+V4n/LvzX7P8z/g8B/Gvy/839/07+j/B/Af8J+Cf4vwr+Z/X/X/p/m/xfhv/bA8F/GP+v9z+Efwj8t/1/WPy/+X/O/1n8Pxb/d+C/R/5n8P/2/X/xP3L/P8J/Cv5R/H8Q/x/k/0/8D/P/F8I/Iv9L/X/L/3+T/+eEfwA4gB+48T9z/h8B/sPy/xj+L8M/BPgHyj+L/O/i//H83wf8B+Af5v8J4H/S/h8E/xPwvwD4twr/d/L/x/w/Bfxbif+1+D+H/z/Avw3/z+n/mfgPAv4p+I+c/9fivw7/e/N/E/4p+U/F/yn4pwp/Wvx/2fwD4X/9/3P834j8w3y/z/t/if9/+f+X+X/e4M/2+H/V8I+Mf7v5v5/j/3X+b+P/Ufx/QvA/+f8Xgv8A+IeC/4j5B/lf5f8P4n/p/y/yXwL+Afhv+X+W/+eCP1XhPx/4X//+Vfz/0vxf5t9E/lfwfwD8AfAPgX/k/BvAvyz//3fivwr+V/N/DPi//v835f8e/APgvwb+L/MPAP8J8G8L/v3Bv5X878D/+3//iV/S/38B8O/+tT+vV+R+7/988u8J/F+p/x3hH5D4W4z/F/nfg3+7+T8M/0vkvwz/gPBPAv6U/IfkH+A/Av92+3+b/wvwT4H/2vs3hD8D/GPyHwb+7er/LPhn9X8g+Lf6fwP+A/APwP/L9P+0+A8B/yn4B/l/if/R/xTwzwJ/Evgn93/h/+3xrwf+U8L/l/kH5V+c/4PgHwj+Af4z5t+a/APBPwj+AfC/TPz/if/B+L8V/wPwz55/KPhPBfy/iv/X4x/xfw7/KfgvQ/7PCP4D+Kfln6b/3/qfKv9t/D8K/kHwDwj+V/rfg/8R+X+u8H8v8W8N/ivxHwb+R5T/K/APAf6P/Gfgfyb84/3/kPhfEv5BwV/2/1/iPwT8o+IfEPxDgj8M/wHgPwD8Q8F/JPwTwD+G/0jgv53hT97/L+S/5f6D/N8K/xH5DwX/AfAPAf+o4N+m/7fQ//sQ/K+Z/wPwT4X/KPB3AP9w+w8I/gDwz/t/gviPgH+S8M/ivwr8Q8J/BPwDwP+k+Lch/wHgT/j/Evhvh//p/I8p/lPgfwH8x/I/CvxbC//R/Nsi/APAP3n+IeA/5f7j/N8k+EfAfwn8A+Dv2P87gv+E4B/hP2f9J4J/CPijgv8T/P+x/B+S/5fCP5P//8f4vw3/W5T/J/EP5f+U/6eZ/5b4/w3/WfMPAv6U8L/K/APBPzH/VPAfg380/6eA/3T/nwP+U+YfBvwHgX8o+U8Df7b4p7X/j+v/cflPBvwD4A8Af9D4/x7+j/Gf7v/t+V8v/mPw35H/DPAfAv6o4L8t+KfnPwr8k/y3Bv9V85+O/AOC/xL8I8A/lPwfgb8c/0cKfy/wzwL+KeAfhfwzAPhfgv8Q8D8D/EPhTwr+4f7vBP8R8w+Afwj8Y4D/APhHwD8M/5TifwD8I8A/Cv4h/q+U/3n4p+Q/BPxjy7/J/K+Zf2j4D/D/Q/gHgH+U+g/23+v8U4z/ePwz73+D//9D+A+AvwD8h+R/APgPwz8M/wDgfwH8E8Af+N+K/5eCPwD8w/0/6n+c+H+D/9eC/wf4jwX/L/IfDPyjgv8U8I8p/gHgvwL/cPhPBP8g+AfAv4v4Twd/GPgPkv+f//9S8o+E/8nxDwJ/2vhPEf6o8F8k/jH4p7T/BvgH5R/qP5D8h7v9n/J/CPzbgv8U8Z8t//uAvw/8Z//fAPhvD//T+586/Tgv5T8R4X/dvyj4R/m/y/BPxD8g4J/WPBvFP53Av6H8w+Q/5vwj5D4o+S/Ff8j+Z8D/xHwDwj+k+Gf8P5T4p+4/wDwHwH/FPDvBP7v/IeB/wT4R8M/w/wvgv9g+Adhvzz/HwX8UcF/MPy3M/+A4B8E/wHwDxD8R6//v/S//d+J/x/iH9P/H8P/FPhHwv/K+D8g+Mfyf57//1/iHxH+R/J/QvwfwX8W8o+M//90/t+G/7X4h5b/MPinA//D/H9F/vfgvwv/AfhvI/9R8o+AfwD4BwP/kPD/9vtPB//P4x/qP5D/n5z/DPAHBP6U+McS/5v8h5D/d/p/VvwPAf+E/D+Pf6D/B/y3wv81+Kf8/wn8R4T/EPxHwj/U/6Hhf+b8E4T/dPhv9/+x/781/4Dgnx3/0/0/Kvgnif8o8o+I/1f5BwJ/QPBPCn+4/4/hf4jwj/v/EPAPAf4Z4L+v+M+if1v+Pwr+U+Afnv6jyD/Y/1vkvwb/sflvF/lHwj/c/5v8h+Ef6T+e+Ifqfyr4Twr+KeDfhP8B8F8P/MPiP+r8/x/if1H8P574R//fLPL/x/0/CfxPgL/V//9A8p9F/tPiP+T+R/P/9vzfJPCfyv/z/P8W8c/0/y/8+39d8A+CfwT8R8k/pPhv3/9Xif8+8v8c4L92//8s/88h/l/2n/d/jH/+/X8H8G/R//+Uf+f5/+d1/gPwv5//L4R/mPh/XvI/j/8A+IfCfw7+X5//Q/APAv+U+EfWv/L8P/X+H+//n/Afi/wP+H+M+H/V/z/m/wf4PwP+KfEPIv9h/n/o/AfiPwL+YfEv4v+n+3/S/xPAvwD+R/D//+q/Ufl/2/7fVfNfAP6XwH+e/69E//+b//fgfw3//wf8j+j/T8u/+vz/0/h/FP4Pg38o+Y8g/+eUf0jwj6r+J4B/VvwD/AfA/zL/Twt+QPAf+v8x+IfS/4D4D/f//+n8E/9/kv8Q4D/V/7+S/y+Ef/j/kfg/+v+Tz/9/m/g/Dfxb9v9/yX/o/C/8v9L/x/EPI//H8X8J/2/7/2n63zH+H+P/GfjHnP+U/A8C/xPAH/D/0uP/Hvh/H/+PCv+R5T8K/A+CfyT5DwP/Uf0/2v9X8R8A/wPwP+b+J+AfJP8g8I+K/8nxX7P/58A/VP8jxv/z/P9k+LfU/1vgfwP/Af8/BPwTgv90/z/J/0eC/+fBv3f7Hwn/QPhPgD+k+G/D/xPAfwr+Dwb/o/gPgH8Y/P//9u8T/lPqPyn+Twn/VPEfAPhPgX/U8x/oP4L8Y//fiv/3BP+H6n/K//3gP/v/F4V/KP9PF/+7/B/m/1vgPyD/8fF/GP5H4T+u+B/S/yfgfwL/AfiPIv/n+L8N/+v8nx/+b/P/UfjvhH/A+If5/8P+Pwj+Y+Yfyv/D/L/8/zPCvxX8Y+IfBfwjwT8A/EPBPgTwD4L/CPiPwT/Uf3v/Twn/D//fg38I+I/ifwT8R8o/UPEPD//j/P/s//8l/L/W+M+Mf6v4B4D/CPwnxH8M/CP6f4r4DwJ/2vhPCf8B4L+F/CPqHxD+R9/+x//+VvIfIvynwD+0/vfnPyH4D/j/JPLPMP/nhH+o/7bW/wPwnwL/APAvwD8C/CPgPwT4J8M/2v8PgD8s+0+d/xj4DwH/YPefY/5j7j+E/KOi/wj3jxr+o+ifCv6h7D8w+MeA/wj4hwX/QeUfCPwDwr9a+Me+/+T4pwr/APAPhvwjwD8i/sPBv6X8R4P/sPEPA/9A5R8F/CPAPxT/Eey/x/gPCf4T/uPiPxT8w/I/JPhHB//A+T8o/UPAv3f+w8Y/MPgPqX+Y959a/+PAHwL+keAfCv7Dzz8s/EPAPyj8U8E/GP8Pj3+w8o9e/+P3P5z8h+Z/UPgPg38c8E9r/xHvnzL/IPAfGv4j5R8h/6HqPwD8I8I/EvwHnf/k+w+p/0HjHxL/hPSfBf5h/T8k/xHxjwT/cPIfnP/j/B/M/+PiPyn8o+IfAv5h7z9S+IfB/7Dzjwb+oep/IPEPkX/I+T8w/wPgP9D8A9N/mPMvSPyH6T9U/KPGH3H8o9c/Xv2Pqf+o+4/h/wv1PwX/Ifh/gP9o/d+O/yPCf9j6zxb/IPEviv+b8o+gfyD4Dwn+AfAPGf+I/P+n3X9L+T8A/EPBP3L/w+I/hvyHBP8h4j/I/BPhP6L9Tyb+IeSfVP1PE//I//sFwv/Y/gPwXwv+R+R/SPwnxv80/T/kPwD8R/X/ePGPBP8Q+IcB/2n9jyH/RPAfAv6D9B8w/2P+n6T/AfAvBP4h4B+e/hHhHyP8A4D/Yff/jPt/FPgn2X9Q8B8J/wDxjyv/IfgPD/7TzH9C9588/gPifwD8I8M/Cv4D+D+U/zD7j8P/CPBPBf6o/D/H/4PBf1jwj7P/j/Z/6fxni39c8g+y/0PgHwT+w+/+V41/EPgn9b9T5D/0/CPiv5f/T9H/SPJvF/8B8I+G/xD8B+Yf8P8TwD+4/4P8P8z/e/BvLf8A+AeIfwj6RyX/EfAPAv9w/0eS/3v8Z7J/yPzP3//j93/k/X8I/qP8P2b+T+J/iP1/mPsvBP8h4B9p/iPwPwD8k+y/U/gPBP4Z4T/y/CPwTw7/wPcP9D/j/+3wTwf/YfWflP8B4B8s//uA/wj4Dwr/MPBPX//s/W8V/+nxjwD/EPB/jPxPAX+Y+EfEPwj+SeBfkvqPhH/0/h8g/9j2HwH+w/Y/hPyTwP9j/Q/hvwf+A/wP7P8A4A8g/gHynwD+Y/kfB/ijwH/I/GPyP1L8h4D/JPD/HvhH7P8t/N+O//+x/48F/wHgv1b5DzH/YPUPAv4R4J8+/0nhPy/+Q+Kfd/8D+w8C/zH3v8P+x8//u/2PC//I+EeS/yTzjwP/QvAPAPij+T8C/BPAH+7+3xz/AeQ/w/yHwf+o/h+H/2PCfyT7Twr/AeDf9f6j1P9j/N+S//f5PyL5PwX8o+AfqvsPBf8Y+M+c/2j4R9Z/BPhPnv+D/38c+IfAv4T/n8v/9/jPmv+Xgn/w+D/D/UeB/yT4TzP+AeBfhPAvyX4i+A/j/+34jyb/AfgPwD8M/6n2P0T8B8D/GfhPBv8R+QeC//X4PwX/Y+ofQv+h+B/p/0PiPxb/EfCffv9B4P+h4t/g/pPhPwT/oPIPVv0PBf+E+If6j7T/kPgfwv+I8g+g/y/3nw3+SeKfR/+TwH+I/0/ivwj+U+I/EPzD+j/j/d/jPyX8Q4J/sPhP3X+c8g+Z/yj5p8D/CPgPB//Z+p8u/xHgn8f/c//+n1/+QfEfg39m/0OCvwnwjw7/EfgP3P808h89/1njH8f8R9P/jP3PBP+h5B8s/xD1jyH/EeE/CPgHBP8B8I8+/4jwj+h/UvgPB/+48w8K/kPlHxf+SeA/CPwnlX+U+k/n/8P8Pw3/AfiXqf6/H//8AAAAAElFTkSuQmCC" alt="شعار مدير المدرسة الذكي" class="w-20 h-20 rounded-3xl shadow-lg mx-auto mb-6">
+            <div class="w-20 h-20 bg-gradient-to-tr from-[rgb(var(--color-primary-600))] to-purple-600 rounded-2xl flex items-center justify-center text-white text-4xl shadow-lg mx-auto mb-6 transform rotate-3">
+                <i class="fas fa-university"></i>
+            </div>
             <h1 class="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">مدير المدرسة الذكي</h1>
             <p class="text-slate-600 font-medium text-sm mb-8 leading-relaxed">مساحتك الخاصة لإدارة مدرستك بفاعلية.</p>
             
-            <button id="googleLoginBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg border border-slate-700 flex items-center justify-center gap-3 transition-all duration-300 group cursor-pointer mb-3">
+            <button onclick="window.app.handleGoogleLogin()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg border border-slate-700 flex items-center justify-center gap-3 transition-all duration-300 group cursor-pointer mb-3">
                 <img src="https://www.google.com/favicon.ico" class="w-5 h-5 group-hover:scale-110 transition-transform" alt="Google icon">
                 <span>تسجيل الدخول بواسطة جوجل</span>
             </button>
-            <button id="guestLoginBtn" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-2xl transition-colors text-sm cursor-pointer border border-slate-200 hover:border-slate-300 shadow-sm">
+            <button onclick="window.app.skipLogin()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-2xl transition-colors text-sm cursor-pointer border border-slate-200 hover:border-slate-300 shadow-sm">
                 الدخول كزائر (تجريبي)
             </button>
         </div>
-        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.1.0</div>
+        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.0.9 - إصلاح سحابي</div>
     </div>
     
     <!-- App View -->
@@ -146,7 +160,9 @@
                 <!-- Brand & Profile (Right) -->
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-2 text-slate-800 select-none">
-                        <img src="data:image/png;base64,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" alt="شعار مدير المدرسة الذكي" class="w-9 h-9 rounded-xl shadow-md">
+                        <div class="bg-gradient-to-tr from-[rgb(var(--color-primary-600))] to-purple-600 text-white w-9 h-9 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-university text-sm"></i>
+                        </div>
                         <h1 class="font-extrabold text-lg hidden md:block tracking-tight text-slate-900">مدير المدرسة</h1>
                     </div>
                     
@@ -249,7 +265,7 @@
                 <div class="relative w-full md:w-96 bg-slate-50 p-2 rounded-2xl border border-slate-200">
                     <label class="text-[10px] font-bold text-slate-500 block px-3 mb-1 uppercase tracking-wider">المعلم الغائب</label>
                     <select id="absentTeacherSelect" onchange="window.app.handleAbsentSelection(this.value)" class="w-full bg-white border-0 rounded-xl p-3 text-slate-800 font-extrabold outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary-300))] shadow-sm cursor-pointer appearance-none">
-                        <option value="">-- اختر من القائمة --</option>
+                        <option value>-- اختر من القائمة --</option>
                     </select>
                     <div class="absolute left-4 bottom-4 text-slate-500 pointer-events-none"><i class="fas fa-chevron-down"></i></div>
                 </div>
@@ -317,8 +333,8 @@
                                 <th class="p-5 sticky right-0 bg-slate-50 z-10 w-24 border-l border-slate-200 text-slate-700">اليوم</th>
                                 <!-- Dynamic Headers -->
                                 <template id="dutyHeaderTemplate"></template>
-                                <tr id="dutyHeaderRow"></tr>
-                            </tr>
+                                </tr><tr id="dutyHeaderRow"></tr>
+                            
                         </thead>
                         <tbody id="dutyBody" class="divide-y divide-slate-100 text-sm font-bold text-slate-700">
                             <!-- Rows generated by JS -->
@@ -506,7 +522,7 @@
                         <input type="text" id="supTeacherName" readonly class="hidden w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-extrabold">
                         <div class="relative">
                             <select id="supTeacherSelect" onchange="window.app.onTeacherSelectChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none appearance-none font-extrabold transition-all cursor-pointer">
-                                <option value="">اختر المعلم...</option>
+                                <option value>اختر المعلم...</option>
                             </select>
                             <i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                         </div>
@@ -515,7 +531,7 @@
                         <label class="text-xs font-bold text-slate-600 mr-1">التخصص</label>
                         <div class="relative">
                             <select id="supSpecialization" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none appearance-none font-extrabold transition-all cursor-pointer">
-                                <option value="">اختر التخصص...</option>
+                                <option value>اختر التخصص...</option>
                             </select>
                             <i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                         </div>
@@ -621,7 +637,7 @@
             
             <!-- Actions -->
             <div class="flex gap-3 mt-12 no-print border-t border-slate-100 pt-8">
-                <button onclick="window.print()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg">
+                <button onclick="window.app.printSupervisionReport()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg">
                     <i class="fas fa-print"></i> طباعة / PDF
                 </button>
                 <button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-100">
@@ -636,26 +652,66 @@
             </div>
         </section>
 
-        <!-- View: Help -->
-        <section id="view-help" class="fade-in space-y-6 hidden-view">
-             <div class="bg-white p-8 rounded-3xl shadow-soft border border-slate-200 text-center">
-                <i class="fas fa-question-circle text-5xl text-[rgb(var(--color-primary-500))] mb-4"></i>
-                <h2 class="text-2xl font-extrabold text-slate-800">مركز التعليمات</h2>
-                <p class="text-slate-500 text-sm mt-1 font-medium">دليل سريع لاستخدام أهم ميزات التطبيق</p>
+        <!-- View: Instructions -->
+        <section id="view-instructions" class="fade-in space-y-6 hidden-view">
+            <div class="flex flex-col md:flex-row justify-between gap-4 bg-white p-8 rounded-3xl shadow-soft border border-slate-200">
+                <div class="flex items-center gap-5">
+                    <div class="bg-gradient-to-br from-sky-400 to-blue-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-200">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900">مركز المساعدة والتعليمات</h2>
+                        <p class="text-slate-600 font-medium text-sm mt-1">دليل استخدام مزايا التطبيق المتقدمة</p>
+                    </div>
+                </div>
+                <button onclick="window.app.setView('now')" class="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 px-5 py-3 rounded-xl font-bold flex items-center gap-2 transition shadow-sm cursor-pointer text-sm">
+                    <i class="fas fa-arrow-right"></i><span>العودة للرئيسية</span>
+                </button>
             </div>
-            <div class="bg-white p-6 rounded-3xl shadow-soft border border-slate-200 space-y-4">
-                 <h3 class="text-lg font-extrabold text-slate-800 border-b border-slate-100 pb-3 mb-4 flex items-center gap-3"><i class="fas fa-rocket text-[rgb(var(--color-primary-600))]"></i>البدء السريع</h3>
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="font-bold text-slate-700 mb-2 text-sm">1. استيراد الجدول (ملف XML)</h4>
-                    <p class="text-xs text-slate-600">اذهب إلى <button onclick="window.app.openSettings()" class="font-bold text-[rgb(var(--color-primary-600))] hover:underline">الإعدادات</button> واضغط على "رفع ملف XML" لاستيراد جدول الحصص من برنامج aSc Timetables.</p>
+
+            <!-- Instruction Cards -->
+            <div class="space-y-5">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="font-extrabold text-slate-900 mb-4 text-lg">1. استيراد جدول الحصص (ملف XML)</h3>
+                    <ol class="list-decimal list-inside space-y-2 text-sm text-slate-700 font-medium">
+                        <li>من برنامج الجداول المدرسية aSc Timetables، قم بتصدير الجدول بصيغة XML.</li>
+                        <li>افتح <span class="font-bold">الإعدادات</span> <i class="fas fa-cog"></i> في هذا التطبيق.</li>
+                        <li>ضمن قسم "أدوات البيانات"، اضغط على زر "رفع ملف XML".</li>
+                        <li>اختر الملف الذي قمت بتصديره. سيتم استيراد بيانات المعلمين والحصص والتوقيت تلقائياً.</li>
+                    </ol>
                 </div>
-                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="font-bold text-slate-700 mb-2 text-sm">2. استيراد بيانات المعلمين (ملف Excel)</h4>
-                    <p class="text-xs text-slate-600">لإضافة أرقام الهواتف والتخصصات، اذهب إلى <button onclick="window.app.openSettings()" class="font-bold text-[rgb(var(--color-primary-600))] hover:underline">الإعدادات</button> واضغط على "استيراد Excel".</p>
+                <!-- Card 2 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="font-extrabold text-slate-900 mb-4 text-lg">2. استيراد قائمة المعلمين (خاص بالمشرف التربوي)</h3>
+                     <ol class="list-decimal list-inside space-y-2 text-sm text-slate-700 font-medium">
+                        <li>افتح <span class="font-bold">الإعدادات</span> <i class="fas fa-cog"></i>.</li>
+                        <li>ضمن "أدوات المشرف التربوي"، اضغط على زر "نموذج المشرف" لتنزيل ملف Excel.</li>
+                        <li>املأ الملف ببيانات المعلمين الذين تشرف عليهم (الاسم، المدرسة، التخصص...).</li>
+                        <li>عد إلى نفس القسم واضغط "استيراد القائمة" لرفع الملف بعد تعبئته.</li>
+                    </ol>
+                    <button onclick="window.app.exportTeacherTemplate()" class="mt-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm"><i class="fas fa-download mr-1"></i> تنزيل نموذج المشرف (Excel)</button>
                 </div>
-                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="font-bold text-slate-700 mb-2 text-sm">3. إدارة الاحتياط</h4>
-                    <p class="text-xs text-slate-600">من قسم <button onclick="window.app.setView('reserve')" class="font-bold text-[rgb(var(--color-primary-600))] hover:underline">الاحتياط</button>، اختر المعلم الغائب وسيتم عرض حصصه. اضغط على "إيجاد بديل" لاختيار معلم متاح.</p>
+                <!-- Card 3 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="font-extrabold text-slate-900 mb-4 text-lg">3. استيراد أرقام هواتف المعلمين</h3>
+                     <ol class="list-decimal list-inside space-y-2 text-sm text-slate-700 font-medium">
+                        <li>اضغط على الزر أدناه لتنزيل قالب Excel جاهز يحتوي على أسماء وأرقام هوية المعلمين.</li>
+                        <li>املأ عمود `Phone` بأرقام الهواتف الصحيحة لكل معلم.</li>
+                        <li>من <span class="font-bold">الإعدادات</span> <i class="fas fa-cog"></i>، قسم "بيانات المعلمين (Excel)"، اضغط "استيراد Excel" وقم برفع الملف بعد تعديله.</li>
+                    </ol>
+                    <button onclick="window.app.exportPhoneTemplate()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm"><i class="fas fa-download mr-1"></i> تنزيل قالب أرقام الهواتف</button>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="font-extrabold text-slate-900 mb-4 text-lg">4. تعديل عبارات التقييم للزيارات الإشرافية</h3>
+                     <ol class="list-decimal list-inside space-y-2 text-sm text-slate-700 font-medium">
+                        <li>اضغط على الزر أدناه لتنزيل ملف `Evaluation_Criteria_Template.xlsx` الذي يحتوي على العبارات الافتراضية.</li>
+                        <li>افتح الملف باستخدام برنامج Excel وقم بتعديل العبارات بما يناسبك مع الحفاظ على هيكل الأعمدة.</li>
+                        <li>افتح <span class="font-bold">الإعدادات</span> <i class="fas fa-cog"></i>.</li>
+                        <li>ضمن "قاعدة بيانات الزيارات"، اضغط على زر "استيراد قاعدة المعايير (Excel)" وقم برفع الملف المعدل.</li>
+                    </ol>
+                    <button onclick="window.app.downloadCriteriaTemplateExcel()" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm"><i class="fas fa-download mr-1"></i> تنزيل قالب العبارات (Excel)</button>
                 </div>
             </div>
         </section>
@@ -733,11 +789,11 @@
                     <span class="text-[10px] font-bold">المناوبة</span>
                 </button>
 
-                <button onclick="window.app.setView('help')" id="btn-help" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                <button onclick="window.app.setView('periods')" id="btn-periods" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
                     <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
-                        <i class="fas fa-question-circle text-lg"></i>
+                        <i class="fas fa-clock text-lg"></i>
                     </div>
-                    <span class="text-[10px] font-bold">التعليمات</span>
+                    <span class="text-[10px] font-bold">التوقيت</span>
                 </button>
                 
                 <button onclick="window.app.setView('reports')" id="btn-reports" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
@@ -826,6 +882,14 @@
             </div>
             
             <div class="p-6 overflow-y-auto custom-scrollbar space-y-8">
+                <!-- Help Center -->
+                <div class="space-y-3">
+                    <h4 class="font-extrabold text-slate-800 text-sm border-b border-slate-100 pb-2">مركز المساعدة</h4>
+                    <button onclick="window.app.setView('instructions'); window.app.closeModal('modal-settings');" class="w-full bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 py-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fas fa-question-circle"></i> عرض تعليمات الاستخدام
+                    </button>
+                </div>
+                
                 <!-- Theme -->
                 <div class="space-y-3">
                     <h4 class="font-extrabold text-slate-800 text-sm border-b border-slate-100 pb-2">المظهر العام</h4>
@@ -838,17 +902,6 @@
                     <div id="schoolGenderSelectorContainer" class="flex gap-4 items-center bg-slate-50 border border-slate-200 rounded-xl p-3">
                         <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="defaultSchoolGender" value="male" onchange="window.app.setDefaultSchoolGender('male')" class="accent-[rgb(var(--color-primary-600))]"><span class="text-sm font-bold text-slate-700">بنين</span></label>
                         <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="defaultSchoolGender" value="female" onchange="window.app.setDefaultSchoolGender('female')" class="accent-pink-600"><span class="text-sm font-bold text-slate-700">بنات</span></label>
-                    </div>
-                </div>
-
-                <!-- Support Section -->
-                <div class="space-y-3">
-                    <h4 class="font-extrabold text-slate-800 text-sm border-b border-slate-100 pb-2">الدعم الفني</h4>
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
-                         <p class="text-sm text-slate-600 mb-3">تصميم وبرمجة: الأستاذ عادل الغزيلي</p>
-                         <a href="https://wa.me/96598882855" target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-sm transition shadow-md shadow-emerald-100">
-                             <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
-                         </a>
                     </div>
                 </div>
                 
@@ -928,9 +981,17 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Support Section -->
+                <div class="mt-8 pt-4 border-t border-slate-100 space-y-3">
+                    <h4 class="font-extrabold text-slate-800 text-sm">الدعم الفني</h4>
+                    <button onclick="window.app.contactSupport()" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 py-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fab fa-whatsapp"></i> تواصل مع المبرمج (عادل الغزيلي)
+                    </button>
+                </div>
                 
                 <!-- Danger Zone -->
-                <div class="mt-8 pt-4 border-t border-slate-100">
+                <div class="mt-4 pt-4 border-t border-slate-100">
                     <button onclick="window.app.deleteData()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 py-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fas fa-trash-alt"></i> حذف جميع البيانات وإعادة تعيين
                     </button>
@@ -961,12 +1022,6 @@
                 this.loadLocalData();
                 this.initFirebaseAndAuth();
                 this.startClock();
-                this.bindAuthEvents();
-            }
-
-            bindAuthEvents() {
-                document.getElementById('googleLoginBtn')?.addEventListener('click', () => this.handleGoogleLogin());
-                document.getElementById('guestLoginBtn')?.addEventListener('click', () => this.skipLogin());
             }
 
             loadLocalData() {
@@ -1068,7 +1123,7 @@
                     { id: 1, title: "التحصيل الدراسي", subtitle: "(تحصيل الطلبة في الأعمال الصفية وغير الصفية)", items: { 1: { desc: "اكتسب جميع الطلبة المهارات الأساسية والمعارف بصورة فعالة.", rec: "تنفيذ مبادرة تربوية تعزز من اكتساب الطلبة للمهارات والمعارف." }, 2: { desc: "يكتسب معظم الطلبة المهارات الأساسية والمعارف بصورة فاعلة.", rec: "تكثيف الأنشطة الإثرائية التي تستهدف الطلبة ذوي المستوى المرتفع." }, 3: { desc: "يكتسب أغلب الطلبة المهارات الأساسية بصورة ملائمة.", rec: "التركيز على تصميم أنشطة صفية متمايزة تضمن اكتساب جميع الطلبة للمهارات." }, 4: { desc: "اكتسب قلة من الطلبة المهارات الأساسية بصورة محدودة.", rec: "تنفيذ حصص تقوية للطلبة واستغلال حصص الاحتياطي لتكثيف الخطط العلاجية." }, 5: { desc: "يكتسب عدد نادر من الطلبة المهارات الأساسية.", rec: "وضع خطة علاجية فورية وشاملة وحصر المهارات المتأخرة." } } },
                     { id: 2, title: "التقدم الدراسي", subtitle: "(التقدم في المعارف والمهارات أثناء الحصة)", items: { 1: { desc: "يتقدم جميع الطلبة في المعارف والمفاهيم والمهارات بصورة متميزة.", rec: "تنفيذ قراءة موجهة لزملاء العمل لآلية تطبيق هرم بلوم." }, 2: { desc: "يتقدم معظم الطلبة دراسياً أثناء الحصة بصورة فاعلة.", rec: "الحرص على مراجعة آليات تفريد التعليم المقدمة للطلبة." }, 3: { desc: "يتقدم أغلب الطلبة دراسياً أثناء الحصة بصورة ملائمة.", rec: "ضمان توظيف هرم بلوم للأهداف بفاعلية في صياغة أسئلة الحصة." }, 4: { desc: "اكتسب بعض الطلبة المعارف والمفاهيم بصورة محدودة.", rec: "تطبيق مشروع تفريد التعلم وتنفيذ الخطط الفردية." }, 5: { desc: "يتقدم عدد نادر من الطلبة دراسياً بصورة محدودة جداً.", rec: "البدء فوراً في تنفيذ الخطط الفردية وتفريد التعلم." } } },
                     { id: 3, title: "مهارات التعلم", subtitle: "(التعلم الذاتي، التعاوني، والرقمي)", items: { 1: { desc: "يطبق جميع الطلبة مهارات التعلم الذاتي والتعاوني والرقمي بصورة متميزة.", rec: "تنفيذ قراءة موجهة لآلية طرح أسئلة مثيرة للتفكير." }, 2: { desc: "يطبق معظم الطلبة مهارات التعلم بمستوى فاعل.", rec: "تعزيز توظيف المنصات الرقمية لتدريب الطلبة على التعلم الذاتي." }, 3: { desc: "يطبق أغلب الطلبة مهارات التعلم بمستوى ملائم.", rec: "إدراج أنشطة صفية محددة تهدف لتنمية مهارات التفكير الناقد." }, 4: { desc: "اكتسب بعض الطلبة مهارات التعلم الذاتي بصورة محدودة.", rec: "تنفيذ مشروع يهدف إلى تنمية مهارات التعلم الذاتي والرقمي." }, 5: { desc: "يطبق عدد نادر من الطلبة مهارات التعلم بمستوى محدود جداً.", rec: "التركيز على تدريب الطلبة على أبسط مهارات التعلم ودمجها في الدرس." } } },
-                    { id: 4, title: "القيم والسلوك", subtitle: "(الانضباط، الهوية الوطنية، القيم الإنسانية)", items: { 1: { desc: "يدرك جميع الطلبة للحقوق والواجبات ويعتزون بهويتهم العمانية.", rec: "تعزيز وتحفيز الطلبة بنماذج وملصقات تعبر عن الهوية العمانية." }, 2: { desc: "يلتزم معظم الطلبة بالقيم الإنسانية المشتركة بمستوى فاعل.", rec: "تصميم أنشطة إثرائية لتعزيز القيم الإيجابية لدى الطلبة." }, 3: { desc: "يلتزم أغلب الطلبة بالقيم الإنسانية المشتركة بمستوى ملائم.", rec: "توفير فرص للطلبة لممارسة التعبير عن الذات والحوار بثقة." }, 4: { desc: "يدرك بعض الطلبة الحقوق والواجبات بصورة محدودة.", rec: "تنفيذ مشروع يهدف إلى تنمية مهارات التعلم والسلوك وتعزيز الهوية." }, 5: { desc: "يلتزم عدد نادر من الطلبة بالقيم الإنسانية.", rec: "وضع خطة سلوكية مركزة لعلاج حالات عدم الانضباط في الحصة." } } },
+                    { id: 4, title: "القيم والسلوك", subtitle: "(الانضباط، الهوية الوطنية، القيم الإنسانية)", items: { 1: { desc: "يدرك جميع الطلبة للحقوق والواجبات ويعتزون بهويتهم العمانية.", rec: "تعزيز وتحفيز الطلبة بنماذج وملصقات تعبر عن الهوية العمانية." }, 2: { desc: "يلتزم معظم الطلبة بالقيم الإنسانية المشتركة بمستوى فاعل.", rec: "تصميم أنشطة إثرائية لتعزيز القيم الإيجابية لدى الطلبة." }, 3: { desc: "يلتزم أغلب الطلبة بالقيم الإنسانية المشتركة بمستوى ملائم.", rec: "توفير فرص للطلبة لممارسة التعبير عن الذات والحوار بثقة." }, 4: { desc: "يدرك بعض الطلبة الحقوق والواجبات بصورة محدودة.", rec: "تنفيذ مشروع يهدف إلى تنمية القيم والسلوك وتعزيز الهوية." }, 5: { desc: "يلتزم عدد نادر من الطلبة بالقيم الإنسانية.", rec: "وضع خطة سلوكية مركزة لعلاج حالات عدم الانضباط في الحصة." } } },
                     { id: 5, title: "جودة بيئة التعلم", subtitle: "(الأمن والسلامة، النظافة، الجاذبية)", items: { 1: { desc: "يتابع المعلم جميع جوانب الأمن والسلامة والنظافة بصورة متميزة.", rec: "تنفيذ حصة تطبيقية حول جوانب الأمن والسلامة في البيئة الصفية." }, 2: { desc: "يتابع المعلم جوانب الأمن والسلامة بصورة جيدة.", rec: "توثيق الممارسات المتميزة في جوانب الأمن والسلامة وتعميمها." }, 3: { desc: "يتابع المعلم جوانب الأمن والسلامة بصورة مناسبة.", rec: "التأكد من تطبيق سياسات الأمن والسلامة في جميع الأنشطة الصفية." }, 4: { desc: "يتابع بعض جوانب الأمن والسلامة بصورة محدودة.", rec: "الالتزام بتدابير الأمن والسلامة في البيئة الصفية (أسلاك مكشوفة..)." }, 5: { desc: "يتابع المعلم جوانب الأمن والسلامة بصورة نادرة.", rec: "اتخاذ إجراءات تصحيحية فورية لضمان سلامة الطلبة." } } },
                     { id: 6, title: "تخطيط المنهاج الدراسي", subtitle: "(التسلسل، ارتباط الأهداف، النواتج)", items: { 1: { desc: "يخطط لجميع دروسه متسلسلاً في تنوع الأهداف بصورة متميزة.", rec: "تنفيذ ورشة تدريبية لكيفية التخطيط للدرس بما يتوافق مع الخطة الفصلية." }, 2: { desc: "يخطط المعلم معظم دروسه بصورة جيدة.", rec: "تطوير التخطيط اليومي عبر إضافة أنشطة إثرائية وخطط علاجية واضحة." }, 3: { desc: "يخطط المعلم أغلب دروسه بصورة مناسبة.", rec: "مراجعة التخطيط للتأكد من ربط الأهداف بنواتج التعلم المحددة." }, 4: { desc: "يخطط لبعض دروسه بصورة محدودة.", rec: "الالتزام بتوافق أهداف خطة الدرس مع الخطة الفصلية." }, 5: { desc: "يخطط المعلم عدد محدود جداً من دروسه بصورة نادرة.", rec: "الالتزام الفوري بإعداد خطط الدروس اليومية بشكل متكامل." } } },
                     { id: 7, title: "إدارة الصف", subtitle: "(إدارة الوقت، السلوك، الدافعية)", items: { 1: { desc: "يقوم بإدارة زمن التعلم وإدارة سلوكيات جميع الطلبة بصورة فعالة.", rec: "العمل على تحليل نتائج الطلبة وتوثيق الأسئلة العاصفة للذهن." }, 2: { desc: "يقوم المعلم بإدارة زمن التعلم بصورة جيدة.", rec: "إدراج استراتيجيات مبتكرة لإدارة سلوكيات الطلبة وتعزيز دافعيتهم." }, 3: { desc: "يقوم المعلم بإدارة زمن التعلم وسلوك طلبته بصورة ملائمة.", rec: "الاستمرار في الإدارة الجيدة للحصة والتركيز على تحويل السلوكيات السلبية." }, 4: { desc: "يقوم بإدارة زمن التعلم بصورة محدودة.", rec: "الالتزام بزمن التعلم والعمل على إدارة وقت الحصة بشكل فعال." }, 5: { desc: "يقوم المعلم بإدارة زمن التعلم وسلوك طلبته بصورة نادرة.", rec: "تطبيق قواعد صارمة لإدارة الصف والالتزام بالخطة الزمنية." } } },
@@ -1082,7 +1137,7 @@
             }
 
             setView(v) { 
-                ['now', 'teachers', 'reports', 'supervision', 'supervision-report', 'supervision-history', 'tasks', 'agenda', 'supervision-hub', 'duty', 'reserve', 'periods', 'help'].forEach(x => { 
+                ['now', 'teachers', 'reports', 'supervision', 'supervision-report', 'supervision-history', 'tasks', 'agenda', 'supervision-hub', 'duty', 'reserve', 'periods', 'instructions'].forEach(x => { 
                     document.getElementById(`view-${x}`)?.classList.add('hidden-view'); 
                     const b = document.getElementById(`btn-${x}`); 
                     if(b) { 
@@ -1108,6 +1163,51 @@
                 } 
                 if(v==='teachers') this.renderTeachers(); if(v==='reports') this.renderReports(); if(v==='supervision-history') this.renderHistory(); if(v==='tasks') this.renderTasks(); if(v==='agenda') this.renderAgenda(); if(v==='supervision-hub') this.renderSupervisionHub(); if(v==='duty') this.renderDutyTable(); if(v==='reserve') this.renderReserve(); if(v==='periods') this.renderPeriods();
                 if(v==='now') { this.renderCurrentPeriod(new Date(new Date().getTime() + this.state.simulationOffset)); this.renderDailyDutyWidget(new Date(new Date().getTime() + this.state.simulationOffset)); } 
+            }
+
+            contactSupport() {
+                const phone = '96898882855';
+                const message = 'مرحباً، أحتاج إلى دعم فني بخصوص تطبيق مدير المدرسة الذكي.';
+                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+            }
+
+            exportPhoneTemplate() {
+                const data = [['Teacher_ID', 'Teacher_Name', 'Phone']];
+                this.state.teachers.forEach(t => {
+                    data.push([t.id, t.name, t.phone || '']);
+                });
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                
+                // Set column widths for better UX
+                ws['!cols'] = [{wch:12}, {wch:30}, {wch:15}];
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Phone_Numbers");
+                XLSX.writeFile(wb, "Teachers_Phone_Template_With_Names.xlsx");
+                alert('تم تنزيل قالب أرقام الهواتف مع أسماء المعلمين.\nيرجى ملء عمود "Phone" فقط ثم إعادة استيراد الملف.');
+            }
+
+            downloadCriteriaTemplateExcel() {
+                const headers = ["المعيار", "وصف المعيار", "الحكم (1-5)", "الوصف السلوكي", "التوصيات"];
+                const data = [headers];
+                
+                this.state.evaluationCriteria.forEach(criterion => {
+                    Object.keys(criterion.items).sort().forEach(rating => {
+                        const item = criterion.items[rating];
+                        data.push([
+                            criterion.title,
+                            criterion.subtitle,
+                            `مستوى ${rating}`,
+                            item.desc,
+                            item.rec
+                        ]);
+                    });
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Evaluation Criteria");
+                XLSX.writeFile(wb, "Evaluation_Criteria_Template.xlsx");
             }
 
             // --- Periods Management ---
@@ -1343,7 +1443,11 @@
                         `;
                     });
                 }
-
+                
+                document.body.classList.add('printing-subs');
+                window.addEventListener('afterprint', () => {
+                    document.body.classList.remove('printing-subs');
+                }, { once: true });
                 window.print();
             }
 
@@ -1598,6 +1702,14 @@
             saveVisit() {
                 const visitData = { id: Date.now().toString(), teacherName: document.getElementById('repTeacherName').innerText, specialization: document.getElementById('repSpecialization').innerText, className: document.getElementById('repClassName').innerText, topic: document.getElementById('repLessonTopic').innerText, date: document.getElementById('reportDate').innerText, gender: this.state.supervisionData.gender, ratings: {...this.state.supervisionData.ratings}, notes: {...this.state.supervisionData.notes}, aiReportContent: document.getElementById('aiReportContent').innerHTML };
                 if(!this.state.supervisionHistory) this.state.supervisionHistory = []; const existingIndex = this.state.supervisionHistory.findIndex(v => v.id === visitData.id); if (existingIndex > -1) { this.state.supervisionHistory[existingIndex] = visitData; } else { this.state.supervisionHistory.push(visitData); } this.saveData(); alert('تم حفظ الزيارة في السجل بنجاح');
+            }
+
+            printSupervisionReport() {
+                document.body.classList.add('printing-supervision');
+                window.addEventListener('afterprint', () => {
+                    document.body.classList.remove('printing-supervision');
+                }, { once: true });
+                window.print();
             }
 
             buildPlainTextReport() {
@@ -1913,4 +2025,306 @@
                     return `<div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100 p-5 flex flex-col gap-4 group"><div class="flex justify-between items-start"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[rgb(var(--color-primary-500))] to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-indigo-100">${t.short[0] || '?'}</div><div><h3 class="font-bold text-slate-800 line-clamp-1 text-base">${t.name}</h3><p class="text-xs text-[rgb(var(--color-primary-600))] mt-0.5 font-bold bg-[rgb(var(--color-primary-50))] px-2 py-0.5 rounded-md w-fit">${t.specialization || 'معلم مادة'}</p>${schoolBadge}</div></div><div class="font-black text-xs px-2.5 py-1.5 rounded-lg border ${scoreColor}">${t.score}%</div></div><div class="relative group/input"><i class="fas fa-phone-alt absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-[rgb(var(--color-primary-500))] transition-colors text-xs"></i><input type="tel" value="${t.phone || ''}" onchange="window.app.updatePhone('${t.id}', this.value)" placeholder="أضف رقم الهاتف" class="w-full pr-9 pl-3 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[rgb(var(--color-primary-500))] focus:ring-4 focus:ring-[rgb(var(--color-primary-100))] transition-all outline-none text-sm font-medium text-slate-800 placeholder:text-slate-400"></div><div class="flex gap-2 mt-auto pt-3 border-t border-slate-50"><button type="button" onclick="window.app.openActionModal('${t.id}')" class="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer shadow-sm">إدارة</button><button type="button" onclick="window.app.openWhatsApp('${t.id}')" class="w-10 flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 rounded-xl transition cursor-pointer shadow-sm hover:shadow"><i class="fab fa-whatsapp text-lg"></i></button></div></div>`; 
                 }).join(''); 
             }
-            renderAgenda() { const tbody = document.getElementById('agendaBody'); if(!tbody) return; const agenda = this.state.agenda || []; if(agenda.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">لا توجد أحداث مسجلة.</td></tr>`; return; } agenda.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()); const todayStr = new Date().toISOString().split('T')[0]; tbody.innerHTML = agenda.map((item, index) => { const itemDateStr = new Date(item.date).toISOString().split('T')[0]; const isToday = itemDateStr === todayStr; return `<tr class="${isToday ? 'bg-yellow-50 border-r-4 border-yellow
+            renderAgenda() { const tbody = document.getElementById('agendaBody'); if(!tbody) return; const agenda = this.state.agenda || []; if(agenda.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">لا توجد أحداث مسجلة.</td></tr>`; return; } agenda.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()); const todayStr = new Date().toISOString().split('T')[0]; tbody.innerHTML = agenda.map((item, index) => { const itemDateStr = new Date(item.date).toISOString().split('T')[0]; const isToday = itemDateStr === todayStr; return `<tr class="${isToday ? 'bg-yellow-50 border-r-4 border-yellow-400' : 'hover:bg-slate-50'} transition-colors border-b border-slate-100 last:border-0"><td class="p-4 text-center font-bold text-slate-400 text-xs">${index + 1}</td><td class="p-4 font-mono text-xs font-bold text-[rgb(var(--color-primary-700))]">${item.date}</td><td class="p-4 font-bold text-slate-700 text-sm">${item.event}</td></tr>`; }).join(''); }
+            verifyAdminAndImportAgenda() { if(prompt('PIN:') === '1234') document.getElementById('agendaInput').click(); else alert('خطأ'); }
+            handleAgendaExcel(e) { const reader = new FileReader(); reader.onload = (evt) => { const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array'}); const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1}); const newAgenda = []; for(let i = 1; i < json.length; i++) { const row = json[i]; if(row && row.length >= 3) { let dateVal = row[1]; if(typeof dateVal === 'number') dateVal = new Date(Math.round((dateVal - 25569)*86400*1000)).toISOString().split('T')[0]; newAgenda.push({ id: Date.now() + i, date: dateVal, event: row[2] }); } } if(newAgenda.length > 0) { this.state.agenda = newAgenda; this.saveData(); this.renderAgenda(); alert('تم'); } else alert('تنسيق غير صالح'); }; reader.readAsArrayBuffer(e.target.files[0]); }
+            renderReports() { const tbody = document.getElementById('reportsBody'); if(!tbody) return; tbody.innerHTML = this.state.teachers.map(t => { let badge = t.score >= 90 ? "bg-emerald-100 text-emerald-700" : (t.score >= 70 ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"); return `<tr class="hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 group"><td class="p-4 font-semibold text-slate-700"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold group-hover:bg-white group-hover:shadow-sm transition">${t.short[0] || '?'}</div><div>${t.name}<br/><span class="text-[10px] text-slate-400 font-normal">${t.school || ''}</span></div></div></td><td class="p-4 text-center"><span class="inline-block px-3 py-1 rounded-lg text-xs font-bold ${badge}">${t.score}%</span></td><td class="p-4 text-center text-slate-500 font-mono text-xs">${t.phone || '-'}</td><td class="p-4 text-center">${t.score < 80 ? '<span class="text-[10px] text-rose-500 font-bold bg-rose-50 px-2 py-1 rounded-md border border-rose-100">متابعة</span>' : '<span class="text-[10px] text-emerald-500 font-bold bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">ممتاز</span>'}</td></tr>`; }).join(''); }
+            addTask() { const text = document.getElementById('newTaskInput').value.trim(); if(text) { this.state.tasks.unshift({id:Date.now().toString(), text, priority: document.getElementById('newTaskPriority').value, completed:false}); this.saveData(); this.renderTasks(); document.getElementById('newTaskInput').value=''; } }
+            toggleTask(id) { const t = this.state.tasks.find(x=>x.id===id); if(t) { t.completed=!t.completed; this.saveData(); this.renderTasks(); } }
+            deleteTask(id) { if(confirm('حذف؟')) { this.state.tasks = this.state.tasks.filter(x=>x.id!==id); this.saveData(); this.renderTasks(); } }
+            renderTasks() { const list = document.getElementById('tasksList'); if(!list) return; const completed = this.state.tasks.filter(t=>t.completed).length; document.getElementById('tasksProgressBar').style.width = (this.state.tasks.length ? Math.round((completed/this.state.tasks.length)*100) : 0) + '%'; document.getElementById('tasksProgressText').innerText = `${completed}/${this.state.tasks.length}`; list.innerHTML = this.state.tasks.length === 0 ? `<div class="text-center p-8 text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200"><p class="text-xs font-medium">لا توجد مهام حالياً.</p></div>` : this.state.tasks.map(t => `<div class="flex items-center gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm transition hover:shadow-md group"><label class="relative flex items-center cursor-pointer"><input type="checkbox" class="task-checkbox sr-only peer" ${t.completed?'checked':''} onchange="window.app.toggleTask('${t.id}')"><div class="w-6 h-6 bg-slate-50 border-2 border-slate-200 rounded-full peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-all flex items-center justify-center text-white"><i class="fas fa-check text-[10px] ${t.completed?'opacity-100':'opacity-0'}"></i></div></label><div class="flex-1 ${t.completed?'line-through text-slate-400':'text-slate-700'}"><p class="text-sm font-bold leading-snug">${t.text}</p></div><span class="text-[10px] px-2 py-1 rounded-lg font-bold ${t.priority==='urgent'?'bg-rose-50 text-rose-600 border border-rose-100':'bg-blue-50 text-blue-600 border border-blue-100'}">${t.priority==='urgent'?'عاجل':'عادي'}</span><button onclick="window.app.deleteTask('${t.id}')" class="text-slate-300 hover:text-rose-500 transition px-2 opacity-0 group-hover:opacity-100"><i class="fas fa-trash-alt"></i></button></div>`).join(''); }
+            renderHistory() { const grid = document.getElementById('supervisionHistoryGrid'); if(!grid) return; const history = this.state.supervisionHistory || []; if(history.length === 0) { grid.innerHTML = '<div class="text-center p-12 text-slate-400 bg-slate-50 rounded-3xl border border-dashed border-slate-200">لا يوجد سجل زيارات حتى الآن.</div>'; return; } history.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()); grid.innerHTML = history.map((v, i) => `<div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-[rgb(var(--color-primary-200))] transition group"><div class="flex-1"><div class="flex items-center gap-3 mb-1"><span class="font-bold text-slate-800 text-base">${v.teacherName}</span><span class="bg-slate-50 text-slate-500 text-[10px] px-2 py-0.5 rounded-md border border-slate-200 font-bold">${v.className}</span></div><p class="text-xs text-slate-500 mb-1 flex items-center gap-1"><i class="fas fa-book-open text-slate-300"></i> ${v.topic}</p><span class="text-[10px] text-slate-400 font-mono bg-slate-50 px-2 rounded">${v.date}</span></div><div class="flex gap-2 w-full md:w-auto opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"><button onclick="window.app.loadVisit(${i})" class="flex-1 md:flex-none bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 px-4 py-2 rounded-xl font-bold text-xs transition cursor-pointer border border-slate-200">عرض التفاصيل</button><button onclick="window.app.deleteVisit(${i})" class="md:flex-none text-rose-300 hover:text-rose-600 px-3 py-2 rounded-xl transition cursor-pointer hover:bg-rose-50"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
+            updatePhone(id, val) { const t = this.state.teachers.find(x => x.id === id); if(t) { t.phone = val; this.saveData(); } }
+            openActionModal(tId, className = null) { this.state.selectedTeacherId = tId; this.state.selectedClassName = className; const t = this.state.teachers.find(x => x.id === tId); if(!t) return; document.getElementById('actionModalTitle').innerHTML = `<div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-lg">📝</div>${t.name}</div>`; document.getElementById('actionModalSubtitle').innerHTML = className && className !== 'undefined' ? `<span class="bg-white/10 px-2 py-0.5 rounded text-[10px]">الحصة: ${className}</span>` : 'قائمة الإدارة'; document.getElementById('currentScoreDisplay').innerText = t.score + '%'; const remind = document.getElementById('btn-remind'); const evalBtn = document.getElementById('btn-evaluate'); if(className && className !== 'undefined') { remind.disabled=false; remind.classList.remove('opacity-50','cursor-not-allowed'); evalBtn.onclick=()=>{this.closeModal('modal-action');this.startSupervision(tId,className);}; } else { remind.disabled=true; remind.classList.add('opacity-50','cursor-not-allowed'); evalBtn.onclick=()=>{this.closeModal('modal-action');this.startSupervision(tId,'زيارة عامة');}; } document.getElementById('violationButtonsContainer').innerHTML = this.state.violationTypes.map(v => `<button type="button" onclick="window.app.dockScore('${v.id}')" class="w-full bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-200 p-3 rounded-xl flex items-center justify-between transition group cursor-pointer"><span class="flex items-center gap-3 font-bold text-xs"><div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:text-rose-500 group-hover:border-rose-200 transition"><i class="fas ${v.icon}"></i></div>${v.label}</span><span class="bg-white px-2 py-1 rounded text-[10px] font-bold text-rose-500 border border-slate-200 group-hover:border-rose-200 shadow-sm">-${v.points}</span></button>`).join(''); document.getElementById('modal-action').classList.remove('hidden-view'); }
+            closeModal(id) { document.getElementById(id)?.classList.add('hidden-view'); }
+            loadVisit(index) { const sorted = [...this.state.supervisionHistory].sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); const visit=sorted[index]; if(visit){this.state.supervisionData={ratings:visit.ratings,notes:visit.notes||{}, gender: visit.gender || 'male' };this.generateReport(true,visit);} }
+            deleteVisit(index) { if(confirm('حذف؟')) { const sorted = [...this.state.supervisionHistory].sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); const id=sorted[index].id; this.state.supervisionHistory=this.state.supervisionHistory.filter(x=>x.id!==id); this.saveData(); this.renderHistory(); } }
+            sendWhatsApp(type) { const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId); if(!t || !t.phone) return alert('أضف الهاتف أولاً'); let msg = type === 'summon' ? `السلام عليكم أستاذ ${t.name}، يرجى التكرم بزيارة مكتب الإدارة.` : `السلام عليكم أستاذ ${t.name}، تذكير بموعد حصتكم الحالية في الصف ${this.state.selectedClassName}.`; window.open(`https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}`, '_blank'); }
+            openWhatsApp(id) { const t = this.state.teachers.find(x => x.id === id); if(t && t.phone) window.open(`https://wa.me/${t.phone}`, '_blank'); else alert('أضف الهاتف أولاً'); }
+            dockScore(vId) { const v = this.state.violationTypes.find(x => x.id === vId); if(v && confirm(`خصم ${v.points}؟`)) { const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId); if(t) { t.score = Math.max(0, t.score - v.points); this.saveData(); this.closeModal('modal-action'); } } }
+            handleXml(e) { const reader = new FileReader(); reader.readAsText(e.target.files[0], "windows-1256"); reader.onload = (evt) => { try { const xml = new DOMParser().parseFromString(evt.target.result, "text/xml"); this.state.periods = Array.from(xml.querySelectorAll('periods period')).map(p => ({ id: p.getAttribute('period'), start: p.getAttribute('starttime'), end: p.getAttribute('endtime') })); const classes = {}; xml.querySelectorAll('classes class').forEach(c => classes[c.getAttribute('id')] = c.getAttribute('name')); this.state.classes = classes; this.state.teachers = Array.from(xml.querySelectorAll('teachers teacher')).map(t => ({ id: t.getAttribute('id'), name: t.getAttribute('name'), short: t.getAttribute('short'), score: 100, phone: '', lessons: [] })); xml.querySelectorAll('TimeTableSchedules TimeTableSchedule').forEach(sch => { const t = this.state.teachers.find(x => x.id === sch.getAttribute('TeacherID')); if(t) t.lessons.push({ day: parseInt(sch.getAttribute('DayID')), period: parseInt(sch.getAttribute('Period')), className: classes[sch.getAttribute('ClassID')] || 'نشاط' }); }); this.saveData(); this.closeModal('modal-settings'); alert('تم'); } catch(err) { alert('خطأ'); } }; }
+            exportTeacherTemplate() {
+                const headers = [[
+                    'Teacher_ID', 
+                    'Short_Name', 
+                    'Full_Name', 
+                    'Phone', 
+                    'School_Name', 
+                    'Specialization'
+                ]];
+                const ws = XLSX.utils.aoa_to_sheet(headers);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Teachers_Data_Template");
+                XLSX.writeFile(wb, "Teachers_Supervisor_Template.xlsx");
+            }
+            handleExcel(e) { 
+                const reader = new FileReader(); 
+                reader.onload = (evt) => { 
+                    try {
+                        const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array'}); 
+                        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); 
+                        let added = 0; let updated = 0;
+                        json.forEach(row => {
+                            const tId = row['Teacher_ID'] || row['الرقم_الوظيفي'] || row['id'];
+                            if (!tId) return;
+                            const idStr = String(tId).trim();
+                            const existingIndex = this.state.teachers.findIndex(t => t.id === idStr);
+                            
+                            if (existingIndex > -1) { 
+                                // UPDATE EXISTING TEACHER
+                                const t = this.state.teachers[existingIndex];
+                                
+                                const name = row['Full_Name'] || row['الاسم_الكامل'] || row['Teacher_Name'] || row['name'];
+                                if (name) t.name = name;
+
+                                if (Object.prototype.hasOwnProperty.call(row, 'Phone') || Object.prototype.hasOwnProperty.call(row, 'الهاتف')) {
+                                    t.phone = String(row['Phone'] || row['الهاتف'] || '');
+                                }
+                                
+                                const school = row['School_Name'] || row['المدرسة'];
+                                if (school) t.school = school;
+                                
+                                const spec = row['Specialization'] || row['التخصص'];
+                                if (spec) t.specialization = spec;
+
+                                const short = row['Short_Name'];
+                                if (short) t.short = short;
+
+                                updated++; 
+                            } 
+                            else { 
+                                // ADD NEW TEACHER
+                                const name = row['Full_Name'] || row['الاسم_الكامل'] || row['Teacher_Name'] || row['name'] || 'معلم بدون اسم';
+                                const phone = row['Phone'] || row['الهاتف'] || '';
+                                const school = row['School_Name'] || row['المدرسة'] || '';
+                                const spec = row['Specialization'] || row['التخصص'] || '';
+                                const short = row['Short_Name'] || name.split(' ').slice(0, 2).join(' ');
+
+                                this.state.teachers.push({ id: idStr, name: name, short: short, phone: String(phone), specialization: spec, school: school, score: 100, lessons: [] }); 
+                                added++; 
+                            }
+                        });
+                        this.saveData(); this.renderTeachers(); 
+                        alert(`تمت العملية بنجاح.\n- تم تحديث: ${updated} معلم.\n- تم إضافة: ${added} معلم جديد.`); 
+                        this.closeModal('modal-settings'); document.getElementById('excelInput').value = '';
+                    } catch (err) { console.error(err); alert('حدث خطأ أثناء معالجة الملف. تأكد من صحة التنسيق.'); }
+                }; 
+                reader.readAsArrayBuffer(e.target.files[0]); 
+            }
+            exportReports() { const data = this.state.teachers.map(t => ({ 'المعلم': t.name, 'التقييم': t.score+'%', 'الهاتف': t.phone||'-' })); const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Reports"); XLSX.writeFile(wb, "School_Report.xlsx"); }
+            
+            simulateRandomPeriod() { 
+                if(!this.state.periods.length) return alert('لا يوجد جدول'); 
+                
+                const r = this.state.periods[Math.floor(Math.random()*this.state.periods.length)]; 
+                const [h,m] = r.start.split(':').map(Number); 
+                
+                let t = new Date();
+                
+                const currentDay = t.getDay(); 
+                
+                const targetDay = Math.floor(Math.random() * 5); 
+                
+                let diff = targetDay - currentDay;
+                
+                t.setDate(t.getDate() + diff);
+                t.setHours(h, m, 0, 0);
+
+                this.state.simulationOffset = t.getTime() - new Date().getTime(); 
+                
+                this.renderCurrentPeriod(t); 
+                this.renderDailyDutyWidget(t); 
+                
+                 const clock = document.getElementById('clockDisplay');
+                if(clock) {
+                    clock.style.color = '#fbbf24';
+                    setTimeout(() => clock.style.color = '', 500);
+                }
+            }
+
+            resetTimeToReal() { this.state.simulationOffset = 0; const now = new Date(); this.renderCurrentPeriod(now); this.renderDailyDutyWidget(now); }
+            startClock() { setInterval(() => { const n = new Date(new Date().getTime() + this.state.simulationOffset); document.getElementById('clockDisplay').innerText = n.toLocaleTimeString('en-GB'); this.renderCurrentPeriod(n); }, 1000); }
+            renderViolationsSettings() { const list = document.getElementById('violationsList'); if(!list) return; list.innerHTML = this.state.violationTypes.map(v => `<div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 shadow-sm group hover:border-red-100 transition"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-400 flex items-center justify-center text-xs"><i class="fas ${v.icon}"></i></div><span class="font-bold text-xs text-slate-700">${v.label}</span></div><div class="flex items-center gap-3"><span class="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-1 rounded-md border border-red-100">-${v.points}</span><button type="button" onclick="window.app.removeViolation('${v.id}')" class="text-slate-300 hover:text-red-500 transition px-2 cursor-pointer"><i class="fas fa-trash-alt"></i></button></div></div>`).join(''); }
+            renderSpecializationsSettings() { const list = document.getElementById('specializationsList'); if(!list) return; list.innerHTML = (this.state.specializations || []).map((s, index) => `<div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm text-xs font-bold text-slate-700 group hover:border-[rgb(var(--color-primary-200))] transition">${s}<button onclick="window.app.removeSpecialization(${index})" class="text-slate-300 hover:text-red-500 transition cursor-pointer ml-1"><i class="fas fa-times"></i></button></div>`).join(''); }
+            addSpecialization() { const input = document.getElementById('newSpecInput'); const val = input.value.trim(); if(val && !this.state.specializations.includes(val)) { this.state.specializations.push(val); input.value = ''; this.saveData(); this.renderSpecializationsSettings(); } }
+            removeSpecialization(index) { if(confirm('حذف هذا التخصص؟')) { this.state.specializations.splice(index, 1); this.saveData(); this.renderSpecializationsSettings(); } }
+            addViolation() { const label = document.getElementById('newViolationLabel').value; const points = parseInt(document.getElementById('newViolationPoints').value); if(label && points) { this.state.violationTypes.push({ id: Date.now().toString(), label, points, icon: 'fa-exclamation-circle' }); document.getElementById('newViolationLabel').value=''; this.saveData(); this.renderViolationsSettings(); } }
+            removeViolation(id) { this.state.violationTypes = this.state.violationTypes.filter(v => v.id !== id); this.saveData(); this.renderViolationsSettings(); }
+            setTheme(themeName) { this.state.theme = themeName; this.applyTheme(); this.saveData(); this.renderThemeSelector(); }
+            applyTheme() { document.body.classList.remove('theme-pink', 'theme-green', 'theme-dark'); if (this.state.theme && this.state.theme !== 'default') document.body.classList.add(`theme-${this.state.theme}`); }
+            renderThemeSelector() { const container = document.getElementById('themeSelectorContainer'); if (!container) return; const themes = [{ id: 'default', name: 'أساسي', colorClass: 'bg-indigo-600', activeClass: 'ring-2 ring-indigo-500 ring-offset-2' }, { id: 'pink', name: 'زهري', colorClass: 'bg-pink-600', activeClass: 'ring-2 ring-pink-500 ring-offset-2' }, { id: 'green', name: 'أخضر', colorClass: 'bg-green-600', activeClass: 'ring-2 ring-green-500 ring-offset-2' }, { id: 'dark', name: 'ليلي', colorClass: 'bg-slate-800', activeClass: 'ring-2 ring-slate-600 ring-offset-2' }]; container.innerHTML = themes.map(theme => { const isActive = this.state.theme === theme.id; const ringClass = isActive ? theme.activeClass : ''; return `<button onclick="window.app.setTheme('${theme.id}')" class="p-1 rounded-xl transition ${ringClass}"><div class="w-full h-12 rounded-lg ${theme.colorClass} shadow-sm"></div><span class="text-[10px] font-bold mt-1.5 block text-center text-slate-500">${theme.name}</span></button>`; }).join(''); }
+            setDefaultSchoolGender(gender) { if (gender === 'male' || gender === 'female') { this.state.defaultSchoolGender = gender; this.saveData(); } }
+            renderSchoolGenderSettings() { const radios = document.getElementsByName('defaultSchoolGender'); for (const radio of radios) { if (radio.value === this.state.defaultSchoolGender) { radio.checked = true; } } }
+            openSettings() { 
+                this.renderViolationsSettings(); 
+                this.renderSpecializationsSettings(); 
+                this.renderThemeSelector(); 
+                this.renderSchoolGenderSettings(); 
+                
+                const devSection = document.getElementById('developerSettingsSection');
+                if (devSection) {
+                    if (this.state.currentUser && this.state.currentUser.email === 'alsaher9@gmail.com') {
+                        devSection.classList.remove('hidden-view');
+                        document.getElementById('settingCloudUrl').value = this.state.cloudFunctionUrl || '';
+                    } else {
+                        devSection.classList.add('hidden-view');
+                    }
+                }
+                document.getElementById('modal-settings')?.classList.remove('hidden-view'); 
+            }
+
+            // --- Duty System Methods ---
+
+            renderDutyTable() {
+                const headerRow = document.getElementById('dutyHeaderRow');
+                const dutyBody = document.getElementById('dutyBody');
+                if (!headerRow || !dutyBody) return;
+
+                headerRow.innerHTML = '';
+                this.state.dutyLocations.forEach((loc, index) => {
+                    const th = document.createElement('th');
+                    th.className = "p-4 text-center text-slate-700 font-extrabold";
+                    th.innerText = loc;
+                    headerRow.appendChild(th);
+                });
+
+                dutyBody.innerHTML = '';
+                const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
+                
+                days.forEach((day, dayIndex) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0";
+                    
+                    const tdDay = document.createElement('td');
+                    tdDay.className = "p-4 font-bold text-[rgb(var(--color-primary-700))] bg-slate-50 sticky right-0 z-10 border-l border-slate-100 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]";
+                    tdDay.innerText = day;
+                    tr.appendChild(tdDay);
+
+                    this.state.dutyLocations.forEach((loc, locIndex) => {
+                        const td = document.createElement('td');
+                        td.className = "p-2 duty-cell relative group border-l border-slate-50";
+                        
+                        const teacherId = this.state.dutySchedule[dayIndex]?.[locIndex] || "";
+                        
+                        const select = document.createElement('select');
+                        select.className = "w-full bg-transparent border-none outline-none text-xs font-bold text-slate-600 appearance-none cursor-pointer p-2 rounded-lg hover:bg-slate-100 transition";
+                        select.onchange = (e) => this.updateDuty(dayIndex, locIndex, e.target.value);
+                        
+                        const defaultOpt = document.createElement('option');
+                        defaultOpt.value = "";
+                        defaultOpt.text = "-";
+                        select.add(defaultOpt);
+
+                        const sortedTeachers = [...this.state.teachers].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
+                        sortedTeachers.forEach(t => {
+                            const opt = document.createElement('option');
+                            opt.value = t.id;
+                            opt.text = t.name;
+                            if(t.id === teacherId) opt.selected = true;
+                            select.add(opt);
+                        });
+                        td.appendChild(select);
+
+                        if(teacherId) {
+                            const actionDiv = document.createElement('div');
+                            actionDiv.className = "duty-actions absolute top-1/2 -translate-y-1/2 left-2 flex gap-1 bg-white p-1 rounded-full shadow-md border border-slate-100";
+                            
+                            const msgBtn = document.createElement('button');
+                            msgBtn.className = "text-emerald-500 hover:text-emerald-600 w-6 h-6 flex items-center justify-center rounded-full hover:bg-emerald-50 transition";
+                            msgBtn.innerHTML = '<i class="fab fa-whatsapp"></i>';
+                            msgBtn.title = "استفسار";
+                            msgBtn.onclick = () => this.sendDutyMessage(teacherId, day, loc);
+                            
+                            const flagBtn = document.createElement('button');
+                            flagBtn.className = "text-rose-400 hover:text-rose-600 w-6 h-6 flex items-center justify-center rounded-full hover:bg-rose-50 transition";
+                            flagBtn.innerHTML = '<i class="fas fa-user-times"></i>';
+                            flagBtn.title = "مخالفة";
+                            flagBtn.onclick = () => this.handleDutyAbsence(teacherId, loc);
+
+                            actionDiv.appendChild(msgBtn);
+                            actionDiv.appendChild(flagBtn);
+                            td.appendChild(actionDiv);
+                        }
+
+                        tr.appendChild(td);
+                    });
+                    dutyBody.appendChild(tr);
+                });
+            }
+
+            updateDuty(dayIndex, locIndex, teacherId) {
+                if(!this.state.dutySchedule[dayIndex]) this.state.dutySchedule[dayIndex] = {};
+                this.state.dutySchedule[dayIndex][locIndex] = teacherId;
+                this.saveData();
+                this.renderDutyTable();
+            }
+
+            addDutyLocationPrompt() {
+                const name = prompt("أدخل اسم موقع المناوبة الجديد:");
+                if(name) {
+                    this.state.dutyLocations.push(name);
+                    this.saveData();
+                    this.renderDutyTable();
+                }
+            }
+
+            sendDutyMessage(teacherId, day, location) {
+                const t = this.state.teachers.find(x => x.id === teacherId);
+                if(!t || !t.phone) return alert('يرجى إضافة رقم الهاتف للمعلم أولاً');
+                
+                const msg = `السلام عليكم أستاذ ${t.name}،\nلوحظ عدم تواجدكم في مناوبة (${location}) ليوم ${day}.\nيرجى التكرم بالإفادة حول سبب التأخر أو الغياب.\nشكراً لتعاونكم.`;
+                window.open(`https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            handleDutyAbsence(teacherId, location) {
+                const t = this.state.teachers.find(x => x.id === teacherId);
+                if(!t) return;
+                this.openActionModal(teacherId, `مناوبة: ${location}`);
+            }
+
+            renderDailyDutyWidget(date) {
+                const widget = document.getElementById('dailyDutyWidget');
+                const grid = document.getElementById('dailyDutyGrid');
+                const dateEl = document.getElementById('dailyDutyDate');
+                
+                if(!widget || !grid) return;
+
+                const dayIndex = date.getDay();
+                
+                if(dayIndex > 4) {
+                    widget.classList.add('hidden-view');
+                    return;
+                }
+
+                widget.classList.remove('hidden-view');
+                dateEl.innerText = date.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                
+                const schedule = this.state.dutySchedule[dayIndex] || {};
+                
+                grid.innerHTML = this.state.dutyLocations.map((loc, index) => {
+                    const teacherId = schedule[index];
+                    const teacher = this.state.teachers.find(t => t.id === teacherId);
+                    
+                    return `
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center justify-between group hover:bg-white hover:shadow-sm transition">
+                        <div>
+                            <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">${loc}</div>
+                            <div class="font-bold text-slate-800 text-sm">
+                                ${teacher ? teacher.name : '<span class="text-slate-300 italic">غير محدد</span>'}
+                            </div>
+                        </div>
+                        ${teacher ? `
+                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <button onclick="window.app.sendDutyMessage('${teacher.id}', '${date.toLocaleDateString('ar-EG', {weekday:'long'})}', '${loc}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-emerald-500 hover:text-emerald-600 transition cursor-pointer shadow-sm"><i class="fab fa-whatsapp"></i></button>
+                             <button onclick="window.app.handleDutyAbsence('${teacher.id}', '${loc}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-rose-400 hover:text-rose-500 transition cursor-pointer shadow-sm"><i class="fas fa-exclamation"></i></button>
+                        </div>
+                        ` : ''}
+                    </div>
+                    `;
+                }).join('');
+            }
+        }
+        window.app = new SchoolApp();
+    </script>
+<script src="main-WJNRXRTZ.js" type="module"></script></body>
+</html>

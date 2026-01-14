@@ -24,13 +24,19 @@ export class AppComponent {
   
   currentView = signal<'now' | 'teachers' | 'reports'>('now');
   
+  navItems = [
+    { view: 'now', label: 'الحصص', icon: 'chalkboard' },
+    { view: 'teachers', label: 'المعلمين', icon: 'users-cog' },
+    { view: 'reports', label: 'التقارير', icon: 'file-invoice' }
+  ];
+
   // Modal State
   selectedTeacher = signal<Teacher | null>(null);
   selectedClassName = signal<string | undefined>(undefined);
   showSettings = signal<boolean>(false);
 
-  setView(view: 'now' | 'teachers' | 'reports') {
-    this.currentView.set(view);
+  setView(view: string) {
+    this.currentView.set(view as 'now' | 'teachers' | 'reports');
   }
 
   openModal(data: {teacher: Teacher, className?: string}) {

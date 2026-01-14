@@ -1,4 +1,3 @@
-
 // Angular bootstrap disabled to allow Vanilla JS application in index.html to run without conflicts.
 // The user has chosen to use a standalone index.html implementation.
 console.log('Running in Vanilla JS mode.');

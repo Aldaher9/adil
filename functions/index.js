@@ -6,7 +6,7 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { defineSecret } = require('firebase-functions/params');
 const admin = require("firebase-admin");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 
 admin.initializeApp();
 
@@ -45,8 +45,7 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1', secrets: [g
       console.error("GEMINI_API_KEY secret not available");
       return res.status(500).json({ error: "CONFIGURATION_ERROR", message: "API Key is not configured on the server." });
     }
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const ai = new GoogleGenAI({ apiKey });
 
     // 4. Construct the Prompt
     const contextGender = gender === 'female' ? 'مؤنث (معلمة/طالبات)' : 'مذكر (معلم/طلاب)';
@@ -58,14 +57,16 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1', secrets: [g
     `;
 
     // 5. Generate Content
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
+    const genResponse = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+    });
     
-    if (!response) {
+    if (!genResponse) {
       throw new Error("No response from AI model.");
     }
 
-    const aiText = response.text();
+    const aiText = genResponse.text;
     const cleanText = aiText.replace(/```html/g, '').replace(/```/g, '').trim();
     
     return res.status(200).json({ result: cleanText });
@@ -76,7 +77,7 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1', secrets: [g
     let errorMessage = "An internal server error occurred while processing the AI request.";
     let errorCode = "INTERNAL_ERROR";
 
-    if (error.message.includes("API key not valid")) {
+    if (error.message && error.message.includes("API key not valid")) {
         errorCode = "INVALID_API_KEY";
         errorMessage = "The configured API key is invalid. Please check the server secrets.";
     }

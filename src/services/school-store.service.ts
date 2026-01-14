@@ -225,9 +225,9 @@ export class SchoolStoreService {
     }
   }
 
-  async updateTeacherPhone(id: string, phone: string) {
-    this.teachers.update(list => 
-      list.map(t => t.id === id ? { ...t, phone } : t)
+  async updateTeacher(id: string, updates: Partial<{ name: string; short: string; phone: string; }>) {
+    this.teachers.update(list =>
+      list.map(t => (t.id === id ? { ...t, ...updates } : t))
     );
     await this.syncToCloud();
   }
@@ -249,6 +249,23 @@ export class SchoolStoreService {
   async removeViolationType(id: string) {
       this.violationTypes.update(list => list.filter(x => x.id !== id));
       await this.syncToCloud();
+  }
+
+  exportToExcel() {
+    if (typeof XLSX === 'undefined') {
+        console.error('XLSX library not found');
+        alert('حدث خطأ أثناء تهيئة مكتبة Excel.');
+        return;
+    }
+    const data = this.teachers().map(t => ({ 
+        'المعلم': t.name, 
+        'التقييم': t.score + '%', 
+        'الهاتف': t.phone || '-' 
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Reports");
+    XLSX.writeFile(wb, "School_Report.xlsx");
   }
 
   // --- Import Logic ---
