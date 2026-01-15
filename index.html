@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" data-beasties-container>
-<head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon_32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon_16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/favicon_180x180.png">
-
-
-
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-   
+    <link rel="icon" href="https://lh3.googleusercontent.com/sitesv/AAzXCkeu7FhYYz-bI6UfrG5ThA962okgIov6TisN8rxz4AvzK6lfX8Cd6IRrXLgcxGSfs69HfoSFfesGmFpf4VRz0zsQEyZ7vn-NstvbSZv_5rzkkJgTkNoAf50jJWcqdXKww4lNlkSEKPdsSXqw2OAJAbtiKZizZWIgKksaJrkbD8LlUc9RO8IooH6dJWixcB4APh2Z-RBkxa-fAqzLhksFRxaPr_wdfdxdEpNZtrk=w1280" type="image/png">
+    <title>مدير المدرسة الذكي</title>
+    
     <!-- Fonts & Icons -->
-    <style>@font-face{font-family:'Cairo';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Cairo';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2) format('woff2');unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;}@font-face{font-family:'Cairo';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Cairo';font-style:normal;font-weight:800;font-display:swap;src:url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}</style>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
@@ -45,11 +44,13 @@
 
     <style>
         :root {
-            --color-primary-50: 238 242 255; --color-primary-100: 224 231 255; --color-primary-500: 99 102 241; --color-primary-600: 79 70 229; --color-primary-700: 67 56 202; --color-primary-900: 49 46 129;
+            /* Default Theme: Sky Blue */
+            --color-primary-50: 224 242 254; --color-primary-100: 186 230 253; --color-primary-500: 14 165 233; --color-primary-600: 0 138 230; --color-primary-700: 3 105 161; --color-primary-900: 12 74 110;
             --bg-body: #f8fafc; --text-main: #0f172a; --text-muted: #475569;
         }
         .theme-pink { --color-primary-50: 253 242 248; --color-primary-100: 252 231 243; --color-primary-500: 236 72 153; --color-primary-600: 219 39 119; --color-primary-700: 190 24 93; --color-primary-900: 131 24 67; }
         .theme-green { --color-primary-50: 240 253 244; --color-primary-100: 220 252 231; --color-primary-500: 34 197 94; --color-primary-600: 22 163 74; --color-primary-700: 21 128 61; --color-primary-900: 20 83 45; }
+        .theme-indigo { --color-primary-50: 238 242 255; --color-primary-100: 224 231 255; --color-primary-500: 99 102 241; --color-primary-600: 79 70 229; --color-primary-700: 67 56 202; --color-primary-900: 49 46 129; }
         .theme-dark { --color-primary-50: 30 41 59; --color-primary-100: 51 65 85; --color-primary-500: 99 102 241; --color-primary-600: 129 140 248; --color-primary-700: 165 180 252; --color-primary-900: 49 46 129; --bg-body: #0f172a; --text-main: #f1f5f9; --text-muted: #94a3b8; }
 
         body { background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
@@ -61,6 +62,8 @@
         
         .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-blob { animation: blob 7s infinite; }
+        @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
         
         .hidden-view { display: none !important; }
         .modal-content { z-index: 60; position: relative; }
@@ -112,36 +115,30 @@
         .ai-report-section li { position: relative; padding-right: 1.5rem; line-height: 1.7; }
         .ai-report-section li::before { content: "•"; position: absolute; right: 0; color: rgb(var(--color-primary-500)); font-weight: bold; font-size: 1.2rem; line-height: 1.5rem; }
     </style>
+    
     <script type="importmap">
 {
   "imports": {
     "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
     "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
-    "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
-    "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
-    "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
-    "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
-    "@angular/core": "https://esm.sh/@angular/core@^21.0.8?external=rxjs",
-    "@angular/common": "https://esm.sh/@angular/common@^21.0.8?external=rxjs",
-    "@angular/forms": "https://esm.sh/@angular/forms@^21.0.8?external=rxjs"
+    "@angular/core": "https://esm.sh/@angular/core@^21.1.0?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.1.0?external=rxjs",
+    "@angular/forms": "https://esm.sh/@angular/forms@^21.1.0?external=rxjs"
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/index.css">
 </head>
 <body class="antialiased selection:bg-[rgb(var(--color-primary-100))] selection:text-[rgb(var(--color-primary-900))] pb-32">
 
     <!-- Login View -->
     <div id="login-view" class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-300 p-6 relative overflow-hidden">
-        <!-- Decoration -->
         <div class="absolute top-0 left-0 w-64 h-64 bg-[rgb(var(--color-primary-500))] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
         
         <div class="w-full max-w-sm text-center relative z-10 bg-white/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/40">
-            <!-- Updated Login Icon -->
-          
-          <img src="/favicon_512x512.png" alt="المدير الذكي">
-
+            <img src="/favicon_512x512.png" class="w-24 h-24 mx-auto mb-6 drop-shadow-2xl hover:scale-110 transition-transform duration-300" alt="School Manager Icon">
+            
             <h1 class="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">مدير المدرسة الذكي</h1>
             <p class="text-slate-600 font-medium text-sm mb-8 leading-relaxed">مساحتك الخاصة لإدارة مدرستك بفاعلية.</p>
             
@@ -153,53 +150,41 @@
                 الدخول كزائر (تجريبي)
             </button>
         </div>
-        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.0.9 - إصلاح سحابي</div>
+        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.4.8 - الثيم السماوي الافتراضي</div>
     </div>
     
     <!-- App View -->
     <div id="app-view" class="hidden-view">
     
-    <!-- Modern Header -->
+    <!-- Header -->
     <header class="glass-panel sticky top-0 z-40 shadow-sm no-print transition-all duration-300">
         <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
-                <!-- Brand & Profile (Right) -->
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-2 text-slate-800 select-none">
-                        <!-- Updated Header Icon -->
-                       
-                            
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm overflow-hidden bg-white">
+                            <img src="/favicon_180x180.png" class="w-full h-full object-cover" alt="Logo">
+                        </div>
                         <h1 class="font-extrabold text-lg hidden md:block tracking-tight text-slate-900">مدير المدرسة</h1>
                     </div>
-                    
                     <div class="h-6 w-px bg-slate-300 hidden md:block"></div>
-
-                    <div id="user-profile-container" class="flex items-center gap-3">
-                        <!-- Populated by JS -->
-                    </div>
+                    <div id="user-profile-container" class="flex items-center gap-3"></div>
                 </div>
 
-                <!-- Controls (Left) -->
                 <div class="flex gap-3 items-center">
                     <div class="hidden md:flex bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 items-center gap-2 shadow-inner">
                         <i class="fas fa-clock text-slate-500 text-sm animate-pulse"></i>
                         <span id="clockDisplay" class="font-mono font-bold text-slate-900 dir-ltr text-sm tracking-widest">00:00:00</span>
                     </div>
-                    
                     <div id="cloudStatusIndicator" class="hidden sm:flex items-center"></div>
-                    
                     <div class="flex bg-slate-100 p-1 rounded-xl gap-1 border border-slate-200">
                         <button onclick="window.app.simulateRandomPeriod()" class="px-3 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition flex items-center gap-2 cursor-pointer bg-white text-indigo-700 shadow-sm hover:shadow hover:bg-indigo-50 border border-slate-200" title="تجربة حصة عشوائية">
-                            <i class="fas fa-dice text-amber-500"></i>
-                            <span class="hidden sm:inline">محاكاة</span>
+                            <i class="fas fa-dice text-amber-500"></i><span class="hidden sm:inline">محاكاة</span>
                         </button>
-                        
                         <button onclick="window.app.resetTimeToReal()" class="px-3 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition flex items-center gap-2 cursor-pointer text-slate-600 hover:text-slate-900 hover:bg-white/80" title="العودة للوقت الفعلي">
-                            <i class="fas fa-sync-alt"></i>
-                            <span class="hidden sm:inline">فعلي</span>
+                            <i class="fas fa-sync-alt"></i><span class="hidden sm:inline">فعلي</span>
                         </button>
                     </div>
-
                     <button onclick="window.app.openSettings()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition shadow-lg shadow-slate-300 cursor-pointer" title="الإعدادات">
                         <i class="fas fa-cog fa-spin-hover"></i>
                     </button>
@@ -212,28 +197,20 @@
         
         <!-- View: Current Classes -->
         <section id="view-now" class="fade-in space-y-6">
-            <!-- Hero Card -->
             <div class="relative overflow-hidden bg-gradient-to-r from-[rgb(var(--color-primary-700))] to-[rgb(var(--color-primary-900))] p-6 md:p-8 rounded-3xl shadow-xl text-white">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
                 <div class="absolute bottom-0 left-0 w-40 h-40 bg-[rgb(var(--color-primary-500))] opacity-20 rounded-full -ml-10 -mb-10 blur-xl"></div>
-                
                 <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div class="flex items-center gap-5">
-                        <div class="bg-white/20 backdrop-blur-sm p-4 rounded-2xl shadow-inner border border-white/10">
-                            <i class="fas fa-chalkboard-user text-3xl text-white"></i>
-                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-4 rounded-2xl shadow-inner border border-white/10"><i class="fas fa-chalkboard-user text-3xl text-white"></i></div>
                         <div>
                             <h2 class="text-2xl md:text-3xl font-extrabold mb-1 text-white tracking-tight">لوحة القيادة المدرسية</h2>
                             <p class="text-white/90 text-sm font-bold">متابعة حية لسير اليوم الدراسي</p>
                         </div>
                     </div>
-                    <div id="currentPeriodInfo" class="bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/10">
-                        <!-- Populated JS -->
-                    </div>
+                    <div id="currentPeriodInfo" class="bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/10"></div>
                 </div>
             </div>
-
-            <!-- Active Classes Grid -->
             <div>
                 <div class="flex items-center justify-between mb-4 px-2">
                     <h3 class="font-extrabold text-slate-800 text-lg flex items-center gap-2"><i class="fas fa-layer-group text-[rgb(var(--color-primary-600))]"></i> الحصص القائمة</h3>
@@ -241,15 +218,10 @@
                 </div>
                 <div id="activeClassesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
             </div>
-            
-            <!-- Daily Duty Widget -->
             <div id="dailyDutyWidget" class="bg-white rounded-3xl shadow-soft border border-slate-200 p-6 hidden-view">
                 <h3 class="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shadow-sm"><i class="fas fa-user-shield"></i></div>
-                    <div>
-                        مناوبة اليوم
-                        <span id="dailyDutyDate" class="block text-xs text-slate-500 font-bold mt-0.5"></span>
-                    </div>
+                    <div>مناوبة اليوم<span id="dailyDutyDate" class="block text-xs text-slate-500 font-bold mt-0.5"></span></div>
                 </h3>
                 <div id="dailyDutyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
             </div>
@@ -257,45 +229,24 @@
 
         <!-- View: Substitution -->
         <section id="view-reserve" class="fade-in space-y-6 hidden-view">
-            <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between gap-6 bg-white p-8 rounded-3xl shadow-soft border border-slate-200 items-center">
                 <div class="flex items-center gap-5 w-full md:w-auto">
-                    <div class="bg-gradient-to-br from-red-500 to-rose-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-red-200">
-                        <i class="fas fa-user-clock"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-extrabold text-slate-900">إدارة الاحتياط</h2>
-                        <p class="text-slate-600 font-medium text-sm mt-1">توزيع حصص الغياب بذكاء وعدالة</p>
-                    </div>
+                    <div class="bg-gradient-to-br from-red-500 to-rose-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-red-200"><i class="fas fa-user-clock"></i></div>
+                    <div><h2 class="text-2xl font-extrabold text-slate-900">إدارة الاحتياط</h2><p class="text-slate-600 font-medium text-sm mt-1">توزيع حصص الغياب بذكاء وعدالة</p></div>
                 </div>
                 <div class="relative w-full md:w-96 bg-slate-50 p-2 rounded-2xl border border-slate-200">
                     <label class="text-[10px] font-bold text-slate-500 block px-3 mb-1 uppercase tracking-wider">المعلم الغائب</label>
-                    <select id="absentTeacherSelect" onchange="window.app.handleAbsentSelection(this.value)" class="w-full bg-white border-0 rounded-xl p-3 text-slate-800 font-extrabold outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary-300))] shadow-sm cursor-pointer appearance-none">
-                        <option value>-- اختر من القائمة --</option>
-                    </select>
+                    <select id="absentTeacherSelect" onchange="window.app.handleAbsentSelection(this.value)" class="w-full bg-white border-0 rounded-xl p-3 text-slate-800 font-extrabold outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary-300))] shadow-sm cursor-pointer appearance-none"><option value>-- اختر من القائمة --</option></select>
                     <div class="absolute left-4 bottom-4 text-slate-500 pointer-events-none"><i class="fas fa-chevron-down"></i></div>
                 </div>
             </div>
-
-            <!-- Absent Schedule Container -->
-            <div id="absentScheduleContainer" class="space-y-4 min-h-[300px]">
-                <div class="flex flex-col items-center justify-center h-64 text-slate-400 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-                    <i class="fas fa-chalkboard-teacher text-5xl mb-4 opacity-50"></i>
-                    <p class="text-sm font-bold text-slate-500">يرجى اختيار المعلم الغائب لعرض جدول حصصه لليوم</p>
-                </div>
-            </div>
-
-            <!-- All Substitutions Table -->
+            <div id="absentScheduleContainer" class="space-y-4 min-h-[300px]"></div>
             <div class="bg-white rounded-3xl shadow-soft border border-slate-200 overflow-hidden mt-8">
                 <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                     <h3 class="font-extrabold text-slate-800 text-lg flex items-center gap-2"><i class="fas fa-list-ol text-[rgb(var(--color-primary-600))]"></i> سجل الاحتياط اليومي</h3>
-                    <button onclick="window.app.printSubstitutions()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition shadow-sm">
-                        <i class="fas fa-print"></i> طباعة / PDF
-                    </button>
+                    <button onclick="window.app.printSubstitutions()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition shadow-sm"><i class="fas fa-print"></i> طباعة / PDF</button>
                 </div>
-                <div id="dailySubstitutionsList" class="divide-y divide-slate-100">
-                    <!-- Populated by JS -->
-                </div>
+                <div id="dailySubstitutionsList" class="divide-y divide-slate-100"></div>
             </div>
         </section>
 
@@ -318,33 +269,18 @@
         <section id="view-duty" class="fade-in space-y-6 hidden-view">
             <div class="flex flex-col md:flex-row justify-between gap-4 bg-white p-8 rounded-3xl shadow-soft border border-slate-200">
                 <div class="flex items-center gap-5">
-                    <div class="bg-gradient-to-br from-amber-400 to-orange-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-orange-200">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-extrabold text-slate-900">جدول المناوبة الأسبوعي</h2>
-                        <p class="text-slate-600 font-medium text-sm mt-1">توزيع ومتابعة نقاط المناوبة</p>
-                    </div>
+                    <div class="bg-gradient-to-br from-amber-400 to-orange-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-orange-200"><i class="fas fa-calendar-check"></i></div>
+                    <div><h2 class="text-2xl font-extrabold text-slate-900">جدول المناوبة الأسبوعي</h2><p class="text-slate-600 font-medium text-sm mt-1">توزيع ومتابعة نقاط المناوبة</p></div>
                 </div>
-                <button onclick="window.app.addDutyLocationPrompt()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 transition shadow-lg cursor-pointer text-sm">
-                    <i class="fas fa-plus"></i><span>موقع جديد</span>
-                </button>
+                <button onclick="window.app.addDutyLocationPrompt()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 transition shadow-lg cursor-pointer text-sm"><i class="fas fa-plus"></i><span>موقع جديد</span></button>
             </div>
-
             <div class="bg-white rounded-3xl shadow-soft border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-right duty-table">
                         <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                            <tr>
-                                <th class="p-5 sticky right-0 bg-slate-50 z-10 w-24 border-l border-slate-200 text-slate-700">اليوم</th>
-                                <!-- Dynamic Headers -->
-                                <template id="dutyHeaderTemplate"></template>
-                                </tr><tr id="dutyHeaderRow"></tr>
-                            
+                            <tr><th class="p-5 sticky right-0 bg-slate-50 z-10 w-24 border-l border-slate-200 text-slate-700">اليوم</th><template id="dutyHeaderTemplate"></template></tr><tr id="dutyHeaderRow"></tr>
                         </thead>
-                        <tbody id="dutyBody" class="divide-y divide-slate-100 text-sm font-bold text-slate-700">
-                            <!-- Rows generated by JS -->
-                        </tbody>
+                        <tbody id="dutyBody" class="divide-y divide-slate-100 text-sm font-bold text-slate-700"></tbody>
                     </table>
                 </div>
             </div>
@@ -354,311 +290,15 @@
         <section id="view-periods" class="fade-in space-y-6 hidden-view">
             <div class="flex flex-col md:flex-row justify-between gap-4 bg-white p-8 rounded-3xl shadow-soft border border-slate-200">
                 <div class="flex items-center gap-5">
-                    <div class="bg-gradient-to-br from-sky-400 to-blue-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-200">
-                        <i class="fas fa-hourglass-half"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-extrabold text-slate-900">ضبط توقيت الحصص</h2>
-                        <p class="text-slate-600 font-medium text-sm mt-1">تعديل أوقات بدء وانتهاء اليوم الدراسي</p>
-                    </div>
+                    <div class="bg-gradient-to-br from-sky-400 to-blue-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-200"><i class="fas fa-hourglass-half"></i></div>
+                    <div><h2 class="text-2xl font-extrabold text-slate-900">ضبط توقيت الحصص</h2><p class="text-slate-600 font-medium text-sm mt-1">تعديل أوقات بدء وانتهاء اليوم الدراسي</p></div>
                 </div>
             </div>
-
-            <div id="periodsListContainer" class="space-y-3">
-                <!-- JS will render periods here -->
-            </div>
-            
-            <div class="mt-6">
-                 <button onclick="window.app.addPeriod()" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border-2 border-dashed border-slate-200 hover:border-slate-300 px-5 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition cursor-pointer text-sm">
-                    <i class="fas fa-plus"></i><span>إضافة حصة جديدة</span>
-                </button>
-            </div>
+            <div id="periodsListContainer" class="space-y-3"></div>
+            <div class="mt-6"><button onclick="window.app.addPeriod()" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 border-2 border-dashed border-slate-200 hover:border-slate-300 px-5 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition cursor-pointer text-sm"><i class="fas fa-plus"></i><span>إضافة حصة جديدة</span></button></div>
         </section>
-
-        <!-- View: Supervision Hub -->
-        <section id="view-supervision-hub" class="fade-in space-y-8 hidden-view">
-            <div class="flex flex-col md:flex-row justify-between gap-6 bg-white p-8 rounded-3xl shadow-soft border border-slate-200 items-center">
-                <div class="flex items-center gap-5">
-                    <div class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-purple-200">
-                        <i class="fas fa-clipboard-check"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-extrabold text-slate-900">مركز الإشراف الفني</h2>
-                        <p class="text-slate-600 font-medium text-sm mt-1">إدارة الزيارات الصفية وتقارير الأداء</p>
-                    </div>
-                </div>
-                <button onclick="window.app.startSupervision()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 transition shadow-xl hover:shadow-2xl hover:-translate-y-1 cursor-pointer">
-                    <i class="fas fa-plus-circle text-xl"></i>
-                    <span>بدء زيارة جديدة</span>
-                </button>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Stats Cards -->
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between h-40 card-hover">
-                    <div class="flex justify-between items-start">
-                        <div class="bg-blue-50 text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-chart-pie"></i></div>
-                        <span class="text-xs font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">تراكمي</span>
-                    </div>
-                    <div>
-                        <div class="text-3xl font-extrabold text-slate-900" id="hubTotalVisits">0</div>
-                        <span class="text-xs text-slate-500 font-bold">إجمالي الزيارات</span>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between h-40 card-hover">
-                    <div class="flex justify-between items-start">
-                        <div class="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-star"></i></div>
-                        <span class="text-xs font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">متوسط</span>
-                    </div>
-                    <div>
-                        <div class="text-3xl font-extrabold text-slate-900" id="hubAvgScore">0%</div>
-                        <span class="text-xs text-slate-500 font-bold">الأداء العام</span>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-center gap-3 h-40">
-                    <button onclick="window.app.setView('supervision-history')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-between px-4 cursor-pointer border border-slate-200 hover:border-slate-300">
-                        <span>سجل الزيارات الكامل</span><i class="fas fa-arrow-left text-slate-400"></i>
-                    </button>
-                    <button onclick="window.app.setView('reports')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-between px-4 cursor-pointer border border-slate-200 hover:border-slate-300">
-                        <span>تقارير الأداء العام</span><i class="fas fa-arrow-left text-slate-400"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-3xl shadow-soft border border-slate-200 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                    <h3 class="font-extrabold text-slate-800 text-lg">أحدث الزيارات المسجلة</h3>
-                    <i class="fas fa-history text-slate-300"></i>
-                </div>
-                <div id="hubRecentList" class="divide-y divide-slate-100"></div>
-            </div>
-        </section>
-
-        <!-- View: Tasks -->
-        <section id="view-tasks" class="fade-in space-y-6 hidden-view">
-            <div class="flex flex-col gap-6 bg-white p-8 rounded-3xl shadow-soft border border-slate-200">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 class="text-2xl font-extrabold text-slate-900">مهام المدير</h2>
-                        <p class="text-slate-500 font-medium text-sm">قائمة المهام اليومية</p>
-                    </div>
-                    <div class="bg-[rgb(var(--color-primary-50))] px-4 py-2 rounded-xl border border-[rgb(var(--color-primary-100))]">
-                        <span class="text-sm font-bold text-[rgb(var(--color-primary-800))]" id="tasksProgressText">0/0</span>
-                    </div>
-                </div>
-                
-                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                    <div id="tasksProgressBar" class="h-full bg-gradient-to-r from-[rgb(var(--color-primary-500))] to-purple-500 transition-all duration-700 ease-out w-0 rounded-full"></div>
-                </div>
-                
-                <div class="flex gap-3 items-center bg-slate-50 p-2 rounded-2xl border border-slate-200 focus-within:ring-2 focus-within:ring-[rgb(var(--color-primary-200))] focus-within:border-[rgb(var(--color-primary-400))] transition-all">
-                    <input type="text" id="newTaskInput" placeholder="أضف مهمة جديدة..." class="flex-1 bg-transparent border-none outline-none px-4 text-sm text-slate-800 font-bold placeholder:text-slate-400" onkeypress="if(event.key === 'Enter') window.app.addTask()">
-                    <select id="newTaskPriority" class="text-xs bg-white border border-slate-200 rounded-xl px-3 py-2.5 outline-none text-slate-700 font-bold shadow-sm">
-                        <option value="normal">عادي</option>
-                        <option value="urgent">عاجل</option>
-                    </select>
-                    <button onclick="window.app.addTask()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white w-10 h-10 rounded-xl flex items-center justify-center transition cursor-pointer shadow-md">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-            </div>
-            <div id="tasksList" class="grid gap-3"></div>
-        </section>
-
-        <!-- View: Reports -->
-        <section id="view-reports" class="fade-in space-y-6 hidden-view">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-6 rounded-3xl shadow-soft border border-slate-200">
-                <div class="flex items-center gap-4">
-                    <div class="bg-indigo-50 text-indigo-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-file-invoice"></i></div>
-                    <div>
-                        <h2 class="text-2xl font-extrabold text-slate-900">تقارير الأداء</h2>
-                        <p class="text-slate-500 font-medium text-sm">تحليل شامل لبيانات المعلمين</p>
-                    </div>
-                </div>
-                <div class="flex gap-3 w-full md:w-auto">
-                    <button onclick="window.app.setView('supervision-history')" class="flex-1 md:flex-none bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition cursor-pointer text-sm shadow-sm">
-                        <i class="fas fa-history text-slate-400"></i><span>السجل</span>
-                    </button>
-                    <button onclick="window.app.exportReports()" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-100 cursor-pointer text-sm">
-                        <i class="fas fa-file-excel"></i><span>تصدير Excel</span>
-                    </button>
-                </div>
-            </div>
-            <div class="bg-white rounded-3xl shadow-soft border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right">
-                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-extrabold uppercase tracking-wider">
-                            <tr>
-                                <th class="p-5">المعلم</th>
-                                <th class="p-5 text-center">التقييم</th>
-                                <th class="p-5 text-center">الهاتف</th>
-                                <th class="p-5 text-center">الحالة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reportsBody" class="divide-y divide-slate-100 text-sm font-bold text-slate-700"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- View: Supervision History -->
-        <section id="view-supervision-history" class="fade-in space-y-6 hidden-view">
-            <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-soft border border-slate-200">
-                <div class="flex items-center gap-3">
-                    <button onclick="window.app.setView('supervision-hub')" class="bg-slate-50 hover:bg-slate-100 text-slate-600 w-10 h-10 rounded-xl flex items-center justify-center transition cursor-pointer border border-slate-200"><i class="fas fa-arrow-right"></i></button>
-                    <h2 class="text-xl font-extrabold text-slate-900">سجل الزيارات</h2>
-                </div>
-            </div>
-            <div id="supervisionHistoryGrid" class="space-y-4"></div>
-        </section>
-
-        <!-- View: Supervision Form -->
-        <section id="view-supervision" class="fade-in space-y-6 hidden-view pb-24">
-            <div class="flex items-center gap-2 mb-4 text-sm text-slate-500 font-bold cursor-pointer hover:text-[rgb(var(--color-primary-600))] transition" onclick="window.app.setView('supervision-hub')"><i class="fas fa-arrow-right"></i> عودة لمركز الإشراف</div>
-            <div class="bg-white p-8 rounded-3xl shadow-soft border border-slate-200">
-                <h2 class="text-2xl font-extrabold text-slate-900 mb-8 flex items-center gap-3 pb-4 border-b border-slate-100">
-                    <span class="bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-700))] w-10 h-10 rounded-xl flex items-center justify-center text-lg border border-[rgb(var(--color-primary-100))]"><i class="fas fa-magic"></i></span>
-                    زيارة إشرافية ذكية
-                </h2>
-                
-                <div class="grid md:grid-cols-2 gap-6 mb-8">
-                    <!-- Form Fields -->
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-slate-600 mr-1">المعلم</label>
-                        <input type="text" id="supTeacherName" readonly class="hidden w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-extrabold">
-                        <div class="relative">
-                            <select id="supTeacherSelect" onchange="window.app.onTeacherSelectChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none appearance-none font-extrabold transition-all cursor-pointer">
-                                <option value>اختر المعلم...</option>
-                            </select>
-                            <i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-slate-600 mr-1">التخصص</label>
-                        <div class="relative">
-                            <select id="supSpecialization" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none appearance-none font-extrabold transition-all cursor-pointer">
-                                <option value>اختر التخصص...</option>
-                            </select>
-                            <i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-slate-600 mr-1">الصف</label>
-                        <input type="text" id="supClassName" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none font-extrabold transition-all">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-slate-600 mr-1">عنوان الدرس</label>
-                        <input type="text" id="supLessonTopic" placeholder="أدخل عنوان الدرس..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none font-extrabold transition-all">
-                    </div>
-                    
-                    <div class="md:col-span-2 space-y-2">
-                        <label class="text-xs font-bold text-slate-600 mr-1">نوع المدرسة (لضبط صياغة التقرير)</label>
-                        <div class="flex gap-4 items-center bg-slate-50 border border-slate-200 rounded-xl p-2 w-fit">
-                            <label class="flex items-center gap-2 cursor-pointer px-3 py-1 hover:bg-white rounded-lg transition">
-                                <input type="radio" id="supGenderMale" name="supSchoolGender" value="male" class="accent-[rgb(var(--color-primary-600))]" checked>
-                                <span class="text-sm font-bold text-slate-700">بنين</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer px-3 py-1 hover:bg-white rounded-lg transition">
-                                <input type="radio" id="supGenderFemale" name="supSchoolGender" value="female" class="accent-pink-600">
-                                <span class="text-sm font-bold text-slate-700">بنات</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="supervisionCriteriaList" class="space-y-6"></div>
-                
-                <button onclick="window.app.generateReport()" class="w-full bg-gradient-to-r from-[rgb(var(--color-primary-600))] to-indigo-600 hover:from-[rgb(var(--color-primary-700))] hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-1 mt-10 flex items-center justify-center gap-2 cursor-pointer text-lg">
-                    <i class="fas fa-wand-magic-sparkles"></i> توليد التقرير الذكي
-                </button>
-            </div>
-        </section>
-
-        <!-- View: Supervision Report -->
-        <section id="view-supervision-report" class="fade-in space-y-6 hidden-view bg-white p-8 md:p-12 rounded-none md:rounded-3xl shadow-none md:shadow-2xl min-h-screen md:min-h-0 print:min-h-0 border border-slate-200">
-            <div class="border-b-2 border-slate-800 pb-6 mb-8 flex justify-between items-start">
-                <div>
-                    <h1 class="text-4xl font-extrabold text-slate-900 mb-2 font-serif">تقرير زيارة إشرافية</h1>
-                    <p class="text-slate-600 text-sm font-bold tracking-wide">نظام الإدارة المدرسية الذكي</p>
-                </div>
-                <div class="text-left text-sm text-slate-600 font-bold">
-                    <p id="reportDate" class="font-mono bg-slate-100 px-3 py-1 rounded-lg border border-slate-200"></p>
-                </div>
-            </div>
-            
-            <!-- Report Meta -->
-            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-10">
-                <div class="grid grid-cols-2 gap-y-6 text-sm">
-                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">المعلم/ة</span> <span id="repTeacherName" class="font-extrabold text-slate-900 text-lg"></span></div>
-                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">التخصص</span> <span id="repSpecialization" class="font-bold text-slate-800"></span></div>
-                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">الصف</span> <span id="repClassName" class="font-bold text-slate-800"></span></div>
-                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">عنوان الدرس</span> <span id="repLessonTopic" class="font-bold text-slate-800"></span></div>
-                    <div class="col-span-2 flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">نوع المدرسة</span> <span id="repSchoolGender" class="font-bold text-slate-800"></span></div>
-                </div>
-            </div>
-            
-            <div class="mb-10">
-                <h3 class="text-lg font-extrabold text-slate-900 mb-4 flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-lg bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-800))] flex items-center justify-center text-sm"><i class="fas fa-list-ol"></i></span>
-                    تفاصيل التقييم
-                </h3>
-                <div class="overflow-hidden rounded-2xl border border-slate-200">
-                    <table class="w-full text-right text-sm">
-                        <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
-                            <tr><th class="p-4 w-1/2">البند</th><th class="p-4 text-center w-24">التقييم</th><th class="p-4">الملاحظات</th></tr>
-                        </thead>
-                        <tbody id="repDetailsBody" class="divide-y divide-slate-100 bg-white"></tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <div class="mb-8 relative">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h3 class="text-lg font-extrabold text-[rgb(var(--color-primary-800))] flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-700 text-white flex items-center justify-center text-sm shadow-md"><i class="fas fa-robot"></i></span>
-                        التحليل النوعي والتوصيات
-                    </h3>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button onclick="window.app.copyToClipboardPrompt()" class="flex-1 md:flex-none text-xs bg-white text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 transition cursor-pointer no-print font-bold">
-                            <i class="fas fa-copy"></i><span>نسخ للأداة الخارجية</span>
-                        </button>
-                        <button onclick="window.app.enhanceReportWithAI()" class="flex-1 md:flex-none text-xs bg-slate-900 text-white px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-lg hover:bg-slate-800 transition cursor-pointer no-print font-bold">
-                            <i class="fas fa-wand-magic-sparkles text-yellow-400"></i><span>تحسين بالذكاء الاصطناعي</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="aiReportContent" class="space-y-6 text-slate-800 font-medium leading-relaxed"></div>
-                
-                <!-- AI Loading -->
-                <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view rounded-3xl">
-                    <div class="relative w-16 h-16 mb-4">
-                        <div class="absolute inset-0 rounded-full border-4 border-slate-100"></div>
-                        <div class="absolute inset-0 rounded-full border-4 border-[rgb(var(--color-primary-600))] border-t-transparent animate-spin"></div>
-                    </div>
-                    <span class="text-sm font-bold text-slate-800">جاري صياغة التقرير الاحترافي...</span>
-                    <span class="text-xs text-slate-500 mt-1">يتم الاتصال بالمعالج الذكي</span>
-                </div>
-            </div>
-            
-            <!-- Actions -->
-            <div class="flex gap-3 mt-12 no-print border-t border-slate-100 pt-8">
-                <button onclick="window.app.printSupervisionReport()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg">
-                    <i class="fas fa-print"></i> طباعة / PDF
-                </button>
-                <button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-100">
-                    <i class="fas fa-save"></i> حفظ
-                </button>
-                <button onclick="window.app.setView('supervision')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 py-3 rounded-xl font-bold transition cursor-pointer">
-                    تعديل
-                </button>
-                <button onclick="window.app.setView('supervision-history')" class="flex-1 bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 py-3 rounded-xl font-bold transition cursor-pointer">
-                    إغلاق
-                </button>
-            </div>
-        </section>
-
-        <!-- View: Instructions -->
+        
+        <!-- View: Instructions (RESTORED) -->
         <section id="view-instructions" class="fade-in space-y-6 hidden-view">
             <div class="flex flex-col md:flex-row justify-between gap-4 bg-white p-8 rounded-3xl shadow-soft border border-slate-200">
                 <div class="flex items-center gap-5">
@@ -675,7 +315,7 @@
                 </button>
             </div>
 
-            <!-- Instruction Cards -->
+            <!-- Instruction Cards (4 Items) -->
             <div class="space-y-5">
                 <!-- Card 1 -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
@@ -696,7 +336,7 @@
                         <li>املأ الملف ببيانات المعلمين الذين تشرف عليهم (الاسم، المدرسة، التخصص...).</li>
                         <li>عد إلى نفس القسم واضغط "استيراد القائمة" لرفع الملف بعد تعبئته.</li>
                     </ol>
-                    <button onclick="window.app.exportTeacherTemplate()" class="mt-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm"><i class="fas fa-download mr-1"></i> تنزيل نموذج المشرف (Excel)</button>
+                    <button onclick="window.app.exportTeacherTemplate()" class="mt-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm cursor-pointer"><i class="fas fa-download mr-1"></i> تنزيل نموذج المشرف (Excel)</button>
                 </div>
                 <!-- Card 3 -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
@@ -706,7 +346,7 @@
                         <li>املأ عمود `Phone` بأرقام الهواتف الصحيحة لكل معلم.</li>
                         <li>من <span class="font-bold">الإعدادات</span> <i class="fas fa-cog"></i>، قسم "بيانات المعلمين (Excel)"، اضغط "استيراد Excel" وقم برفع الملف بعد تعديله.</li>
                     </ol>
-                    <button onclick="window.app.exportPhoneTemplate()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm"><i class="fas fa-download mr-1"></i> تنزيل قالب أرقام الهواتف</button>
+                    <button onclick="window.app.exportPhoneTemplate()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm cursor-pointer"><i class="fas fa-download mr-1"></i> تنزيل قالب أرقام الهواتف</button>
                 </div>
                 <!-- Card 4 -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
@@ -717,168 +357,169 @@
                         <li>افتح <span class="font-bold">الإعدادات</span> <i class="fas fa-cog"></i>.</li>
                         <li>ضمن "قاعدة بيانات الزيارات"، اضغط على زر "استيراد قاعدة المعايير (Excel)" وقم برفع الملف المعدل.</li>
                     </ol>
-                    <button onclick="window.app.downloadCriteriaTemplateExcel()" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm"><i class="fas fa-download mr-1"></i> تنزيل قالب العبارات (Excel)</button>
+                    <button onclick="window.app.downloadCriteriaTemplateExcel()" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-sm cursor-pointer"><i class="fas fa-download mr-1"></i> تنزيل قالب العبارات (Excel)</button>
                 </div>
             </div>
+        </section>
+
+        <!-- Supervision Hub -->
+        <section id="view-supervision-hub" class="fade-in space-y-8 hidden-view">
+             <div class="flex flex-col md:flex-row justify-between gap-6 bg-white p-8 rounded-3xl shadow-soft border border-slate-200 items-center">
+                <div class="flex items-center gap-5">
+                    <div class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-purple-200"><i class="fas fa-clipboard-check"></i></div>
+                    <div><h2 class="text-2xl font-extrabold text-slate-900">مركز الإشراف الفني</h2><p class="text-slate-600 font-medium text-sm mt-1">إدارة الزيارات الصفية وتقارير الأداء</p></div>
+                </div>
+                <button onclick="window.app.startSupervision()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 transition shadow-xl hover:shadow-2xl hover:-translate-y-1 cursor-pointer"><i class="fas fa-plus-circle text-xl"></i><span>بدء زيارة جديدة</span></button>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between h-40 card-hover">
+                    <div class="flex justify-between items-start"><div class="bg-blue-50 text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-chart-pie"></i></div><span class="text-xs font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">تراكمي</span></div>
+                    <div><div class="text-3xl font-extrabold text-slate-900" id="hubTotalVisits">0</div><span class="text-xs text-slate-500 font-bold">إجمالي الزيارات</span></div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between h-40 card-hover">
+                    <div class="flex justify-between items-start"><div class="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-star"></i></div><span class="text-xs font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">متوسط</span></div>
+                    <div><div class="text-3xl font-extrabold text-slate-900" id="hubAvgScore">0%</div><span class="text-xs text-slate-500 font-bold">الأداء العام</span></div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-center gap-3 h-40">
+                    <button onclick="window.app.setView('supervision-history')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-between px-4 cursor-pointer border border-slate-200 hover:border-slate-300"><span>سجل الزيارات الكامل</span><i class="fas fa-arrow-left text-slate-400"></i></button>
+                    <button onclick="window.app.setView('reports')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-between px-4 cursor-pointer border border-slate-200 hover:border-slate-300"><span>تقارير الأداء العام</span><i class="fas fa-arrow-left text-slate-400"></i></button>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl shadow-soft border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50"><h3 class="font-extrabold text-slate-800 text-lg">أحدث الزيارات المسجلة</h3><i class="fas fa-history text-slate-300"></i></div>
+                <div id="hubRecentList" class="divide-y divide-slate-100"></div>
+            </div>
+        </section>
+
+        <!-- Supervision Form -->
+        <section id="view-supervision" class="fade-in space-y-6 hidden-view pb-24">
+             <div class="flex items-center gap-2 mb-4 text-sm text-slate-500 font-bold cursor-pointer hover:text-[rgb(var(--color-primary-600))] transition" onclick="window.app.setView('supervision-hub')"><i class="fas fa-arrow-right"></i> عودة لمركز الإشراف</div>
+            <div class="bg-white p-8 rounded-3xl shadow-soft border border-slate-200">
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-8 flex items-center gap-3 pb-4 border-b border-slate-100">
+                    <span class="bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-700))] w-10 h-10 rounded-xl flex items-center justify-center text-lg border border-[rgb(var(--color-primary-100))]"><i class="fas fa-magic"></i></span> زيارة إشرافية ذكية
+                </h2>
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="space-y-1"><label class="text-xs font-bold text-slate-600 mr-1">المعلم</label><input type="text" id="supTeacherName" readonly class="hidden w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-extrabold"><div class="relative"><select id="supTeacherSelect" onchange="window.app.onTeacherSelectChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none appearance-none font-extrabold transition-all cursor-pointer"><option value>اختر المعلم...</option></select><i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i></div></div>
+                    <div class="space-y-1"><label class="text-xs font-bold text-slate-600 mr-1">التخصص</label><div class="relative"><select id="supSpecialization" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none appearance-none font-extrabold transition-all cursor-pointer"><option value>اختر التخصص...</option></select><i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i></div></div>
+                    <div class="space-y-1"><label class="text-xs font-bold text-slate-600 mr-1">الصف</label><input type="text" id="supClassName" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none font-extrabold transition-all"></div>
+                    <div class="space-y-1"><label class="text-xs font-bold text-slate-600 mr-1">عنوان الدرس</label><input type="text" id="supLessonTopic" placeholder="أدخل عنوان الدرس..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:border-[rgb(var(--color-primary-500))] focus:bg-white focus:ring-4 focus:ring-[rgb(var(--color-primary-50))] outline-none font-extrabold transition-all"></div>
+                    <div class="md:col-span-2 space-y-2"><label class="text-xs font-bold text-slate-600 mr-1">نوع المدرسة</label><div class="flex gap-4 items-center bg-slate-50 border border-slate-200 rounded-xl p-2 w-fit"><label class="flex items-center gap-2 cursor-pointer px-3 py-1 hover:bg-white rounded-lg transition"><input type="radio" id="supGenderMale" name="supSchoolGender" value="male" class="accent-[rgb(var(--color-primary-600))]" checked><span class="text-sm font-bold text-slate-700">بنين</span></label><label class="flex items-center gap-2 cursor-pointer px-3 py-1 hover:bg-white rounded-lg transition"><input type="radio" id="supGenderFemale" name="supSchoolGender" value="female" class="accent-pink-600"><span class="text-sm font-bold text-slate-700">بنات</span></label></div></div>
+                </div>
+                <div id="supervisionCriteriaList" class="space-y-6"></div>
+                <button onclick="window.app.generateReport()" class="w-full bg-gradient-to-r from-[rgb(var(--color-primary-600))] to-indigo-600 hover:from-[rgb(var(--color-primary-700))] hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-1 mt-10 flex items-center justify-center gap-2 cursor-pointer text-lg"><i class="fas fa-wand-magic-sparkles"></i> توليد التقرير الذكي</button>
+            </div>
+        </section>
+
+        <!-- Report View -->
+        <section id="view-supervision-report" class="fade-in space-y-6 hidden-view bg-white p-8 md:p-12 rounded-none md:rounded-3xl shadow-none md:shadow-2xl min-h-screen md:min-h-0 print:min-h-0 border border-slate-200">
+            <!-- Headers and Meta (Preserved) -->
+            <div class="border-b-2 border-slate-800 pb-6 mb-8 flex justify-between items-start">
+                <div><h1 class="text-4xl font-extrabold text-slate-900 mb-2 font-serif">تقرير زيارة إشرافية</h1><p class="text-slate-600 text-sm font-bold tracking-wide">نظام الإدارة المدرسية الذكي</p></div>
+                <div class="text-left text-sm text-slate-600 font-bold"><p id="reportDate" class="font-mono bg-slate-100 px-3 py-1 rounded-lg border border-slate-200"></p></div>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-10">
+                <div class="grid grid-cols-2 gap-y-6 text-sm">
+                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">المعلم/ة</span> <span id="repTeacherName" class="font-extrabold text-slate-900 text-lg"></span></div>
+                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">التخصص</span> <span id="repSpecialization" class="font-bold text-slate-800"></span></div>
+                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">الصف</span> <span id="repClassName" class="font-bold text-slate-800"></span></div>
+                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">عنوان الدرس</span> <span id="repLessonTopic" class="font-bold text-slate-800"></span></div>
+                    <div class="col-span-2 flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">نوع المدرسة</span> <span id="repSchoolGender" class="font-bold text-slate-800"></span></div>
+                </div>
+            </div>
+            
+            <!-- Ratings Table -->
+            <div class="mb-10">
+                <h3 class="text-lg font-extrabold text-slate-900 mb-4 flex items-center gap-2"><span class="w-8 h-8 rounded-lg bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-800))] flex items-center justify-center text-sm"><i class="fas fa-list-ol"></i></span> تفاصيل التقييم</h3>
+                <div class="overflow-hidden rounded-2xl border border-slate-200">
+                    <table class="w-full text-right text-sm">
+                        <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200"><tr><th class="p-4 w-1/2">البند</th><th class="p-4 text-center w-24">التقييم</th><th class="p-4">الملاحظات</th></tr></thead>
+                        <tbody id="repDetailsBody" class="divide-y divide-slate-100 bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- AI Section -->
+            <div class="mb-8 relative">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h3 class="text-lg font-extrabold text-[rgb(var(--color-primary-800))] flex items-center gap-2"><span class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-700 text-white flex items-center justify-center text-sm shadow-md"><i class="fas fa-robot"></i></span> التحليل النوعي والتوصيات</h3>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="window.app.copyToClipboardPrompt()" class="flex-1 md:flex-none text-xs bg-white text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 transition cursor-pointer no-print font-bold"><i class="fas fa-copy"></i><span>نسخ للأداة الخارجية</span></button>
+                        <button onclick="window.app.enhanceReportWithAI()" class="flex-1 md:flex-none text-xs bg-slate-900 text-white px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-lg hover:bg-slate-800 transition cursor-pointer no-print font-bold"><i class="fas fa-wand-magic-sparkles text-yellow-400"></i><span>تحسين بالذكاء الاصطناعي</span></button>
+                    </div>
+                </div>
+                <div id="aiReportContent" class="space-y-6 text-slate-800 font-medium leading-relaxed"></div>
+                <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view rounded-3xl">
+                    <div class="relative w-16 h-16 mb-4"><div class="absolute inset-0 rounded-full border-4 border-slate-100"></div><div class="absolute inset-0 rounded-full border-4 border-[rgb(var(--color-primary-600))] border-t-transparent animate-spin"></div></div>
+                    <span class="text-sm font-bold text-slate-800">جاري صياغة التقرير الاحترافي...</span><span class="text-xs text-slate-500 mt-1">يتم الاتصال بالمعالج الذكي</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-12 no-print border-t border-slate-100 pt-8">
+                <button onclick="window.app.printSupervisionReport()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg"><i class="fas fa-print"></i> طباعة / PDF</button>
+                <button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-100"><i class="fas fa-save"></i> حفظ</button>
+                <button onclick="window.app.setView('supervision')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 py-3 rounded-xl font-bold transition cursor-pointer">تعديل</button>
+                <button onclick="window.app.setView('supervision-history')" class="flex-1 bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 py-3 rounded-xl font-bold transition cursor-pointer">إغلاق</button>
+            </div>
+        </section>
+
+        <!-- View: Supervision History -->
+        <section id="view-supervision-history" class="fade-in space-y-6 hidden-view">
+            <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-soft border border-slate-200">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.app.setView('supervision-hub')" class="bg-slate-50 hover:bg-slate-100 text-slate-600 w-10 h-10 rounded-xl flex items-center justify-center transition cursor-pointer border border-slate-200"><i class="fas fa-arrow-right"></i></button>
+                    <h2 class="text-xl font-extrabold text-slate-900">سجل الزيارات</h2>
+                </div>
+            </div>
+            <div id="supervisionHistoryGrid" class="space-y-4"></div>
+        </section>
+
+        <!-- View: Reports (General) -->
+        <section id="view-reports" class="fade-in space-y-6 hidden-view">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-6 rounded-3xl shadow-soft border border-slate-200">
+                <div class="flex items-center gap-4">
+                    <div class="bg-indigo-50 text-indigo-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-file-invoice"></i></div>
+                    <div><h2 class="text-2xl font-extrabold text-slate-900">تقارير الأداء</h2><p class="text-slate-500 font-medium text-sm">تحليل شامل لبيانات المعلمين</p></div>
+                </div>
+                <div class="flex gap-3 w-full md:w-auto">
+                    <button onclick="window.app.setView('supervision-history')" class="flex-1 md:flex-none bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition cursor-pointer text-sm shadow-sm"><i class="fas fa-history text-slate-400"></i><span>السجل</span></button>
+                    <button onclick="window.app.exportReports()" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-100 cursor-pointer text-sm"><i class="fas fa-file-excel"></i><span>تصدير Excel</span></button>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl shadow-soft border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right"><thead class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-extrabold uppercase tracking-wider"><tr><th class="p-5">المعلم</th><th class="p-5 text-center">التقييم</th><th class="p-5 text-center">الهاتف</th><th class="p-5 text-center">الحالة</th></tr></thead><tbody id="reportsBody" class="divide-y divide-slate-100 text-sm font-bold text-slate-700"></tbody></table>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Tasks -->
+        <section id="view-tasks" class="fade-in space-y-6 hidden-view">
+            <div class="flex flex-col gap-6 bg-white p-8 rounded-3xl shadow-soft border border-slate-200">
+                <div class="flex justify-between items-center"><div><h2 class="text-2xl font-extrabold text-slate-900">مهام المدير</h2><p class="text-slate-500 font-medium text-sm">قائمة المهام اليومية</p></div><div class="bg-[rgb(var(--color-primary-50))] px-4 py-2 rounded-xl border border-[rgb(var(--color-primary-100))]"><span class="text-sm font-bold text-[rgb(var(--color-primary-800))]" id="tasksProgressText">0/0</span></div></div>
+                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden"><div id="tasksProgressBar" class="h-full bg-gradient-to-r from-[rgb(var(--color-primary-500))] to-purple-500 transition-all duration-700 ease-out w-0 rounded-full"></div></div>
+                <div class="flex gap-3 items-center bg-slate-50 p-2 rounded-2xl border border-slate-200 focus-within:ring-2 focus-within:ring-[rgb(var(--color-primary-200))] focus-within:border-[rgb(var(--color-primary-400))] transition-all">
+                    <input type="text" id="newTaskInput" placeholder="أضف مهمة جديدة..." class="flex-1 bg-transparent border-none outline-none px-4 text-sm text-slate-800 font-bold placeholder:text-slate-400" onkeypress="if(event.key === 'Enter') window.app.addTask()">
+                    <select id="newTaskPriority" class="text-xs bg-white border border-slate-200 rounded-xl px-3 py-2.5 outline-none text-slate-700 font-bold shadow-sm"><option value="normal">عادي</option><option value="urgent">عاجل</option></select>
+                    <button onclick="window.app.addTask()" class="bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-700))] text-white w-10 h-10 rounded-xl flex items-center justify-center transition cursor-pointer shadow-md"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            <div id="tasksList" class="grid gap-3"></div>
         </section>
 
     </main>
 
     <!-- Hidden Printable Substitution Sheet -->
     <div id="printable-substitution-sheet" class="hidden-view bg-white p-8">
-        <div class="text-center mb-8 border-b-2 border-slate-800 pb-4">
-            <h1 class="text-3xl font-extrabold text-slate-900 mb-2">كشف حصص الاحتياط اليومي</h1>
-            <p id="printDate" class="text-lg font-bold text-slate-600"></p>
-        </div>
+        <div class="text-center mb-8 border-b-2 border-slate-800 pb-4"><h1 class="text-3xl font-extrabold text-slate-900 mb-2">كشف حصص الاحتياط اليومي</h1><p id="printDate" class="text-lg font-bold text-slate-600"></p></div>
         <table class="w-full text-right border-collapse border border-slate-300">
-            <thead>
-                <tr class="bg-slate-100 text-slate-800">
-                    <th class="p-3 border border-slate-300 font-extrabold">الحصة</th>
-                    <th class="p-3 border border-slate-300 font-extrabold">الصف</th>
-                    <th class="p-3 border border-slate-300 font-extrabold">المعلم الغائب</th>
-                    <th class="p-3 border border-slate-300 font-extrabold">المعلم البديل</th>
-                    <th class="p-3 border border-slate-300 font-extrabold">التوقيع</th>
-                </tr>
-            </thead>
-            <tbody id="printSubstitutionBody" class="text-sm font-bold text-slate-700">
-                <!-- Rows populated by JS -->
-            </tbody>
+            <thead><tr class="bg-slate-100 text-slate-800"><th class="p-3 border border-slate-300 font-extrabold">الحصة</th><th class="p-3 border border-slate-300 font-extrabold">الصف</th><th class="p-3 border border-slate-300 font-extrabold">المعلم الغائب</th><th class="p-3 border border-slate-300 font-extrabold">المعلم البديل</th><th class="p-3 border border-slate-300 font-extrabold">التوقيع</th></tr></thead>
+            <tbody id="printSubstitutionBody" class="text-sm font-bold text-slate-700"></tbody>
         </table>
-        <div class="mt-12 flex justify-between px-10">
-            <div class="text-center font-bold">
-                <p>مدير المدرسة</p>
-                <div class="h-16"></div>
-            </div>
-            <div class="text-center font-bold">
-                <p>يعتمد،</p>
-                <div class="h-16"></div>
-            </div>
-        </div>
+        <div class="mt-12 flex justify-between px-10"><div class="text-center font-bold"><p>مدير المدرسة</p><div class="h-16"></div></div><div class="text-center font-bold"><p>يعتمد،</p><div class="h-16"></div></div></div>
     </div>
 
-    <!-- Floating Bottom Navigation (Modern) -->
-    <div class="fixed bottom-4 left-4 right-4 z-40 no-print flex justify-center pointer-events-none">
-        <nav class="bg-white/90 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl pointer-events-auto max-w-lg w-full">
-            <div class="flex justify-around items-center h-16 px-2">
-                <button onclick="window.app.setView('now')" id="btn-now" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-[rgb(var(--color-primary-700))] transition-all duration-300 group relative">
-                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-[rgb(var(--color-primary-50))] group-hover:scale-110 transition-transform">
-                        <i class="fas fa-chalkboard text-lg"></i>
-                    </div>
-                    <span class="text-[10px] font-bold">الحصص</span>
-                </button>
-                
-                <button onclick="window.app.setView('reserve')" id="btn-reserve" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
-                        <i class="fas fa-user-clock text-lg"></i>
-                    </div>
-                    <span class="text-[10px] font-bold">الاحتياط</span>
-                </button>
-
-                <button onclick="window.app.setView('teachers')" id="btn-teachers" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
-                        <i class="fas fa-users-cog text-lg"></i>
-                    </div>
-                    <span class="text-[10px] font-bold">المعلمين</span>
-                </button>
-
-                <button onclick="window.app.setView('supervision-hub')" id="btn-supervision-hub" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
-                        <i class="fas fa-clipboard-user text-lg"></i>
-                    </div>
-                    <span class="text-[10px] font-bold">الزيارات</span>
-                </button>
-                
-                <button onclick="window.app.setView('duty')" id="btn-duty" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
-                        <i class="fas fa-user-shield text-lg"></i>
-                    </div>
-                    <span class="text-[10px] font-bold">المناوبة</span>
-                </button>
-
-                <button onclick="window.app.setView('periods')" id="btn-periods" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
-                        <i class="fas fa-clock text-lg"></i>
-                    </div>
-                    <span class="text-[10px] font-bold">التوقيت</span>
-                </button>
-                
-                <button onclick="window.app.setView('reports')" id="btn-reports" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
-                        <i class="fas fa-file-invoice text-lg"></i>
-                    </div>
-                    <span class="text-[10px] font-bold">التقارير</span>
-                </button>
-            </div>
-        </nav>
-    </div>
-    
-    </div>
-
-    <!-- Modals (Re-styled) -->
-    
-    <!-- Substitute Modal -->
-    <div id="modal-substitute" class="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 hidden-view">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm modal-backdrop transition-opacity" onclick="window.app.closeModal('modal-substitute')"></div>
-        <div class="bg-white w-full md:max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden animate-scale-in modal-content">
-            <div class="bg-indigo-900 p-5 text-white flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold flex items-center gap-2 text-lg"><i class="fas fa-chalkboard-teacher text-yellow-400"></i> معلم احتياط</h3>
-                    <p class="text-indigo-200 text-xs mt-0.5 font-bold">اختيار البديل الأنسب بناءً على النصاب</p>
-                </div>
-                <button type="button" onclick="window.app.closeModal('modal-substitute')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-5">
-                <div class="text-xs font-bold text-slate-500 mb-3 flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <span>المعلمون المتاحون</span>
-                    <span id="subModalPeriodInfo" class="text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded"></span>
-                </div>
-                <div id="substituteList" class="space-y-2 max-h-[60vh] overflow-y-auto custom-scrollbar"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Action Modal -->
-    <div id="modal-action" class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 hidden-view">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-action')"></div>
-        <div class="bg-white w-full md:max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden animate-scale-in modal-content mb-0 md:mb-20">
-            <div class="bg-slate-800 p-5 text-white flex justify-between items-start">
-                <div>
-                    <h3 class="text-xl font-bold flex items-center gap-2" id="actionModalTitle"></h3>
-                    <p id="actionModalSubtitle" class="text-slate-300 text-xs mt-1 flex items-center gap-1 font-medium"></p>
-                </div>
-                <button type="button" onclick="window.app.closeModal('modal-action')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-5 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                <button type="button" id="btn-evaluate" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 p-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-3 transition cursor-pointer group shadow-sm">
-                    <span class="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition"><i class="fas fa-clipboard-list text-lg"></i></span>
-                    <span>بدء تقييم زيارة إشرافية</span>
-                </button>
-                
-                <div class="space-y-2">
-                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">التواصل السريع</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button type="button" onclick="window.app.sendWhatsApp('summon')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 p-3 rounded-2xl font-bold text-xs flex flex-col items-center gap-2 transition cursor-pointer">
-                            <i class="fab fa-whatsapp text-2xl"></i><span>استدعاء للإدارة</span>
-                        </button>
-                        <button type="button" id="btn-remind" onclick="window.app.sendWhatsApp('remind')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 p-3 rounded-2xl font-bold text-xs flex flex-col items-center gap-2 transition cursor-pointer disabled:opacity-50">
-                            <i class="fas fa-bell text-2xl"></i><span>تذكير بالحصة</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="space-y-2">
-                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">المخالفات الإدارية</label>
-                    <div id="violationButtonsContainer" class="space-y-2"></div>
-                </div>
-            </div>
-             <div class="bg-slate-50 p-4 text-center border-t border-slate-100 flex justify-between items-center px-6">
-                 <span class="text-xs text-slate-500 font-bold">التقييم الحالي</span>
-                 <span class="text-xl font-extrabold text-slate-800" id="currentScoreDisplay"></span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
+    <!-- Modals -->
+    <!-- Settings Modal (Restored Full Version) -->
     <div id="modal-settings" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-settings')"></div>
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-scale-in flex flex-col max-h-[85vh] modal-content">
@@ -914,13 +555,12 @@
                 <!-- Dev Settings -->
                 <div id="developerSettingsSection" class="hidden-view space-y-4 bg-red-50 p-5 rounded-2xl border border-red-100 relative">
                     <div class="flex items-center justify-between pb-2 border-b border-red-200">
-                        <h4 class="font-bold text-red-900 flex items-center gap-2 text-sm"><i class="fas fa-shield-alt text-red-500"></i> إعدادات المطور</h4>
+                        <h4 class="font-bold text-red-900 flex items-center gap-2 text-sm"><i class="fas fa-shield-alt text-red-500"></i> إعدادات المطور (API)</h4>
                         <button onclick="window.app.enableDevEdit()" class="text-xs bg-white text-red-600 px-3 py-1 rounded-lg border border-red-200 hover:bg-red-50 transition cursor-pointer"><i class="fas fa-lock-open mr-1"></i> تعديل</button>
                     </div>
                     <div class="space-y-3">
                         <label class="text-[10px] font-bold text-red-800 uppercase tracking-wider">Cloud Function URL</label>
                         <input type="text" id="settingCloudUrl" disabled class="w-full text-xs p-3 rounded-xl border border-red-200 bg-white/50 text-slate-600 dir-ltr text-left disabled:opacity-70 font-mono">
-                        
                         <button onclick="window.app.saveDevSettings()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"><i class="fas fa-save mr-1"></i> حفظ</button>
                     </div>
                 </div>
@@ -992,7 +632,7 @@
                 <div class="mt-8 pt-4 border-t border-slate-100 space-y-3">
                     <h4 class="font-extrabold text-slate-800 text-sm">الدعم الفني</h4>
                     <button onclick="window.app.contactSupport()" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 py-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fab fa-whatsapp"></i> تواصل مع المبرمج (عادل الغزيلي)
+                        <i class="fab fa-whatsapp"></i> الدعم الفني (عادل الغزيلي)
                     </button>
                 </div>
                 
@@ -1005,7 +645,69 @@
             </div>
         </div>
     </div>
+    <!-- Substitute Modal -->
+    <div id="modal-substitute" class="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 hidden-view">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm modal-backdrop transition-opacity" onclick="window.app.closeModal('modal-substitute')"></div>
+        <div class="bg-white w-full md:max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden animate-scale-in modal-content">
+            <div class="bg-indigo-900 p-5 text-white flex justify-between items-center">
+                <div><h3 class="font-bold flex items-center gap-2 text-lg"><i class="fas fa-chalkboard-teacher text-yellow-400"></i> معلم احتياط</h3><p class="text-indigo-200 text-xs mt-0.5 font-bold">اختيار البديل الأنسب بناءً على النصاب</p></div>
+                <button type="button" onclick="window.app.closeModal('modal-substitute')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-5">
+                <div class="text-xs font-bold text-slate-500 mb-3 flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100"><span>المعلمون المتاحون</span><span id="subModalPeriodInfo" class="text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded"></span></div>
+                <div id="substituteList" class="space-y-2 max-h-[60vh] overflow-y-auto custom-scrollbar"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Action Modal -->
+    <div id="modal-action" class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 hidden-view">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-action')"></div>
+        <div class="bg-white w-full md:max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden animate-scale-in modal-content mb-0 md:mb-20">
+            <div class="bg-slate-800 p-5 text-white flex justify-between items-start">
+                <div><h3 class="text-xl font-bold flex items-center gap-2" id="actionModalTitle"></h3><p id="actionModalSubtitle" class="text-slate-300 text-xs mt-1 flex items-center gap-1 font-medium"></p></div>
+                <button type="button" onclick="window.app.closeModal('modal-action')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-5 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <button type="button" id="btn-evaluate" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 p-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-3 transition cursor-pointer group shadow-sm"><span class="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition"><i class="fas fa-clipboard-list text-lg"></i></span><span>بدء تقييم زيارة إشرافية</span></button>
+                <div class="space-y-2"><label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">التواصل السريع</label><div class="grid grid-cols-2 gap-3"><button type="button" onclick="window.app.sendWhatsApp('summon')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 p-3 rounded-2xl font-bold text-xs flex flex-col items-center gap-2 transition cursor-pointer"><i class="fab fa-whatsapp text-2xl"></i><span>استدعاء للإدارة</span></button><button type="button" id="btn-remind" onclick="window.app.sendWhatsApp('remind')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 p-3 rounded-2xl font-bold text-xs flex flex-col items-center gap-2 transition cursor-pointer disabled:opacity-50"><i class="fas fa-bell text-2xl"></i><span>تذكير بالحصة</span></button></div></div>
+                <div class="space-y-2"><label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">المخالفات الإدارية</label><div id="violationButtonsContainer" class="space-y-2"></div></div>
+            </div>
+             <div class="bg-slate-50 p-4 text-center border-t border-slate-100 flex justify-between items-center px-6"><span class="text-xs text-slate-500 font-bold">التقييم الحالي</span><span class="text-xl font-extrabold text-slate-800" id="currentScoreDisplay"></span></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="fixed bottom-4 left-4 right-4 z-40 no-print flex justify-center pointer-events-none">
+        <nav class="bg-white/90 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl pointer-events-auto max-w-lg w-full">
+            <div class="flex justify-around items-center h-16 px-2">
+                <button onclick="window.app.setView('now')" id="btn-now" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-[rgb(var(--color-primary-700))] transition-all duration-300 group relative">
+                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-[rgb(var(--color-primary-50))] group-hover:scale-110 transition-transform"><i class="fas fa-chalkboard text-lg"></i></div><span class="text-[10px] font-bold">الحصص</span>
+                </button>
+                <button onclick="window.app.setView('reserve')" id="btn-reserve" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors"><i class="fas fa-user-clock text-lg"></i></div><span class="text-[10px] font-bold">الاحتياط</span>
+                </button>
+                <button onclick="window.app.setView('teachers')" id="btn-teachers" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors"><i class="fas fa-users-cog text-lg"></i></div><span class="text-[10px] font-bold">المعلمين</span>
+                </button>
+                <button onclick="window.app.setView('supervision-hub')" id="btn-supervision-hub" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors"><i class="fas fa-clipboard-user text-lg"></i></div><span class="text-[10px] font-bold">الزيارات</span>
+                </button>
+                <button onclick="window.app.setView('duty')" id="btn-duty" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors"><i class="fas fa-user-shield text-lg"></i></div><span class="text-[10px] font-bold">المناوبة</span>
+                </button>
+                <button onclick="window.app.setView('periods')" id="btn-periods" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors"><i class="fas fa-clock text-lg"></i></div><span class="text-[10px] font-bold">التوقيت</span>
+                </button>
+                <button onclick="window.app.setView('reports')" id="btn-reports" class="nav-btn flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
+                    <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors"><i class="fas fa-file-invoice text-lg"></i></div><span class="text-[10px] font-bold">التقارير</span>
+                </button>
+            </div>
+        </nav>
+    </div>
     
+    </div>
+
+    <!-- Script Implementation -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script>
         class SchoolApp {
@@ -1989,7 +1691,7 @@
                 }); 
                 
                 active.sort((a, b) => { 
-                    const gA = (a.className.match(/\\d+/) || [999])[0], gB = (b.className.match(/\\d+/) || [999])[0]; 
+                    const gA = (a.className.match(/\d+/) || [999])[0], gB = (b.className.match(/\d+/) || [999])[0]; 
                     return parseInt(gA) - parseInt(gB); 
                 }); 
                 
@@ -2157,8 +1859,8 @@
             addViolation() { const label = document.getElementById('newViolationLabel').value; const points = parseInt(document.getElementById('newViolationPoints').value); if(label && points) { this.state.violationTypes.push({ id: Date.now().toString(), label, points, icon: 'fa-exclamation-circle' }); document.getElementById('newViolationLabel').value=''; this.saveData(); this.renderViolationsSettings(); } }
             removeViolation(id) { this.state.violationTypes = this.state.violationTypes.filter(v => v.id !== id); this.saveData(); this.renderViolationsSettings(); }
             setTheme(themeName) { this.state.theme = themeName; this.applyTheme(); this.saveData(); this.renderThemeSelector(); }
-            applyTheme() { document.body.classList.remove('theme-pink', 'theme-green', 'theme-dark'); if (this.state.theme && this.state.theme !== 'default') document.body.classList.add(`theme-${this.state.theme}`); }
-            renderThemeSelector() { const container = document.getElementById('themeSelectorContainer'); if (!container) return; const themes = [{ id: 'default', name: 'أساسي', colorClass: 'bg-indigo-600', activeClass: 'ring-2 ring-indigo-500 ring-offset-2' }, { id: 'pink', name: 'زهري', colorClass: 'bg-pink-600', activeClass: 'ring-2 ring-pink-500 ring-offset-2' }, { id: 'green', name: 'أخضر', colorClass: 'bg-green-600', activeClass: 'ring-2 ring-green-500 ring-offset-2' }, { id: 'dark', name: 'ليلي', colorClass: 'bg-slate-800', activeClass: 'ring-2 ring-slate-600 ring-offset-2' }]; container.innerHTML = themes.map(theme => { const isActive = this.state.theme === theme.id; const ringClass = isActive ? theme.activeClass : ''; return `<button onclick="window.app.setTheme('${theme.id}')" class="p-1 rounded-xl transition ${ringClass}"><div class="w-full h-12 rounded-lg ${theme.colorClass} shadow-sm"></div><span class="text-[10px] font-bold mt-1.5 block text-center text-slate-500">${theme.name}</span></button>`; }).join(''); }
+            applyTheme() { document.body.classList.remove('theme-pink', 'theme-green', 'theme-dark', 'theme-indigo'); if (this.state.theme && this.state.theme !== 'default') document.body.classList.add(`theme-${this.state.theme}`); }
+            renderThemeSelector() { const container = document.getElementById('themeSelectorContainer'); if (!container) return; const themes = [{ id: 'default', name: 'سماوي (أساسي)', colorClass: 'bg-[#008ae6]', activeClass: 'ring-2 ring-[#008ae6] ring-offset-2' }, { id: 'indigo', name: 'نيلي', colorClass: 'bg-indigo-600', activeClass: 'ring-2 ring-indigo-500 ring-offset-2' }, { id: 'pink', name: 'زهري', colorClass: 'bg-pink-600', activeClass: 'ring-2 ring-pink-500 ring-offset-2' }, { id: 'green', name: 'أخضر', colorClass: 'bg-green-600', activeClass: 'ring-2 ring-green-500 ring-offset-2' }, { id: 'dark', name: 'ليلي', colorClass: 'bg-slate-800', activeClass: 'ring-2 ring-slate-600 ring-offset-2' }]; container.innerHTML = themes.map(theme => { const isActive = this.state.theme === theme.id; const ringClass = isActive ? theme.activeClass : ''; return `<button onclick="window.app.setTheme('${theme.id}')" class="p-1 rounded-xl transition ${ringClass}"><div class="w-full h-12 rounded-lg ${theme.colorClass} shadow-sm"></div><span class="text-[10px] font-bold mt-1.5 block text-center text-slate-500">${theme.name}</span></button>`; }).join(''); }
             setDefaultSchoolGender(gender) { if (gender === 'male' || gender === 'female') { this.state.defaultSchoolGender = gender; this.saveData(); } }
             renderSchoolGenderSettings() { const radios = document.getElementsByName('defaultSchoolGender'); for (const radio of radios) { if (radio.value === this.state.defaultSchoolGender) { radio.checked = true; } } }
             openSettings() { 
