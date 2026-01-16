@@ -80,39 +80,29 @@
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
 
         .print-only { display: none; }
+        .page-break { page-break-before: always; }
         @media print {
+            body { background-color: #fff; }
             body * { visibility: hidden; }
             .no-print { display: none !important; }
             .print-only { display: block; }
+            
+            #view-supervision-report { background-color: transparent !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            #report-document-container, #report-document-container * { visibility: visible; }
+            #report-document-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
 
             body.printing-subs #printable-substitution-sheet,
-            body.printing-subs #printable-substitution-sheet * {
-                visibility: visible;
-            }
-            body.printing-subs #printable-substitution-sheet {
-                position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; z-index: 9999;
-            }
+            body.printing-subs #printable-substitution-sheet * { visibility: visible; }
+            body.printing-subs #printable-substitution-sheet { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; z-index: 9999; }
 
-            body.printing-supervision #view-supervision-report,
-            body.printing-supervision #view-supervision-report * {
-                visibility: visible;
-            }
-            body.printing-supervision #view-supervision-report {
-                position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 0; margin: 0; background: white;
-            }
-            
             body.printing-duty #printable-duty-sheet,
-            body.printing-duty #printable-duty-sheet * {
-                visibility: visible;
-            }
-            body.printing-duty #printable-duty-sheet {
-                position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; z-index: 9999;
-            }
+            body.printing-duty #printable-duty-sheet * { visibility: visible; }
+            body.printing-duty #printable-duty-sheet { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; z-index: 9999; }
         }
         
         .task-checkbox:checked + div { text-decoration: line-through; color: var(--text-muted); opacity: 0.6; }
         
-        .duty-table th, .duty-table td { white-space: nowrap; min-width: 120px; }
+        .duty-table th, .duty-table td { white-space: nowrap; }
         .duty-cell { position: relative; }
         .duty-cell:hover .duty-actions { opacity: 1; pointer-events: auto; }
         .duty-actions { opacity: 0; transition: opacity 0.2s; pointer-events: none; }
@@ -122,6 +112,24 @@
         .ai-report-section ul { list-style: none; padding: 0; space-y: 0.8rem; }
         .ai-report-section li { position: relative; padding-right: 1.5rem; line-height: 1.7; }
         .ai-report-section li::before { content: "•"; position: absolute; right: 0; color: rgb(var(--color-primary-500)); font-weight: bold; font-size: 1.2rem; line-height: 1.5rem; }
+        
+        /* New report styling */
+        .report-section h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .report-section ul {
+            list-style-type: disc;
+            padding-right: 1.5rem;
+            space-y: 0.5rem;
+            color: #334155;
+            line-height: 1.8;
+        }
+
     </style>
     
     <script type="importmap">
@@ -158,7 +166,7 @@
                 الدخول كزائر (تجريبي)
             </button>
         </div>
-        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.4.9 - طباعة المناوبة</div>
+        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.5.0 - تقرير احترافي</div>
     </div>
     
     <!-- App View -->
@@ -287,7 +295,7 @@
             </div>
             <div class="bg-white rounded-3xl shadow-soft border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-right duty-table table-fixed">
+                    <table class="w-full text-right duty-table table-auto">
                         <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
                             <tr id="dutyHeaderRow"></tr>
                         </thead>
@@ -421,57 +429,98 @@
             </div>
         </section>
 
-        <!-- Report View -->
-        <section id="view-supervision-report" class="fade-in space-y-6 hidden-view bg-white p-8 md:p-12 rounded-none md:rounded-3xl shadow-none md:shadow-2xl min-h-screen md:min-h-0 print:min-h-0 border border-slate-200">
-            <!-- Headers and Meta (Preserved) -->
-            <div class="border-b-2 border-slate-800 pb-6 mb-8 flex justify-between items-start">
-                <div><h1 class="text-4xl font-extrabold text-slate-900 mb-2 font-serif">تقرير زيارة إشرافية</h1><p class="text-slate-600 text-sm font-bold tracking-wide">نظام الإدارة المدرسية الذكي</p></div>
-                <div class="text-left text-sm text-slate-600 font-bold"><p id="reportDate" class="font-mono bg-slate-100 px-3 py-1 rounded-lg border border-slate-200"></p></div>
-            </div>
-            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-10">
-                <div class="grid grid-cols-2 gap-y-6 text-sm">
-                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">المعلم/ة</span> <span id="repTeacherName" class="font-extrabold text-slate-900 text-lg"></span></div>
-                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">التخصص</span> <span id="repSpecialization" class="font-bold text-slate-800"></span></div>
-                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">الصف</span> <span id="repClassName" class="font-bold text-slate-800"></span></div>
-                    <div class="flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">عنوان الدرس</span> <span id="repLessonTopic" class="font-bold text-slate-800"></span></div>
-                    <div class="col-span-2 flex flex-col"><span class="text-slate-500 text-xs font-bold mb-1">نوع المدرسة</span> <span id="repSchoolGender" class="font-bold text-slate-800"></span></div>
-                </div>
-            </div>
-            
-            <!-- Ratings Table -->
-            <div class="mb-10">
-                <h3 class="text-lg font-extrabold text-slate-900 mb-4 flex items-center gap-2"><span class="w-8 h-8 rounded-lg bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-800))] flex items-center justify-center text-sm"><i class="fas fa-list-ol"></i></span> تفاصيل التقييم</h3>
-                <div class="overflow-hidden rounded-2xl border border-slate-200">
-                    <table class="w-full text-right text-sm">
-                        <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200"><tr><th class="p-4 w-1/2">البند</th><th class="p-4 text-center w-24">التقييم</th><th class="p-4">الملاحظات</th></tr></thead>
-                        <tbody id="repDetailsBody" class="divide-y divide-slate-100 bg-white"></tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- AI Section -->
-            <div class="mb-8 relative">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h3 class="text-lg font-extrabold text-[rgb(var(--color-primary-800))] flex items-center gap-2"><span class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-700 text-white flex items-center justify-center text-sm shadow-md"><i class="fas fa-robot"></i></span> التحليل النوعي والتوصيات</h3>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button onclick="window.app.copyToClipboardPrompt()" class="flex-1 md:flex-none text-xs bg-white text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 transition cursor-pointer no-print font-bold"><i class="fas fa-copy"></i><span>نسخ للأداة الخارجية</span></button>
-                        <button onclick="window.app.enhanceReportWithAI()" class="flex-1 md:flex-none text-xs bg-slate-900 text-white px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-lg hover:bg-slate-800 transition cursor-pointer no-print font-bold"><i class="fas fa-wand-magic-sparkles text-yellow-400"></i><span>تحسين بالذكاء الاصطناعي</span></button>
-                    </div>
-                </div>
-                <div id="aiReportContent" class="space-y-6 text-slate-800 font-medium leading-relaxed"></div>
-                <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view rounded-3xl">
-                    <div class="relative w-16 h-16 mb-4"><div class="absolute inset-0 rounded-full border-4 border-slate-100"></div><div class="absolute inset-0 rounded-full border-4 border-[rgb(var(--color-primary-600))] border-t-transparent animate-spin"></div></div>
-                    <span class="text-sm font-bold text-slate-800">جاري صياغة التقرير الاحترافي...</span><span class="text-xs text-slate-500 mt-1">يتم الاتصال بالمعالج الذكي</span>
-                </div>
-            </div>
-            
-            <div class="flex gap-3 mt-12 no-print border-t border-slate-100 pt-8">
+        <!-- NEW Report View -->
+        <section id="view-supervision-report" class="fade-in space-y-6 hidden-view bg-slate-100 p-4 md:p-8">
+            <div class="flex gap-3 mt-4 no-print max-w-4xl mx-auto">
                 <button onclick="window.app.printSupervisionReport()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg"><i class="fas fa-print"></i> طباعة / PDF</button>
                 <button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-100"><i class="fas fa-save"></i> حفظ</button>
                 <button onclick="window.app.setView('supervision')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 py-3 rounded-xl font-bold transition cursor-pointer">تعديل</button>
                 <button onclick="window.app.setView('supervision-history')" class="flex-1 bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 py-3 rounded-xl font-bold transition cursor-pointer">إغلاق</button>
             </div>
+            <div id="report-document-container" class="bg-white max-w-4xl mx-auto shadow-2xl rounded-lg border border-slate-200">
+                <!-- PAGE 1 -->
+                <div class="p-10">
+                    <header class="flex justify-between items-start pb-4 border-b-2 border-black">
+                        <div class="text-right text-xs space-y-1 font-bold text-slate-800">
+                            <p>سلطنة عُمان</p>
+                            <p>وزارة التربية والتعليم</p>
+                            <p>المديرية العامة للتربية والتعليم بمحافظة مسقط</p>
+                        </div>
+                        <div class="px-4">
+                            <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAA5ADkDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1VZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A+yvjH8avAn7Pvw+1T4l/ErxFB4d8J6NGJL3UZ0kkEYZgqqqRqzu7MQqoiszEgAEkCuA/Zn/AG5v2b/2wv8AhIl+CfxS0vxde+FLgWviDT0juLO/05yWCia1uY45kDFGCMU2uVbaTg4x/+Ckf7AfhX/go7+zjqXwB8U+LtV8EWd5qVlqdvrmkQRTXEL20qyBWjkwHRgCrAMOCTggkEfGv7I3/BBvxl+xR+3L4N/ap+Hf7U2seJdM8OW19ZaroHijw7ZrcatBPaTRKq3dqYlV1dkYAxN93BznIAPs7U/26/2bdF/ais/2PdR+KWlWnxq1LTv7Vs/B8kc63U9t8+HVzH5IOY5MLv3Hy3wDtOOZ+Pv8AwVK/Yq/Zn+Jsnwh+L3x38PeGPHEVvHdzaDcR3Ut1BDJgrukjhdIycj5XcNgg4wQT8y/Eb/g3/wBG+KH/AAUK1P8Abm1/9pDxkfiVf2S6XZ3unaRpluujWIhjie0gg2MI0KRLlhk5Zz3wOQ+J/wDwbO+AfiB8ZPE/xc0f9qv4zeA7rxfqc2ra7oPhbV7CytLy6lOXf5bZn57ZZuAACcYAAK//AAV/8a6Z8Vf2QfC/jLQ5t1nca3E6Kfuq6g/Kfoa/PD9m3433PwA+LGm+O7e3a9sbYMLq2jIDTRkYIXPGc8jPGQOnWu8/4Kb/8I/+yl+xP8OfgT4D8d+JPEnw18D60bvw/pfi24in1XTrV45Xe3lniRFfDuxGVGMgc4JPiP8AwTm+AGqftNftU+Efh1o1o1/DqmoQ295ArbWe1LgTHd2wnOTgDB5FAH7yfs7/ALQHgz9p/wCB/hX46+ALhpfDfjTTItU05ZgBLGknVJFBIWRGDIy5OGUjJxk/nP8AtI/8Esv2jPjl+0n4k+Lnw//AOCjfxp+B/hvWLiOax+HXhG626XpKiJEZbfM6EBmVpCNi/NI3XOT+iXwl+EfhH4G/DDwz8IfAWmrpfhXwhpFrpGkWaEn_xAAmEALHliFALMcsxJJJJJrpKAPn39iv9hrwz+wz4D1LwN4e+LfxV+LFrqN+b59U+LfjK58U3sDFAnlQyzY8uIAZCDgEk+pr6CoooA/Mn9vzwj8Sfi1+xZ8Q/APhDwpN4g1jXLOO2hsrC4U7iZYwzFnZVUKuWySBxyRX4o/A3xJ4z/Ya/ag8OeJ9esdQ0rWvhx4jtrvUNMv7Z7aYCCZWuLeWOQBkbaJI2VgCCARyK/o9/4KAftA+C/2QvgNq/jjxNqdvBc38MunaNYtIPNu72SMqixr1O3IYkDIA54Ffz5fEzxHqXjLx5r3ivV5TLqGtanPezuxyS0kjOefqaAP6WdK1K31jS7XVrXPk3sCTx7hghXUMP1Irkfjr8btA/Z/8Ah3e/EnxVo3iLWdH0plF7H4W0WfV7y3jJ+aYwQAvJGg5dkB2Ll2wqswi/Z78d+Fvib8B/AXjfwbeR33h7WfDWmy6fPEwZWjFtGo5HqrKwwcEKQcEEV3NAHw1+0T/wWu/ZH+AnwD8NfHrQ7jxP8X/C/jXXLjQPD6/DHSpbu4v7+BZGmjUXHkBSoifJLDBOARkZ+Wf2Xf8Ag5R1b9pz9pTwv8Cbj9iX4xeEtF8aa5FpGjeMdQtZJtLmaV/3RkYWqxhWIJyZAQMcjPHt37WH/BvD+xn+1n+0N4l/aQ1vUPHfgvxV43nW88TR+CNfjsbPWrlUVFlnie3k+YBQMqVJ5JySSfzJ/4Lp/srfsXfsTfEr4O/s6fseeGptN1HQvDt9qXj++k1u81Frq6aaOO1jd7iRwyiOKY7UIXMh4GBQBU/4K9/8ABUDwn/wU+/aI1TxT4V8OxeFPCHgy3l0Pwvp91eGa+e0SYyGa5ckr5khJbYpIRSoG45Y+s/8ABvr+y3qPxp/bX0n4hXljJceF/hJDJrt9OVJiW7ZGitI89AzNI0gHVhA/Tmvkv9kP9mLxt+15+0N4M+AngDS5NQ1/wAZatDptuqqSqBm+eVyAdsaIC7sRwqsTwK/o6/Yy/ZI8FfsX/s6eFf2fPAUQTS/DNkI5bkopnvrlzvnupmAAMksjO5OMDcAAABQB6nRRRQB//9k=" alt="شعار وزارة التربية والتعليم" class="h-16">
+                        </div>
+                        <div class="text-left text-xs">
+                            <p><strong class="font-sans text-slate-800">رقم الصفحة:</strong> 1</p>
+                            <p><strong class="font-sans text-slate-800">التاريخ:</strong> <span id="repMetaDate" class="font-mono"></span></p>
+                            <p><strong class="font-sans text-slate-800">الساعة:</strong> <span id="repMetaTime" class="font-mono"></span></p>
+                            <p><strong class="font-sans text-slate-800">العام الدراسي:</strong> <span id="repAcademicYear" class="font-mono"></span></p>
+                        </div>
+                    </header>
+
+                    <h1 class="text-center text-xl font-extrabold my-6 text-slate-900">استمارة الزيارة الإشرافية لمعلم مجال/ مادة</h1>
+                    
+                    <div class="grid grid-cols-2 gap-x-8 gap-y-2 border border-slate-400 rounded-lg p-4 text-sm mb-6">
+                        <div><strong>الاسم:</strong> <span id="repTeacherName" class="font-medium"></span></div>
+                        <div><strong>المدرسة:</strong> <span id="repSchoolName" class="font-medium"></span></div>
+                        <div><strong>تاريخ الزيارة:</strong> <span id="repVisitDate" class="font-medium font-mono"></span></div>
+                        <div><strong>رقم الملف:</strong> <span class="font-medium font-mono">16210112</span></div>
+                        <div><strong>المرحلة:</strong> <span class="font-medium">أساسي (5 - 10)</span></div>
+                        <div><strong>رقم الزيارة:</strong> <span class="font-medium">1</span></div>
+                        <div class="col-span-2 grid grid-cols-3 gap-x-8">
+                            <div><strong>الصف:</strong> <span id="repClassName" class="font-medium"></span></div>
+                            <div><strong>الفصل:</strong> <span class="font-medium">2</span></div>
+                            <div><strong>الحصة:</strong> <span class="font-medium">7</span></div>
+                        </div>
+                        <div><strong>المجال / المادة:</strong> <span id="repSpecialization" class="font-medium"></span></div>
+                        <div class="col-span-2"><strong>عنوان الدرس:</strong> <span id="repLessonTopic" class="font-medium"></span></div>
+                    </div>
+
+                    <p class="text-center text-xs font-bold text-slate-600 mb-4 p-2 bg-slate-100 rounded-md border border-slate-200">
+                        متميز (1) &nbsp;&nbsp;&nbsp; جيد (2) &nbsp;&nbsp;&nbsp; ملائم (3) &nbsp;&nbsp;&nbsp; غير ملائم (4) &nbsp;&nbsp;&nbsp; يحتاج إلى تدخل (5)
+                    </p>
+
+                    <table class="w-full border-collapse border border-slate-400 text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 font-extrabold text-slate-800">
+                                <th class="border border-slate-400 p-2 w-12">م</th>
+                                <th class="border border-slate-400 p-2 text-right">بنود التقويم</th>
+                                <th class="border border-slate-400 p-2 w-20">المستوى</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repDetailsBody"></tbody>
+                    </table>
+
+                    <footer class="mt-16 flex justify-around items-end text-sm font-bold text-slate-900">
+                        <div class="text-center">
+                            <p>اسم الزائر: <span id="repVisitorName" class="font-medium"></span></p>
+                            <p class="mt-2">الوظيفة: <span class="font-medium">مدير مدرسة</span></p>
+                        </div>
+                        <div class="text-center"><p>توقيع المعلم</p><div class="h-16 w-48 border-b border-slate-400 mt-2"></div></div>
+                        <div class="text-center"><p>توقيع مدير المدرسة</p><div class="h-16 w-48 border-b border-slate-400 mt-2"></div></div>
+                    </footer>
+                </div>
+                
+                <!-- PAGE 2 -->
+                <div class="p-10 page-break">
+                    <div id="aiReportContentWrapper" class="relative">
+                        <div id="aiReportContent" class="space-y-6 text-slate-800 font-medium leading-relaxed"></div>
+                        <div id="aiLoadingOverlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 hidden-view rounded-3xl">
+                            <div class="relative w-16 h-16 mb-4"><div class="absolute inset-0 rounded-full border-4 border-slate-100"></div><div class="absolute inset-0 rounded-full border-4 border-[rgb(var(--color-primary-600))] border-t-transparent animate-spin"></div></div>
+                            <span class="text-sm font-bold text-slate-800">جاري صياغة التقرير الاحترافي...</span><span class="text-xs text-slate-500 mt-1">يتم الاتصال بالمعالج الذكي</span>
+                        </div>
+                    </div>
+                    <footer class="mt-16 flex justify-around items-end text-sm font-bold text-slate-900">
+                        <div class="text-center">
+                            <p>اسم الزائر: <span id="repVisitorName_p2" class="font-medium"></span></p>
+                            <p class="mt-2">الوظيفة: <span class="font-medium">مدير مدرسة</span></p>
+                        </div>
+                        <div class="text-center"><p>توقيع المعلم</p><div class="h-16 w-48 border-b border-slate-400 mt-2"></div></div>
+                        <div class="text-center"><p>توقيع مدير المدرسة</p><div class="h-16 w-48 border-b border-slate-400 mt-2"></div></div>
+                    </footer>
+                </div>
+            </div>
         </section>
+
 
         <!-- View: Supervision History -->
         <section id="view-supervision-history" class="fade-in space-y-6 hidden-view">
@@ -1414,33 +1463,98 @@
             setNote(criteriaId, text) { if(!this.state.supervisionData.notes) this.state.supervisionData.notes = {}; this.state.supervisionData.notes[criteriaId] = text; }
 
             generateReport(isLoad = false, existingData = null) {
-                const ratings = existingData ? existingData.ratings : this.state.supervisionData.ratings; const notes = existingData ? (existingData.notes || {}) : (this.state.supervisionData.notes || {});
+                const ratings = existingData ? existingData.ratings : this.state.supervisionData.ratings;
                 if(!isLoad && Object.keys(ratings).length < this.state.evaluationCriteria.length) { alert('يرجى استكمال تقييم جميع البنود'); return; }
-                let tName = ""; if(isLoad) { tName = existingData.teacherName; } else { const nameInput = document.getElementById('supTeacherName'); if (!nameInput.classList.contains('hidden')) { tName = nameInput.value; } else { const select = document.getElementById('supTeacherSelect'); tName = select.options[select.selectedIndex].text; } }
-                const spec = isLoad ? existingData.specialization : document.getElementById('supSpecialization').value; const cName = isLoad ? existingData.className : document.getElementById('supClassName').value; const lTopic = isLoad ? existingData.topic : document.getElementById('supLessonTopic').value || '-';
-                const schoolGender = isLoad ? existingData.gender : document.querySelector('input[name="supSchoolGender"]:checked').value; const rDate = isLoad ? existingData.date : new Date().toLocaleDateString('ar-EG');
+                
+                const now = new Date();
+                const year = now.getFullYear();
+                
+                let tName = ""; 
+                if(isLoad) { tName = existingData.teacherName; } 
+                else { 
+                    const nameInput = document.getElementById('supTeacherName'); 
+                    if (!nameInput.classList.contains('hidden')) { tName = nameInput.value; } 
+                    else { const select = document.getElementById('supTeacherSelect'); tName = select.options[select.selectedIndex].text; } 
+                }
+                const t = this.state.teachers.find(t => t.name === tName);
+
+                const spec = isLoad ? existingData.specialization : document.getElementById('supSpecialization').value; 
+                const cName = isLoad ? existingData.className : document.getElementById('supClassName').value; 
+                const lTopic = isLoad ? existingData.topic : document.getElementById('supLessonTopic').value || '-';
+                const schoolGender = isLoad ? existingData.gender : document.querySelector('input[name="supSchoolGender"]:checked').value; 
+                const visitDate = isLoad ? existingData.date : now.toLocaleDateString('en-CA');
+                
                 this.state.supervisionData.gender = schoolGender;
-                document.getElementById('repTeacherName').innerText = tName; document.getElementById('repSpecialization').innerText = spec || 'عام'; document.getElementById('repClassName').innerText = cName; document.getElementById('repLessonTopic').innerText = lTopic; document.getElementById('reportDate').innerText = rDate; document.getElementById('repSchoolGender').innerText = schoolGender === 'male' ? 'بنين' : 'بنات';
-                const analysis = []; const detailsBody = document.getElementById('repDetailsBody'); detailsBody.innerHTML = ''; 
-                this.state.evaluationCriteria.forEach(c => { const r = ratings[c.id]; const noteText = notes[c.id] || '-'; const itemData = c.items[r] || { desc: "", rec: "" }; analysis.push({ id: c.id, title: c.title, rating: r, desc: itemData.desc, rec: itemData.rec, note: notes[c.id] || '' }); let ratingBadge = r === 1 ? 'text-emerald-700 bg-emerald-50' : (r === 2 ? 'text-green-600 bg-green-50' : (r === 3 ? 'text-amber-600 bg-amber-50' : (r === 4 ? 'text-orange-600 bg-orange-50' : 'text-red-600 bg-red-50'))); detailsBody.innerHTML += `<tr class="hover:bg-slate-50 transition-colors"><td class="p-4 border-b border-slate-100 align-top"><div class="font-bold text-slate-800 mb-1 text-sm">${c.title}</div><div class="text-[10px] text-slate-400 mb-2 font-bold">${c.subtitle}</div><div class="text-xs text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">${itemData.desc}</div></td><td class="p-4 border-b border-slate-100 text-center align-top pt-5"><span class="font-bold px-3 py-1 rounded-lg text-xs border border-transparent ${ratingBadge}">${r}/5</span></td><td class="p-4 border-b border-slate-100 text-slate-500 italic text-xs align-top pt-5">${noteText}</td></tr>`; });
-                if (isLoad && existingData.aiReportContent) { document.getElementById('aiReportContent').innerHTML = existingData.aiReportContent; } else {
-                    const strengths = [...analysis].sort((a,b) => a.rating - b.rating).slice(0, 4); const improvements = [...analysis].filter(a => a.rating > 2).sort((a,b) => b.rating - a.rating).slice(0, 4);
-                    const repStrengthsHTML = strengths.map(s => `<li><span class="font-bold text-emerald-700">${s.title}:</span> ${s.desc}</li>`).join(''); const repImprovementsHTML = improvements.length > 0 ? improvements.map(s => `<li><span class="font-bold text-orange-700">${s.title}:</span> ${s.desc}</li>`).join('') : '<li>لا توجد نقاط ضعف ملحوظة تستدعي التدخل العاجل.</li>'; const repRecommendationsHTML = improvements.length > 0 ? improvements.map(s => `<li>${s.rec || `تحسين مستوى ${s.title} من خلال اتباع استراتيجيات حديثة.`}</li>`).join('') : '<li>الاستمرار في الأداء المتميز ومشاركة الخبرات مع الزملاء.</li>';
-                    document.getElementById('aiReportContent').innerHTML = `<div class="ai-report-section"><h4><i class="fas fa-star text-emerald-500"></i> أبرز جوانب الإجادة</h4><ul class="list-disc pr-5 text-sm text-slate-700">${repStrengthsHTML}</ul></div><div class="ai-report-section"><h4><i class="fas fa-chart-line text-orange-500"></i> نقاط تحتاج إلى تحسين</h4><ul class="list-disc pr-5 text-sm text-slate-700">${repImprovementsHTML}</ul></div><div class="ai-report-section bg-[rgb(var(--color-primary-50))]/50 p-5 rounded-2xl border border-[rgb(var(--color-primary-100))]"><h4><i class="fas fa-lightbulb text-yellow-500"></i> التوصيات والمقترحات الفنية</h4><ul class="list-decimal pr-5 text-sm text-slate-700 space-y-2">${repRecommendationsHTML}</ul></div>`;
+                
+                // Populate new header and metadata
+                document.getElementById('repMetaDate').innerText = now.toLocaleDateString('en-CA');
+                document.getElementById('repMetaTime').innerText = now.toLocaleTimeString('ar-EG');
+                document.getElementById('repAcademicYear').innerText = `${year}/${year+1}`;
+                
+                document.getElementById('repTeacherName').innerText = tName;
+                document.getElementById('repSchoolName').innerText = t?.school || 'مدرسة الشيخ محمد بن شامس البطاشي'; // Placeholder
+                document.getElementById('repVisitDate').innerText = visitDate;
+                document.getElementById('repClassName').innerText = cName;
+                document.getElementById('repSpecialization').innerText = spec || 'عام';
+                document.getElementById('repLessonTopic').innerText = lTopic;
+                const visitorName = this.state.currentUser?.name || "مدير المدرسة";
+                document.getElementById('repVisitorName').innerText = visitorName;
+                document.getElementById('repVisitorName_p2').innerText = visitorName;
+
+
+                // Populate new simplified table
+                const detailsBody = document.getElementById('repDetailsBody');
+                detailsBody.innerHTML = ''; 
+                this.state.evaluationCriteria.forEach((c, index) => { 
+                    const r = ratings[c.id]; 
+                    detailsBody.innerHTML += `
+                        <tr class="hover:bg-slate-50 text-sm">
+                            <td class="border border-slate-400 p-2 text-center font-bold">${index + 1}</td>
+                            <td class="border border-slate-400 p-2 font-medium">${c.title}</td>
+                            <td class="border border-slate-400 p-2 text-center font-extrabold text-slate-800">${r || '-'}</td>
+                        </tr>
+                    `; 
+                });
+                
+                if (isLoad && existingData.aiReportContent) { 
+                    document.getElementById('aiReportContent').innerHTML = existingData.aiReportContent; 
+                } else {
+                    const strengths = this.state.evaluationCriteria.filter(c => ratings[c.id] <= 2).slice(0, 4);
+                    const improvements = this.state.evaluationCriteria.filter(c => ratings[c.id] > 2).sort((a,b) => ratings[b.id] - ratings[a.id]).slice(0, 4);
+                    
+                    const strengthsHTML = strengths.map(s => `<li>${s.items[ratings[s.id]].desc}</li>`).join('');
+                    const improvementsHTML = improvements.map(s => `<li>${s.items[ratings[s.id]].desc}</li>`).join('');
+                    const recommendationsHTML = improvements.map(s => `<li>${s.items[ratings[s.id]].rec}</li>`).join('');
+
+                    document.getElementById('aiReportContent').innerHTML = `
+                        <div class="report-section">
+                            <h3>جوانب الإجادة في الأداء وأدلتها</h3>
+                            <ul>${strengthsHTML || '<li>يظهر المعلم أداءً متوازنًا في كافة الجوانب.</li>'}</ul>
+                        </div>
+                        <div class="report-section">
+                            <h3>الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها</h3>
+                            <ul>${improvementsHTML || '<li>لا توجد نقاط ضعف ملحوظة تستدعي التدخل العاجل.</li>'}</ul>
+                        </div>
+                        <div class="report-section">
+                             <h3>الدعم المقدم</h3>
+                             <ul><li>تبادل زيارات مع معلم ذو خبرة.</li></ul>
+                        </div>
+                        <div class="report-section">
+                            <h3>التوصيات</h3>
+                            <ul>${recommendationsHTML || '<li>الاستمرار في الأداء المتميز ومشاركة الخبرات مع الزملاء.</li>'}</ul>
+                        </div>
+                    `;
                 }
                 this.setView('supervision-report');
             }
 
+
             saveVisit() {
-                const visitData = { id: Date.now().toString(), teacherName: document.getElementById('repTeacherName').innerText, specialization: document.getElementById('repSpecialization').innerText, className: document.getElementById('repClassName').innerText, topic: document.getElementById('repLessonTopic').innerText, date: document.getElementById('reportDate').innerText, gender: this.state.supervisionData.gender, ratings: {...this.state.supervisionData.ratings}, notes: {...this.state.supervisionData.notes}, aiReportContent: document.getElementById('aiReportContent').innerHTML };
+                const visitData = { id: Date.now().toString(), teacherName: document.getElementById('repTeacherName').innerText, specialization: document.getElementById('repSpecialization').innerText, className: document.getElementById('repClassName').innerText, topic: document.getElementById('repLessonTopic').innerText, date: document.getElementById('repVisitDate').innerText, gender: this.state.supervisionData.gender, ratings: {...this.state.supervisionData.ratings}, notes: {...this.state.supervisionData.notes}, aiReportContent: document.getElementById('aiReportContent').innerHTML };
                 if(!this.state.supervisionHistory) this.state.supervisionHistory = []; const existingIndex = this.state.supervisionHistory.findIndex(v => v.id === visitData.id); if (existingIndex > -1) { this.state.supervisionHistory[existingIndex] = visitData; } else { this.state.supervisionHistory.push(visitData); } this.saveData(); alert('تم حفظ الزيارة في السجل بنجاح');
             }
 
             printSupervisionReport() {
-                document.body.classList.add('printing-supervision');
-                window.addEventListener('afterprint', () => {
-                    document.body.classList.remove('printing-supervision');
-                }, { once: true });
                 window.print();
             }
 
@@ -1449,7 +1563,7 @@
                 const context = { teacher: isMale ? "المعلم" : "المعلمة", student: isMale ? "الطالب" : "الطالبة", students: isMale ? "الطلاب" : "الطالبات", address: isMale ? "مدرسة بنين" : "مدرسة بنات" };
                 let reportText = `الدور: تصرف بصفتك موجه فني خبير لمادة ${specialization}. المهمة: كتابة تقرير زيارة صفية فني واحترافي. معلومات الزيارة: - المعلم: ${context.teacher} - عنوان الدرس: "${topic}" - نوع المدرسة: ${context.address}. التقييمات التفصيلية:\n`;
                 this.state.evaluationCriteria.forEach(c => { const r = this.state.supervisionData.ratings[c.id]; const note = this.state.supervisionData.notes[c.id]; if (r) { const itemDesc = c.items[r]?.desc || ''; reportText += `- ${c.title}: مستوى ${r}/5. (${itemDesc}) ${note ? '- ملاحظة إضافية: ' + note : ''}\n`; } });
-                reportText += `\nالمطلوب (HTML Format Only): يرجى صياغة التقرير بتنسيق HTML جاهز للعرض، يتضمن الأقسام التالية داخل divs بclass "ai-report-section": وصف عام للأداء، أبرز جوانب الإجادة، نقاط التحسين، توصيات فنية.`;
+                reportText += `\nالمطلوب (بتنسيق HTML فقط): يرجى صياغة تقرير فني تربوي. استخدم العناوين التالية بالضبط كـ <h4>: "جوانب الإجادة في الأداء وأدلتها"، "الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها"، "الدعم المقدم"، و"التوصيات". اجعل المحتوى تحت كل عنوان في قوائم نقطية (<ul><li>...</li></ul>).`;
                 return reportText;
             }
 
@@ -1458,9 +1572,7 @@
                 const specialization = document.getElementById('repSpecialization').innerText;
                 const className = document.getElementById('repClassName').innerText;
                 const topic = document.getElementById('repLessonTopic').innerText;
-                const schoolType = document.getElementById('repSchoolGender').innerText;
                 const gender = this.state.supervisionData.gender;
-                const isMale = gender === 'male';
                 
                 let prompt = `أعمل كموجه فني تربوي خبير لمادة ${specialization}.\n`;
                 prompt += `المطلوب: صياغة تقرير زيارة صفية احترافي، تربوي، ومحفز بناءً على البيانات التالية:\n\n`;
@@ -1469,7 +1581,7 @@
                 prompt += `- التخصص: ${specialization}\n`;
                 prompt += `- الصف: ${className}\n`;
                 prompt += `- عنوان الدرس: ${topic}\n`;
-                prompt += `- نوع المدرسة: ${schoolType}\n\n`;
+                prompt += `- نوع المدرسة: ${gender === 'male' ? 'بنين' : 'بنات'}\n\n`;
                 prompt += `--- تفاصيل التقييم والملاحظات ---\n`;
 
                 this.state.evaluationCriteria.forEach(c => {
@@ -1485,12 +1597,11 @@
                 });
 
                 prompt += `\n--- هيكل التقرير المطلوب ---\n`;
-                prompt += `يرجى كتابة التقرير بحيث يتضمن:\n`;
-                prompt += `1. مقدمة عامة تصف سياق الحصة.\n`;
-                prompt += `2. نقاط القوة (أبرز جوانب الإجادة).\n`;
-                prompt += `3. فرص التحسين (نقاط الضعف إن وجدت).\n`;
-                prompt += `4. توصيات فنية عملية للمعلم للارتقاء بالأداء.\n`;
-                prompt += `5. خاتمة تشجيعية.\n`;
+                prompt += `يرجى كتابة التقرير بحيث يتضمن الأقسام التالية مع استخدام العناوين الدقيقة:\n`;
+                prompt += `1. جوانب الإجادة في الأداء وأدلتها.\n`;
+                prompt += `2. الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها.\n`;
+                prompt += `3. الدعم المقدم.\n`;
+                prompt += `4. التوصيات.\n`;
 
                 try {
                     await navigator.clipboard.writeText(prompt);
@@ -1994,8 +2105,8 @@
             printDutySchedule() {
                 const printTable = document.getElementById('printDutyTable');
                 if (!printTable) return;
-
-                document.getElementById('printDutyDate').innerText = `للعام الدراسي ${new Date().getFullYear()}-${new Date().getFullYear()+1}`;
+                const year = new Date().getFullYear();
+                document.getElementById('printDutyDate').innerText = `للعام الدراسي ${year}-${year+1}`;
 
                 // Header
                 let theadHTML = `<thead><tr class="bg-slate-100 text-slate-800"><th class="p-3 border border-slate-300 font-extrabold">اليوم</th>`;

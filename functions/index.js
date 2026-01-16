@@ -48,8 +48,7 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1', secrets: [g
     
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // Use standard flash model. If this fails with "Not Found", verify API enablement.
-    // Try 'gemini-1.5-flash' first, it is the current standard.
+    // Use standard flash model.
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // 4. Construct the Prompt
@@ -57,7 +56,7 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1', secrets: [g
     const prompt = `
       System Instruction: بصفتك موجهاً فنياً تربوياً خبيراً، قم بصياغة تقرير زيارة صفية احترافي ومحفز للمعلم.
       السياق: مادة ${specialization || 'عامة'}, عنوان الدرس "${topic || 'عام'}", نوع المدرسة: ${contextGender}.
-      المطلوب: يجب أن يكون الرد بتنسيق HTML فقط، ومقسم إلى فقرات داخل div يحمل class="ai-report-section". يجب أن يحتوي التقرير على: مقدمة، جوانب الإجادة، نقاط للتحسين، وتوصيات فنية.
+      المطلوب: يجب أن يكون الرد بتنسيق HTML فقط. استخدم العناوين التالية بالضبط كعناوين رئيسية (<h4>): "جوانب الإجادة في الأداء وأدلتها"، "الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها"، "الدعم المقدم"، و"التوصيات". اجعل المحتوى تحت كل عنوان في قوائم نقطية (<ul><li>...</li></ul>).
       بيانات التقييم الخام: ${text}
     `;
 
