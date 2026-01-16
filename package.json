@@ -10,14 +10,14 @@
   },
   "dependencies": {
     "rxjs": "^7.8.2",
-    "@angular/core": "^21.0.0",
-    "@angular/common": "^21.0.0",
-    "@angular/forms": "^21.0.8",
-    "@angular/platform-browser": "^21.0.0",
-    "@angular/build": "^21.0.0",
-    "@angular/cli": "^21.0.0",
-    "@angular/compiler-cli": "^21.0.0",
-    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.1.0",
+    "@angular/common": "^21.1.0",
+    "@angular/forms": "^21.1.0",
+    "@angular/platform-browser": "^21.1.0",
+    "@angular/build": "^21.1.0",
+    "@angular/cli": "^21.1.0",
+    "@angular/compiler-cli": "^21.1.0",
+    "@angular/compiler": "^21.1.0",
     "tailwindcss": "latest"
   },
   "devDependencies": {

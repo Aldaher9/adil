@@ -6,7 +6,7 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { defineSecret } = require('firebase-functions/params');
 const admin = require("firebase-admin");
-const { GoogleGenAI } = require("@google/genai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 admin.initializeApp();
 
@@ -45,7 +45,12 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1', secrets: [g
       console.error("GEMINI_API_KEY secret not available");
       return res.status(500).json({ error: "CONFIGURATION_ERROR", message: "API Key is not configured on the server." });
     }
-    const ai = new GoogleGenAI({ apiKey });
+    
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    // Use standard flash model. If this fails with "Not Found", verify API enablement.
+    // Try 'gemini-1.5-flash' first, it is the current standard.
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // 4. Construct the Prompt
     const contextGender = gender === 'female' ? 'مؤنث (معلمة/طالبات)' : 'مذكر (معلم/طلاب)';
@@ -57,16 +62,10 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1', secrets: [g
     `;
 
     // 5. Generate Content
-    const genResponse = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-    });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const aiText = response.text(); 
     
-    if (!genResponse) {
-      throw new Error("No response from AI model.");
-    }
-
-    const aiText = genResponse.text;
     const cleanText = aiText.replace(/```html/g, '').replace(/```/g, '').trim();
     
     return res.status(200).json({ result: cleanText });
@@ -77,9 +76,16 @@ exports.improveText = onRequest({ cors: true, region: 'us-central1', secrets: [g
     let errorMessage = "An internal server error occurred while processing the AI request.";
     let errorCode = "INTERNAL_ERROR";
 
-    if (error.message && error.message.includes("API key not valid")) {
-        errorCode = "INVALID_API_KEY";
-        errorMessage = "The configured API key is invalid. Please check the server secrets.";
+    // Handle specific Google API errors
+    if (error.message) {
+        if (error.message.includes("API key")) {
+            errorCode = "INVALID_API_KEY";
+            errorMessage = "The configured API key is invalid or blocked.";
+        } else if (error.message.includes("not found") || error.message.includes("404")) {
+            // Specific handling for the user's error
+            errorCode = "MODEL_NOT_FOUND";
+            errorMessage = "Model not found. Please ensure 'Generative Language API' is enabled in Google Cloud Console.";
+        }
     }
 
     return res.status(500).json({ 
