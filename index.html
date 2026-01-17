@@ -42,6 +42,9 @@
     <!-- Excel Export/Import -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+    <!-- Gemini AI SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@google/generative-ai/dist/index.js"></script>
+
     <style>
         :root {
             /* Default Theme: Sky Blue */
@@ -82,6 +85,9 @@
         .print-only { display: none; }
         .page-break { page-break-before: always; }
         @media print {
+            @page {
+                margin: 0;
+            }
             body { background-color: #fff; }
             body * { visibility: hidden; }
             .no-print { display: none !important; }
@@ -90,6 +96,12 @@
             #view-supervision-report { background-color: transparent !important; padding: 0 !important; margin: 0 !important; display: block !important; }
             #report-document-container, #report-document-container * { visibility: visible; }
             #report-document-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
+            #report-document-container > div { padding: 1.5rem !important; padding-top: 0 !important; }
+
+            /* Force visibility for page 2 content which was disappearing */
+            .page-break, .page-break * {
+                visibility: visible !important;
+            }
 
             body.printing-subs #printable-substitution-sheet,
             body.printing-subs #printable-substitution-sheet * { visibility: visible; }
@@ -166,7 +178,7 @@
                 الدخول كزائر (تجريبي)
             </button>
         </div>
-        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.5.0 - تقرير احترافي</div>
+        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.6.0 - AI مباشر</div>
     </div>
     
     <!-- App View -->
@@ -431,35 +443,33 @@
 
         <!-- NEW Report View -->
         <section id="view-supervision-report" class="fade-in space-y-6 hidden-view bg-slate-100 p-4 md:p-8">
-            <div class="flex gap-3 mt-4 no-print max-w-4xl mx-auto">
-                <button onclick="window.app.printSupervisionReport()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg"><i class="fas fa-print"></i> طباعة / PDF</button>
-                <button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-100"><i class="fas fa-save"></i> حفظ</button>
-                <button onclick="window.app.setView('supervision')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 py-3 rounded-xl font-bold transition cursor-pointer">تعديل</button>
-                <button onclick="window.app.setView('supervision-history')" class="flex-1 bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 py-3 rounded-xl font-bold transition cursor-pointer">إغلاق</button>
+            <div class="flex flex-wrap gap-2 mt-4 no-print max-w-4xl mx-auto">
+                <button onclick="window.app.printSupervisionReport()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg text-xs md:text-sm"><i class="fas fa-print"></i> طباعة</button>
+                <button onclick="window.app.enhanceReportWithAI()" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-200/50 text-xs md:text-sm">
+                    <i class="fas fa-wand-magic-sparkles"></i> تحسين
+                </button>
+                <button onclick="window.app.copyToClipboardPrompt()" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-sky-100 text-xs md:text-sm">
+                    <i class="fas fa-copy"></i> نسخ النص
+                </button>
+                <button onclick="window.app.saveVisit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-100 text-xs md:text-sm"><i class="fas fa-save"></i> حفظ</button>
+                <button onclick="window.app.setView('supervision')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 py-3 rounded-xl font-bold transition cursor-pointer text-xs md:text-sm">تعديل</button>
+                <button onclick="window.app.setView('supervision-history')" class="flex-1 bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 py-3 rounded-xl font-bold transition cursor-pointer text-xs md:text-sm">إغلاق</button>
             </div>
             <div id="report-document-container" class="bg-white max-w-4xl mx-auto shadow-2xl rounded-lg border border-slate-200">
                 <!-- PAGE 1 -->
                 <div class="p-10">
-                    <header class="flex justify-between items-start pb-4 border-b-2 border-black">
-                        <div class="text-right text-xs space-y-1 font-bold text-slate-800">
+                    <header class="text-center pb-4 border-b-2 border-black">
+                        <img src="./oman-emblem.png" alt="شعار سلطنة عمان" class="h-16 w-auto object-contain mx-auto mb-2"/>
+                        <div class="text-xs space-y-1 font-bold text-slate-800">
                             <p>سلطنة عُمان</p>
                             <p>وزارة التربية والتعليم</p>
-                            <p>المديرية العامة للتربية والتعليم بمحافظة مسقط</p>
-                        </div>
-                        <div class="px-4">
-                            <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAA5ADkDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1VZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A+yvjH8avAn7Pvw+1T4l/ErxFB4d8J6NGJL3UZ0kkEYZgqqqRqzu7MQqoiszEgAEkCuA/Zn/AG5v2b/2wv8AhIl+CfxS0vxde+FLgWviDT0juLO/05yWCia1uY45kDFGCMU2uVbaTg4x/+Ckf7AfhX/go7+zjqXwB8U+LtV8EWd5qVlqdvrmkQRTXEL20qyBWjkwHRgCrAMOCTggkEfGv7I3/BBvxl+xR+3L4N/ap+Hf7U2seJdM8OW19ZaroHijw7ZrcatBPaTRKq3dqYlV1dkYAxN93BznIAPs7U/26/2bdF/ais/2PdR+KWlWnxq1LTv7Vs/B8kc63U9t8+HVzH5IOY5MLv3Hy3wDtOOZ+Pv8AwVK/Yq/Zn+Jsnwh+L3x38PeGPHEVvHdzaDcR3Ut1BDJgrukjhdIycj5XcNgg4wQT8y/Eb/g3/wBG+KH/AAUK1P8Abm1/9pDxkfiVf2S6XZ3unaRpluujWIhjie0gg2MI0KRLlhk5Zz3wOQ+J/wDwbO+AfiB8ZPE/xc0f9qv4zeA7rxfqc2ra7oPhbV7CytLy6lOXf5bZn57ZZuAACcYAAK//AAV/8a6Z8Vf2QfC/jLQ5t1nca3E6Kfuq6g/Kfoa/PD9m3433PwA+LGm+O7e3a9sbYMLq2jIDTRkYIXPGc8jPGQOnWu8/4Kb/8I/+yl+xP8OfgT4D8d+JPEnw18D60bvw/pfi24in1XTrV45Xe3lniRFfDuxGVGMgc4JPiP8AwTm+AGqftNftU+Efh1o1o1/DqmoQ295ArbWe1LgTHd2wnOTgDB5FAH7yfs7/ALQHgz9p/wCB/hX46+ALhpfDfjTTItU05ZgBLGknVJFBIWRGDIy5OGUjJxk/nP8AtI/8Esv2jPjl+0n4k+Lnw//AOCjfxp+B/hvWLiOax+HXhG626XpKiJEZbfM6EBmVpCNi/NI3XOT+iXwl+EfhH4G/DDwz8IfAWmrpfhXwhpFrpGkWaEn_xAAmEALHliFALMcsxJJJJJrpKAPn39iv9hrwz+wz4D1LwN4e+LfxV+LFrqN+b59U+LfjK58U3sDFAnlQyzY8uIAZCDgEk+pr6CoooA/Mn9vzwj8Sfi1+xZ8Q/APhDwpN4g1jXLOO2hsrC4U7iZYwzFnZVUKuWySBxyRX4o/A3xJ4z/Ya/ag8OeJ9esdQ0rWvhx4jtrvUNMv7Z7aYCCZWuLeWOQBkbaJI2VgCCARyK/o9/4KAftA+C/2QvgNq/jjxNqdvBc38MunaNYtIPNu72SMqixr1O3IYkDIA54Ffz5fEzxHqXjLx5r3ivV5TLqGtanPezuxyS0kjOefqaAP6WdK1K31jS7XVrXPk3sCTx7hghXUMP1Irkfjr8btA/Z/8Ah3e/EnxVo3iLWdH0plF7H4W0WfV7y3jJ+aYwQAvJGg5dkB2Ll2wqswi/Z78d+Fvib8B/AXjfwbeR33h7WfDWmy6fPEwZWjFtGo5HqrKwwcEKQcEEV3NAHw1+0T/wWu/ZH+AnwD8NfHrQ7jxP8X/C/jXXLjQPD6/DHSpbu4v7+BZGmjUXHkBSoifJLDBOARkZ+Wf2Xf8Ag5R1b9pz9pTwv8Cbj9iX4xeEtF8aa5FpGjeMdQtZJtLmaV/3RkYWqxhWIJyZAQMcjPHt37WH/BvD+xn+1n+0N4l/aQ1vUPHfgvxV43nW88TR+CNfjsbPWrlUVFlnie3k+YBQMqVJ5JySSfzJ/4Lp/srfsXfsTfEr4O/s6fseeGptN1HQvDt9qXj++k1u81Frq6aaOO1jd7iRwyiOKY7UIXMh4GBQBU/4K9/8ABUDwn/wU+/aI1TxT4V8OxeFPCHgy3l0Pwvp91eGa+e0SYyGa5ckr5khJbYpIRSoG45Y+s/8ABvr+y3qPxp/bX0n4hXljJceF/hJDJrt9OVJiW7ZGitI89AzNI0gHVhA/Tmvkv9kP9mLxt+15+0N4M+AngDS5NQ1/wAZatDptuqqSqBm+eVyAdsaIC7sRwqsTwK/o6/Yy/ZI8FfsX/s6eFf2fPAUQTS/DNkI5bkopnvrlzvnupmAAMksjO5OMDcAAABQB6nRRRQB//9k=" alt="شعار وزارة التربية والتعليم" class="h-16">
-                        </div>
-                        <div class="text-left text-xs">
-                            <p><strong class="font-sans text-slate-800">رقم الصفحة:</strong> 1</p>
-                            <p><strong class="font-sans text-slate-800">التاريخ:</strong> <span id="repMetaDate" class="font-mono"></span></p>
-                            <p><strong class="font-sans text-slate-800">الساعة:</strong> <span id="repMetaTime" class="font-mono"></span></p>
-                            <p><strong class="font-sans text-slate-800">العام الدراسي:</strong> <span id="repAcademicYear" class="font-mono"></span></p>
+                            <p id="repDirectorate">المديرية العامة للتربية والتعليم بمحافظة مسقط</p>
                         </div>
                     </header>
 
                     <h1 class="text-center text-xl font-extrabold my-6 text-slate-900">استمارة الزيارة الإشرافية لمعلم مجال/ مادة</h1>
                     
-                    <div class="grid grid-cols-2 gap-x-8 gap-y-2 border border-slate-400 rounded-lg p-4 text-sm mb-6">
+                    <div class="grid grid-cols-2 gap-x-8 gap-y-2 border border-slate-500 rounded-lg p-4 text-sm mb-4">
                         <div><strong>الاسم:</strong> <span id="repTeacherName" class="font-medium"></span></div>
                         <div><strong>المدرسة:</strong> <span id="repSchoolName" class="font-medium"></span></div>
                         <div><strong>تاريخ الزيارة:</strong> <span id="repVisitDate" class="font-medium font-mono"></span></div>
@@ -475,28 +485,32 @@
                         <div class="col-span-2"><strong>عنوان الدرس:</strong> <span id="repLessonTopic" class="font-medium"></span></div>
                     </div>
 
-                    <p class="text-center text-xs font-bold text-slate-600 mb-4 p-2 bg-slate-100 rounded-md border border-slate-200">
+                    <p class="text-center text-xs font-bold text-slate-600 mb-3 p-2 bg-slate-100 rounded-md border border-slate-200">
                         متميز (1) &nbsp;&nbsp;&nbsp; جيد (2) &nbsp;&nbsp;&nbsp; ملائم (3) &nbsp;&nbsp;&nbsp; غير ملائم (4) &nbsp;&nbsp;&nbsp; يحتاج إلى تدخل (5)
                     </p>
 
-                    <table class="w-full border-collapse border border-slate-400 text-sm">
+                    <table class="w-full border-collapse border border-slate-500 text-sm">
                         <thead>
                             <tr class="bg-slate-100 font-extrabold text-slate-800">
-                                <th class="border border-slate-400 p-2 w-12">م</th>
-                                <th class="border border-slate-400 p-2 text-right">بنود التقويم</th>
-                                <th class="border border-slate-400 p-2 w-20">المستوى</th>
+                                <th class="border border-slate-500 p-1.5 w-12">م</th>
+                                <th class="border border-slate-500 p-1.5 text-right">بنود التقويم</th>
+                                <th class="border border-slate-500 p-1.5 w-20">المستوى</th>
                             </tr>
                         </thead>
                         <tbody id="repDetailsBody"></tbody>
                     </table>
 
-                    <footer class="mt-16 flex justify-around items-end text-sm font-bold text-slate-900">
+                     <footer class="mt-12 grid grid-cols-2 gap-x-16 text-sm font-bold text-slate-900">
                         <div class="text-center">
-                            <p>اسم الزائر: <span id="repVisitorName" class="font-medium"></span></p>
-                            <p class="mt-2">الوظيفة: <span class="font-medium">مدير مدرسة</span></p>
+                            <p id="repFooterTeacherName_p1" class="mt-2 font-medium min-h-6"></p>
+                            <div class="h-12 mt-2 border-b border-slate-500"></div>
+                            <p class="mt-1">المعلم/ـة</p>
                         </div>
-                        <div class="text-center"><p>توقيع المعلم</p><div class="h-16 w-48 border-b border-slate-400 mt-2"></div></div>
-                        <div class="text-center"><p>توقيع مدير المدرسة</p><div class="h-16 w-48 border-b border-slate-400 mt-2"></div></div>
+                        <div class="text-center">
+                            <p id="repFooterVisitorName_p1" class="mt-2 font-medium min-h-6"></p>
+                            <div class="h-12 mt-2 border-b border-slate-500"></div>
+                            <p class="mt-1">مدير المدرسة</p>
+                        </div>
                     </footer>
                 </div>
                 
@@ -509,13 +523,17 @@
                             <span class="text-sm font-bold text-slate-800">جاري صياغة التقرير الاحترافي...</span><span class="text-xs text-slate-500 mt-1">يتم الاتصال بالمعالج الذكي</span>
                         </div>
                     </div>
-                    <footer class="mt-16 flex justify-around items-end text-sm font-bold text-slate-900">
+                    <footer class="mt-12 grid grid-cols-2 gap-x-16 text-sm font-bold text-slate-900">
                         <div class="text-center">
-                            <p>اسم الزائر: <span id="repVisitorName_p2" class="font-medium"></span></p>
-                            <p class="mt-2">الوظيفة: <span class="font-medium">مدير مدرسة</span></p>
+                            <p id="repFooterTeacherName_p2" class="mt-2 font-medium min-h-6"></p>
+                            <div class="h-12 mt-2 border-b border-slate-500"></div>
+                            <p class="mt-1">المعلم/ـة</p>
                         </div>
-                        <div class="text-center"><p>توقيع المعلم</p><div class="h-16 w-48 border-b border-slate-400 mt-2"></div></div>
-                        <div class="text-center"><p>توقيع مدير المدرسة</p><div class="h-16 w-48 border-b border-slate-400 mt-2"></div></div>
+                        <div class="text-center">
+                            <p id="repFooterVisitorName_p2" class="mt-2 font-medium min-h-6"></p>
+                            <div class="h-12 mt-2 border-b border-slate-500"></div>
+                            <p class="mt-1">مدير المدرسة</p>
+                        </div>
                     </footer>
                 </div>
             </div>
@@ -625,16 +643,24 @@
                     </div>
                 </div>
                 
-                <!-- Dev Settings -->
-                <div id="developerSettingsSection" class="hidden-view space-y-4 bg-red-50 p-5 rounded-2xl border border-red-100 relative">
-                    <div class="flex items-center justify-between pb-2 border-b border-red-200">
-                        <h4 class="font-bold text-red-900 flex items-center gap-2 text-sm"><i class="fas fa-shield-alt text-red-500"></i> إعدادات المطور (API)</h4>
-                        <button onclick="window.app.enableDevEdit()" class="text-xs bg-white text-red-600 px-3 py-1 rounded-lg border border-red-200 hover:bg-red-50 transition cursor-pointer"><i class="fas fa-lock-open mr-1"></i> تعديل</button>
+                <!-- Report Settings -->
+                <div class="space-y-3">
+                    <h4 class="font-extrabold text-slate-800 text-sm border-b border-slate-100 pb-2">إعدادات التقرير</h4>
+                    <div class="space-y-1">
+                        <label for="settingDirectorate" class="text-xs font-bold text-slate-600 mr-1">المديرية التعليمية</label>
+                        <input type="text" id="settingDirectorate" onchange="window.app.setDirectorate(this.value)" class="w-full text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[rgb(var(--color-primary-500))] focus:ring-4 focus:ring-[rgb(var(--color-primary-100))] transition-all outline-none font-bold text-slate-700">
+                    </div>
+                </div>
+
+                <!-- AI Settings -->
+                <div id="aiSettingsSection" class="space-y-4 bg-indigo-50 p-5 rounded-2xl border border-indigo-100 relative">
+                    <div class="flex items-center justify-between pb-2 border-b border-indigo-200">
+                        <h4 class="font-bold text-indigo-900 flex items-center gap-2 text-sm"><i class="fas fa-robot text-indigo-500"></i> إعدادات الذكاء الاصطناعي</h4>
                     </div>
                     <div class="space-y-3">
-                        <label class="text-[10px] font-bold text-red-800 uppercase tracking-wider">Cloud Function URL</label>
-                        <input type="text" id="settingCloudUrl" disabled class="w-full text-xs p-3 rounded-xl border border-red-200 bg-white/50 text-slate-600 dir-ltr text-left disabled:opacity-70 font-mono">
-                        <button onclick="window.app.saveDevSettings()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"><i class="fas fa-save mr-1"></i> حفظ</button>
+                        <label class="text-[10px] font-bold text-indigo-800 uppercase tracking-wider">مفتاح Gemini API</label>
+                        <input type="password" id="settingGeminiKey" placeholder="أدخل مفتاح Gemini API من Google AI Studio" class="w-full text-xs p-3 rounded-xl border border-indigo-200 bg-white/50 text-slate-600 dir-ltr text-left font-mono">
+                        <button onclick="window.app.saveAISettings()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"><i class="fas fa-save mr-1"></i> حفظ المفتاح</button>
                     </div>
                 </div>
 
@@ -776,7 +802,6 @@
                 </button>
             </div>
         </nav>
-    </div>
     
     </div>
 
@@ -796,7 +821,7 @@
                     substitutions: {}, // Key: "Date_Period_Class" -> Value: SubstituteTeacherID
                     selectedAbsentTeacherId: null, // Persist selection across re-renders
                     
-                    theme: 'default', defaultSchoolGender: 'male', cloudStatus: 'offline', unsubscribe: null, aiReportData: null, cloudFunctionUrl: "https://improvetext-cewovb6fwq-uc.a.run.app"
+                    theme: 'default', defaultSchoolGender: 'male', directorate: 'المديرية العامة للتربية والتعليم بمحافظة مسقط', cloudStatus: 'offline', unsubscribe: null, aiReportData: null, geminiApiKey: ''
                 };
                 this.db = null; this.auth = null;
                 this.initDefaultCriteria();
@@ -820,7 +845,8 @@
                         if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
                         if (data.theme) this.state.theme = data.theme;
                         if (data.defaultSchoolGender) this.state.defaultSchoolGender = data.defaultSchoolGender;
-                        if (data.cloudFunctionUrl) this.state.cloudFunctionUrl = data.cloudFunctionUrl;
+                        if (data.directorate) this.state.directorate = data.directorate;
+                        if (data.geminiApiKey) this.state.geminiApiKey = data.geminiApiKey;
                         if (data.evaluationCriteria && data.evaluationCriteria.length > 0) this.state.evaluationCriteria = data.evaluationCriteria;
                         if (data.dutyLocations) this.state.dutyLocations = data.dutyLocations;
                         if (data.dutySchedule) this.state.dutySchedule = data.dutySchedule;
@@ -880,7 +906,8 @@
                         const data = doc.data();
                         this.state.teachers = data.teachers || []; this.state.periods = data.periods || []; this.state.classes = data.classes || {}; this.state.tasks = data.tasks || []; this.state.agenda = data.agenda || [];
                         if (data.violationTypes) this.state.violationTypes = data.violationTypes; if (data.specializations) this.state.specializations = data.specializations; if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
-                        if (data.theme) this.state.theme = data.theme; if (data.defaultSchoolGender) this.state.defaultSchoolGender = data.defaultSchoolGender;
+                        if (data.theme) this.state.theme = data.theme; if (data.defaultSchoolGender) this.state.defaultSchoolGender = data.defaultSchoolGender; if (data.directorate) this.state.directorate = data.directorate;
+                        if (data.geminiApiKey) this.state.geminiApiKey = data.geminiApiKey;
                         if (data.evaluationCriteria) this.state.evaluationCriteria = data.evaluationCriteria;
                         if (data.dutyLocations) this.state.dutyLocations = data.dutyLocations;
                         if (data.dutySchedule) this.state.dutySchedule = data.dutySchedule;
@@ -890,11 +917,11 @@
                 }, e => this.updateCloudStatus('error'));
             }
 
-            saveDataToLocal() { localStorage.setItem('school_data_v1', JSON.stringify({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, cloudFunctionUrl: this.state.cloudFunctionUrl, evaluationCriteria: this.state.evaluationCriteria, dutyLocations: this.state.dutyLocations, dutySchedule: this.state.dutySchedule, substitutions: this.state.substitutions })); }
+            saveDataToLocal() { localStorage.setItem('school_data_v1', JSON.stringify({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, directorate: this.state.directorate, geminiApiKey: this.state.geminiApiKey, evaluationCriteria: this.state.evaluationCriteria, dutyLocations: this.state.dutyLocations, dutySchedule: this.state.dutySchedule, substitutions: this.state.substitutions })); }
             async saveData() {
                 this.saveDataToLocal(); if (!this.state.currentUser) { this.updateCloudStatus('local'); return; }
                 this.updateCloudStatus('saving');
-                try { await this.db.collection("users").doc(this.state.currentUser.uid).set({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, evaluationCriteria: this.state.evaluationCriteria, dutyLocations: this.state.dutyLocations, dutySchedule: this.state.dutySchedule, substitutions: this.state.substitutions, lastSync: new Date(), userName: this.state.currentUser.name }, { merge: true }); this.updateCloudStatus('connected'); } catch (e) { this.updateCloudStatus('error'); }
+                try { await this.db.collection("users").doc(this.state.currentUser.uid).set({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, directorate: this.state.directorate, geminiApiKey: this.state.geminiApiKey, evaluationCriteria: this.state.evaluationCriteria, dutyLocations: this.state.dutyLocations, dutySchedule: this.state.dutySchedule, substitutions: this.state.substitutions, lastSync: new Date(), userName: this.state.currentUser.name }, { merge: true }); this.updateCloudStatus('connected'); } catch (e) { this.updateCloudStatus('error'); }
             }
 
             updateCloudStatus(status) { const el = document.getElementById('cloudStatusIndicator'); if(!el) return; if(status === 'connected') el.innerHTML = '<span class="text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-[10px] font-bold border border-emerald-100 flex items-center gap-1"><i class="fas fa-check-circle"></i> متصل</span>'; else if(status === 'saving') el.innerHTML = '<span class="text-amber-600 bg-amber-50 px-2 py-1 rounded-lg text-[10px] font-bold border border-amber-100 flex items-center gap-1"><i class="fas fa-sync fa-spin"></i> حفظ...</span>'; else if(status === 'local') el.innerHTML = '<span class="text-slate-600 bg-slate-50 px-2 py-1 rounded-lg text-[10px] font-bold border border-slate-200 flex items-center gap-1"><i class="fas fa-hdd"></i> محلي</span>'; else el.innerHTML = '<span class="text-red-600 bg-red-50 px-2 py-1 rounded-lg text-[10px] font-bold border border-red-100 flex items-center gap-1"><i class="fas fa-exclamation-triangle"></i> خطأ</span>'; }
@@ -1464,86 +1491,103 @@
 
             generateReport(isLoad = false, existingData = null) {
                 const ratings = existingData ? existingData.ratings : this.state.supervisionData.ratings;
-                if(!isLoad && Object.keys(ratings).length < this.state.evaluationCriteria.length) { alert('يرجى استكمال تقييم جميع البنود'); return; }
-                
+                if (!isLoad && Object.keys(ratings).length < this.state.evaluationCriteria.length) {
+                    alert('يرجى استكمال تقييم جميع البنود');
+                    return;
+                }
+
                 const now = new Date();
-                const year = now.getFullYear();
                 
-                let tName = ""; 
-                if(isLoad) { tName = existingData.teacherName; } 
-                else { 
-                    const nameInput = document.getElementById('supTeacherName'); 
-                    if (!nameInput.classList.contains('hidden')) { tName = nameInput.value; } 
-                    else { const select = document.getElementById('supTeacherSelect'); tName = select.options[select.selectedIndex].text; } 
+                let tName = "";
+                if (isLoad) {
+                    tName = existingData.teacherName;
+                } else {
+                    const nameInput = document.getElementById('supTeacherName');
+                    if (nameInput && !nameInput.classList.contains('hidden')) {
+                        tName = nameInput.value;
+                    } else {
+                        const select = document.getElementById('supTeacherSelect');
+                        tName = select.options[select.selectedIndex].text;
+                    }
                 }
                 const t = this.state.teachers.find(t => t.name === tName);
 
-                const spec = isLoad ? existingData.specialization : document.getElementById('supSpecialization').value; 
-                const cName = isLoad ? existingData.className : document.getElementById('supClassName').value; 
+                const spec = isLoad ? existingData.specialization : document.getElementById('supSpecialization').value;
+                const cName = isLoad ? existingData.className : document.getElementById('supClassName').value;
                 const lTopic = isLoad ? existingData.topic : document.getElementById('supLessonTopic').value || '-';
-                const schoolGender = isLoad ? existingData.gender : document.querySelector('input[name="supSchoolGender"]:checked').value; 
+                const schoolGender = isLoad ? existingData.gender : document.querySelector('input[name="supSchoolGender"]:checked').value;
                 const visitDate = isLoad ? existingData.date : now.toLocaleDateString('en-CA');
-                
+
                 this.state.supervisionData.gender = schoolGender;
-                
-                // Populate new header and metadata
-                document.getElementById('repMetaDate').innerText = now.toLocaleDateString('en-CA');
-                document.getElementById('repMetaTime').innerText = now.toLocaleTimeString('ar-EG');
-                document.getElementById('repAcademicYear').innerText = `${year}/${year+1}`;
-                
+
                 document.getElementById('repTeacherName').innerText = tName;
-                document.getElementById('repSchoolName').innerText = t?.school || 'مدرسة الشيخ محمد بن شامس البطاشي'; // Placeholder
+                document.getElementById('repSchoolName').innerText = t?.school || 'مدرسة الشيخ محمد بن شامس البطاشي';
                 document.getElementById('repVisitDate').innerText = visitDate;
                 document.getElementById('repClassName').innerText = cName;
                 document.getElementById('repSpecialization').innerText = spec || 'عام';
                 document.getElementById('repLessonTopic').innerText = lTopic;
                 const visitorName = this.state.currentUser?.name || "مدير المدرسة";
-                document.getElementById('repVisitorName').innerText = visitorName;
-                document.getElementById('repVisitorName_p2').innerText = visitorName;
+                document.getElementById('repDirectorate').innerText = this.state.directorate || 'المديرية العامة للتربية والتعليم بمحافظة مسقط';
 
-
-                // Populate new simplified table
                 const detailsBody = document.getElementById('repDetailsBody');
-                detailsBody.innerHTML = ''; 
-                this.state.evaluationCriteria.forEach((c, index) => { 
-                    const r = ratings[c.id]; 
-                    detailsBody.innerHTML += `
-                        <tr class="hover:bg-slate-50 text-sm">
-                            <td class="border border-slate-400 p-2 text-center font-bold">${index + 1}</td>
-                            <td class="border border-slate-400 p-2 font-medium">${c.title}</td>
-                            <td class="border border-slate-400 p-2 text-center font-extrabold text-slate-800">${r || '-'}</td>
-                        </tr>
-                    `; 
-                });
+                const sortedCriteria = [...this.state.evaluationCriteria].sort((a, b) => a.id - b.id);
                 
-                if (isLoad && existingData.aiReportContent) { 
-                    document.getElementById('aiReportContent').innerHTML = existingData.aiReportContent; 
+                detailsBody.innerHTML = sortedCriteria.map((c, index) => {
+                    const r = ratings[c.id];
+                    const description = (r && c.items[r]) ? c.items[r].desc : 'لم يتم تحديد وصف'; // Fallback
+                    return `
+                        <tr class="hover:bg-slate-50 text-sm">
+                            <td class="border border-slate-500 p-1.5 text-center font-bold align-top">${index + 1}</td>
+                            <td class="border border-slate-500 p-1.5 font-medium">${description}</td>
+                            <td class="border border-slate-500 p-1.5 text-center font-extrabold text-slate-800 align-top">${r || '-'}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+
+                document.getElementById('repFooterTeacherName_p1').innerText = tName;
+                document.getElementById('repFooterVisitorName_p1').innerText = visitorName;
+                document.getElementById('repFooterTeacherName_p2').innerText = tName;
+                document.getElementById('repFooterVisitorName_p2').innerText = visitorName;
+
+                if (isLoad && existingData.aiReportContent) {
+                    document.getElementById('aiReportContent').innerHTML = existingData.aiReportContent;
                 } else {
-                    const strengths = this.state.evaluationCriteria.filter(c => ratings[c.id] <= 2).slice(0, 4);
-                    const improvements = this.state.evaluationCriteria.filter(c => ratings[c.id] > 2).sort((a,b) => ratings[b.id] - ratings[a.id]).slice(0, 4);
-                    
-                    const strengthsHTML = strengths.map(s => `<li>${s.items[ratings[s.id]].desc}</li>`).join('');
-                    const improvementsHTML = improvements.map(s => `<li>${s.items[ratings[s.id]].desc}</li>`).join('');
-                    const recommendationsHTML = improvements.map(s => `<li>${s.items[ratings[s.id]].rec}</li>`).join('');
+                    const allRatedItems = this.state.evaluationCriteria
+                        .filter(c => ratings[c.id] !== undefined)
+                        .map(c => ({ criterion: c, rating: ratings[c.id] }));
+
+                    const strengths = [...allRatedItems]
+                        .sort((a, b) => a.rating - b.rating)
+                        .slice(0, 4);
+
+                    const improvements = allRatedItems
+                        .filter(item => item.rating > 2)
+                        .sort((a, b) => b.rating - a.rating);
+
+                    const strengthsHTML = strengths.map(s => `<li>${s.criterion.items[s.rating].desc}</li>`).join('');
+                    const improvementsHTML = improvements.map(s => `<li>${s.criterion.items[s.rating].desc}</li>`).join('');
+                    const recommendationsHTML = improvements.map(s => `<li>${s.criterion.items[s.rating].rec}</li>`).join('');
+                    const supportText = schoolGender === 'female' ? 'تبادل زيارات مع معلمة ذات خبرة.' : 'تبادل زيارات مع معلم ذو خبرة.';
 
                     document.getElementById('aiReportContent').innerHTML = `
-                        <div class="report-section">
-                            <h3>جوانب الإجادة في الأداء وأدلتها</h3>
-                            <ul>${strengthsHTML || '<li>يظهر المعلم أداءً متوازنًا في كافة الجوانب.</li>'}</ul>
-                        </div>
-                        <div class="report-section">
-                            <h3>الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها</h3>
-                            <ul>${improvementsHTML || '<li>لا توجد نقاط ضعف ملحوظة تستدعي التدخل العاجل.</li>'}</ul>
-                        </div>
-                        <div class="report-section">
-                             <h3>الدعم المقدم</h3>
-                             <ul><li>تبادل زيارات مع معلم ذو خبرة.</li></ul>
-                        </div>
-                        <div class="report-section">
-                            <h3>التوصيات</h3>
-                            <ul>${recommendationsHTML || '<li>الاستمرار في الأداء المتميز ومشاركة الخبرات مع الزملاء.</li>'}</ul>
-                        </div>
-                    `;
+                <div class="report-section">
+                    <h3>جوانب الإجادة في الأداء وأدلتها</h3>
+                    <ul>${strengthsHTML || '<li>يظهر المعلم أداءً متوازنًا في كافة الجوانب.</li>'}</ul>
+                </div>
+                <div class="report-section">
+                    <h3>الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها</h3>
+                    <ul>${improvementsHTML || '<li>لا توجد نقاط ضعف ملحوظة تستدعي التدخل العاجل.</li>'}</ul>
+                </div>
+                <div class="report-section">
+                     <h3>الدعم المقدم</h3>
+                     <ul><li>${supportText}</li></ul>
+                </div>
+                <div class="report-section">
+                    <h3>التوصيات</h3>
+                    <ul>${recommendationsHTML || '<li>الاستمرار في الأداء المتميز ومشاركة الخبرات مع الزملاء.</li>'}</ul>
+                </div>
+            `;
                 }
                 this.setView('supervision-report');
             }
@@ -1558,51 +1602,73 @@
                 window.print();
             }
 
-            buildPlainTextReport() {
-                const topic = document.getElementById('repLessonTopic').innerText; const specialization = document.getElementById('repSpecialization').innerText; const gender = this.state.supervisionData.gender; const isMale = gender === 'male';
-                const context = { teacher: isMale ? "المعلم" : "المعلمة", student: isMale ? "الطالب" : "الطالبة", students: isMale ? "الطلاب" : "الطالبات", address: isMale ? "مدرسة بنين" : "مدرسة بنات" };
-                let reportText = `الدور: تصرف بصفتك موجه فني خبير لمادة ${specialization}. المهمة: كتابة تقرير زيارة صفية فني واحترافي. معلومات الزيارة: - المعلم: ${context.teacher} - عنوان الدرس: "${topic}" - نوع المدرسة: ${context.address}. التقييمات التفصيلية:\n`;
-                this.state.evaluationCriteria.forEach(c => { const r = this.state.supervisionData.ratings[c.id]; const note = this.state.supervisionData.notes[c.id]; if (r) { const itemDesc = c.items[r]?.desc || ''; reportText += `- ${c.title}: مستوى ${r}/5. (${itemDesc}) ${note ? '- ملاحظة إضافية: ' + note : ''}\n`; } });
-                reportText += `\nالمطلوب (بتنسيق HTML فقط): يرجى صياغة تقرير فني تربوي. استخدم العناوين التالية بالضبط كـ <h4>: "جوانب الإجادة في الأداء وأدلتها"، "الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها"، "الدعم المقدم"، و"التوصيات". اجعل المحتوى تحت كل عنوان في قوائم نقطية (<ul><li>...</li></ul>).`;
-                return reportText;
+            buildReportContextText() {
+                let rawData = "";
+                const ratings = this.state.supervisionData.ratings;
+                const allRatedItems = this.state.evaluationCriteria
+                    .filter(c => ratings[c.id] !== undefined)
+                    .map(c => ({ criterion: c, rating: ratings[c.id], note: this.state.supervisionData.notes[c.id] || '' }));
+
+                const strengths = [...allRatedItems]
+                    .sort((a, b) => a.rating - b.rating)
+                    .slice(0, 4);
+
+                const improvements = allRatedItems
+                    .filter(item => item.rating > 2)
+                    .sort((a, b) => b.rating - a.rating);
+
+                rawData += "--- جوانب الإجادة (أفضل 4 بنود) ---\n";
+                strengths.forEach(item => {
+                    const desc = item.criterion.items[item.rating]?.desc || '';
+                    rawData += `- ${item.criterion.title}: (${desc}) ${item.note ? '- ملاحظة: ' + item.note : ''}\n`;
+                });
+
+                rawData += "\n--- الجوانب التي تحتاج إلى تطوير (كل البنود بتقييم أعلى من 2) ---\n";
+                if (improvements.length > 0) {
+                    improvements.forEach(item => {
+                        const desc = item.criterion.items[item.rating]?.desc || '';
+                        const rec = item.criterion.items[item.rating]?.rec || '';
+                        rawData += `- ${item.criterion.title}: (${desc}) - توصية مقترحة: (${rec}) ${item.note ? '- ملاحظة: ' + item.note : ''}\n`;
+                    });
+                } else {
+                    rawData += "لا توجد بنود تحتاج إلى تطوير ملحوظ.\n";
+                }
+                return rawData;
             }
 
-            async copyToClipboardPrompt() {
+            buildPlainTextReport() {
                 const teacherName = document.getElementById('repTeacherName').innerText;
                 const specialization = document.getElementById('repSpecialization').innerText;
                 const className = document.getElementById('repClassName').innerText;
                 const topic = document.getElementById('repLessonTopic').innerText;
                 const gender = this.state.supervisionData.gender;
+                const isMale = gender === 'male';
                 
                 let prompt = `أعمل كموجه فني تربوي خبير لمادة ${specialization}.\n`;
-                prompt += `المطلوب: صياغة تقرير زيارة صفية احترافي، تربوي، ومحفز بناءً على البيانات التالية:\n\n`;
+                const genderInstruction = isMale ? "" : "يرجى استخدام صيغة المؤنث في التقرير (معلمة، طالبات، قامت...).";
+                prompt += `المطلوب: صياغة تقرير زيارة صفية احترافي، تربوي، ومحفز بناءً على البيانات التالية. ${genderInstruction}\n\n`;
                 prompt += `--- بيانات الزيارة ---\n`;
-                prompt += `- المعلم: ${teacherName}\n`;
+                prompt += `- المعلم/ة: ${teacherName}\n`;
                 prompt += `- التخصص: ${specialization}\n`;
                 prompt += `- الصف: ${className}\n`;
                 prompt += `- عنوان الدرس: ${topic}\n`;
                 prompt += `- نوع المدرسة: ${gender === 'male' ? 'بنين' : 'بنات'}\n\n`;
-                prompt += `--- تفاصيل التقييم والملاحظات ---\n`;
 
-                this.state.evaluationCriteria.forEach(c => {
-                    const r = this.state.supervisionData.ratings[c.id];
-                    const note = this.state.supervisionData.notes[c.id];
-                    if (r) {
-                        const itemDesc = c.items[r]?.desc || '';
-                        prompt += `* المعيار: ${c.title}\n`;
-                        prompt += `  - التقييم: ${r} من 5\n`;
-                        prompt += `  - الوصف: ${itemDesc}\n`;
-                        if(note && note.length > 1) prompt += `  - ملاحظات المشرف: ${note}\n`;
-                    }
-                });
+                const rawData = this.buildReportContextText();
+                prompt += rawData;
 
                 prompt += `\n--- هيكل التقرير المطلوب ---\n`;
                 prompt += `يرجى كتابة التقرير بحيث يتضمن الأقسام التالية مع استخدام العناوين الدقيقة:\n`;
                 prompt += `1. جوانب الإجادة في الأداء وأدلتها.\n`;
                 prompt += `2. الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها.\n`;
                 prompt += `3. الدعم المقدم.\n`;
-                prompt += `4. التوصيات.\n`;
+                prompt += `4. التوصيات (بناءً على التوصيات المذكورة في البيانات الخام).\n`;
+                
+                return prompt;
+            }
 
+            async copyToClipboardPrompt() {
+                const prompt = this.buildPlainTextReport();
                 try {
                     await navigator.clipboard.writeText(prompt);
                     alert("تم نسخ كافة تفاصيل الزيارة ومعايير التقييم إلى الحافظة بنجاح!\n\nيمكنك الآن التوجه إلى ChatGPT أو Gemini ولصق النص للحصول على التقرير.");
@@ -1612,73 +1678,108 @@
                 }
             }
 
+
             renderAIReport(content) { const cleanHtml = (content || "").replace(/```html/g, '').replace(/```/g, '').trim(); document.getElementById('aiReportContent').innerHTML = cleanHtml; }
 
             async enhanceReportWithAI() {
-                const topic = document.getElementById('repLessonTopic').innerText; 
-                const specialization = document.getElementById('repSpecialization').innerText; 
-                
-                if(!topic || topic === '-' || topic === 'عام') return alert('يرجى تحديد عنوان الدرس وتخصص المعلم بدقة للحصول على تقرير ذكي.');
+                const topic = document.getElementById('repLessonTopic').innerText;
+                const specialization = document.getElementById('repSpecialization').innerText;
+
+                if (!topic || topic === '-' || topic === 'عام') {
+                    return alert('يرجى تحديد عنوان الدرس وتخصص المعلم بدقة للحصول على تقرير ذكي.');
+                }
+
+                document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
 
                 try {
-                    document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
-                    const reportText = this.buildPlainTextReport(); 
-                    const gender = this.state.supervisionData.gender;
-
-                    if (!this.auth || !this.auth.currentUser) {
-                         throw new Error("يجب تسجيل الدخول لاستخدام الميزات السحابية المتقدمة.");
+                    const apiKey = this.state.geminiApiKey;
+                    if (!apiKey) {
+                        throw new Error("يرجى إدخال مفتاح Gemini API في الإعدادات أولاً.");
                     }
 
-                    // الحصول على التوكن للمصادقة مع Cloud Function
-                    const token = await this.auth.currentUser.getIdToken(true);
-                    const url = this.state.cloudFunctionUrl || "https://improvetext-cewovb6fwq-uc.a.run.app";
+                    if (typeof genai === 'undefined' || !genai.GoogleGenerativeAI) {
+                        throw new Error("لم يتم تحميل مكتبة الذكاء الاصطناعي. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.");
+                    }
+
+                    const { GoogleGenerativeAI, Type } = genai;
+                    const ai = new GoogleGenerativeAI({ apiKey });
+
+                    const reportContext = this.buildReportContextText();
+                    const gender = this.state.supervisionData.gender;
                     
-                    const response = await fetch(url, { 
-                        method: "POST", 
-                        headers: { 
-                            "Content-Type": "application/json", 
-                            "Authorization": `Bearer ${token}` 
-                        }, 
-                        body: JSON.stringify({ 
-                            text: reportText, 
-                            gender: gender, 
-                            specialization: specialization, 
-                            topic: topic 
-                        }) 
+                    const contextGender = gender === 'female' ? 'مؤنث (معلمة/طالبات)' : 'مذكر (معلم/طلاب)';
+                    const systemInstruction = `أنت خبير تربوي متخصص في كتابة تقارير الزيارات الصفية باللغة العربية. مهمتك هي تحليل البيانات الخام المقدمة وتحويلها إلى تقرير احترافي، بنّاء، ومحفز. يجب أن يكون الأسلوب رسمياً وداعماً. استخدم مصطلحات تربوية دقيقة والتزم بالهيكل المطلوب بدقة.`;
+
+                    const responseSchema = {
+                        type: Type.OBJECT,
+                        properties: {
+                            strengths: { type: Type.OBJECT, description: "قسم جوانب الإجادة.", properties: { title: { type: Type.STRING }, points: { type: Type.ARRAY, items: { type: Type.STRING } } } },
+                            improvements: { type: Type.OBJECT, description: "قسم جوانب التطوير.", properties: { title: { type: Type.STRING }, points: { type: Type.ARRAY, items: { type: Type.STRING } } } },
+                            support: { type: Type.OBJECT, description: "قسم الدعم المقدم.", properties: { title: { type: Type.STRING }, points: { type: Type.ARRAY, items: { type: Type.STRING } } } },
+                            recommendations: { type: Type.OBJECT, description: "قسم التوصيات.", properties: { title: { type: Type.STRING }, points: { type: Type.ARRAY, items: { type: Type.STRING } } } }
+                        }
+                    };
+
+                    const userPrompt = `
+                        الرجاء تحليل بيانات التقييم الخام التالية وصياغة تقرير زيارة صفية منظم.
+                        السياق: مادة "${specialization}", عنوان الدرس "${topic}", نوع المدرسة: ${contextGender}.
+                        
+                        بيانات التقييم الخام:
+                        ${reportContext}
+
+                        ملاحظات هامة للتحليل:
+                        - ${gender === 'female' ? "استخدم صيغة المؤنث في كامل التقرير (معلمة، طالبات، قامت)." : ""}
+                        - قسم "الدعم المقدم" يجب أن يحتوي على اقتراحات عملية مثل "تبادل زيارات مع معلم خبير" أو "حضور ورشة عمل متخصصة".
+                        - التزم بالهيكل المحدد في schema بدقة شديدة.
+                        - العناوين يجب أن تكون بالضبط كالتالي: "جوانب الإجادة في الأداء وأدلتها", "الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها", "الدعم المقدم", "التوصيات".
+                    `;
+
+                    const response = await ai.models.generateContent({
+                        model: "gemini-2.5-flash",
+                        contents: userPrompt,
+                        config: {
+                            systemInstruction: systemInstruction,
+                            responseMimeType: "application/json",
+                            responseSchema: responseSchema
+                        }
                     });
 
-                    if (!response.ok) { 
-                        const errJson = await response.json().catch(() => ({}));
-                        console.warn("Cloud Function Failed:", errJson);
-                        throw new Error(errJson.message || errJson.error || "خطأ في الاتصال بالخدمة السحابية"); 
+                    const aiText = response.text;
+                    if (!aiText || !aiText.trim()) {
+                        throw new Error("لم يرجع النموذج أي استجابة. قد يكون ذلك بسبب فلاتر الأمان.");
                     }
-                    
-                    const data = await response.json(); 
-                    const resultHtml = data.result || data.text;
 
-                    if (!resultHtml) throw new Error("لم يتم استلام أي نص من الذكاء الاصطناعي.");
-                    
-                    this.renderAIReport(resultHtml);
+                    const jsonResponse = JSON.parse(aiText);
 
-                } catch (e) { 
-                    console.error("AI Process Error:", e); 
-                    alert("فشل المعالجة السحابية: " + e.message); 
-                } finally { 
-                    document.getElementById('aiLoadingOverlay')?.classList.add('hidden-view'); 
+                    const buildSection = (section) => {
+                        if (!section || !section.title || !section.points) return '';
+                        const pointsHtml = section.points.map(p => `<li>${p}</li>`).join('');
+                        return `<div class="report-section"><h3>${section.title}</h3><ul>${pointsHtml}</ul></div>`;
+                    };
+
+                    const htmlResult = `
+                        ${buildSection(jsonResponse.strengths)}
+                        ${buildSection(jsonResponse.improvements)}
+                        ${buildSection(jsonResponse.support)}
+                        ${buildSection(jsonResponse.recommendations)}
+                    `;
+
+                    this.renderAIReport(htmlResult.trim());
+
+                } catch (e) {
+                    console.error("AI Process Error:", e);
+                    alert("فشل المعالجة بالذكاء الاصطناعي: " + e.message);
+                } finally {
+                    document.getElementById('aiLoadingOverlay')?.classList.add('hidden-view');
                 }
             }
             
-            enableDevEdit() {
-                const inputs = document.querySelectorAll('#developerSettingsSection input');
-                inputs.forEach(input => input.disabled = false);
-            }
-
-            saveDevSettings() {
-                this.state.cloudFunctionUrl = document.getElementById('settingCloudUrl').value;
+            saveAISettings() {
+                const key = document.getElementById('settingGeminiKey').value;
+                this.state.geminiApiKey = key;
                 this.saveData();
-                const inputs = document.querySelectorAll('#developerSettingsSection input');
-                inputs.forEach(input => input.disabled = true);
-                alert('تم تحديث الإعدادات الأمنية بنجاح.');
+                alert('تم حفظ مفتاح Gemini API بنجاح.');
+                this.closeModal('modal-settings');
             }
             
             handleCriteriaExcel(e) {
@@ -1997,22 +2098,30 @@
             applyTheme() { document.body.classList.remove('theme-pink', 'theme-green', 'theme-dark', 'theme-indigo'); if (this.state.theme && this.state.theme !== 'default') document.body.classList.add(`theme-${this.state.theme}`); }
             renderThemeSelector() { const container = document.getElementById('themeSelectorContainer'); if (!container) return; const themes = [{ id: 'default', name: 'سماوي (أساسي)', colorClass: 'bg-[#008ae6]', activeClass: 'ring-2 ring-[#008ae6] ring-offset-2' }, { id: 'indigo', name: 'نيلي', colorClass: 'bg-indigo-600', activeClass: 'ring-2 ring-indigo-500 ring-offset-2' }, { id: 'pink', name: 'زهري', colorClass: 'bg-pink-600', activeClass: 'ring-2 ring-pink-500 ring-offset-2' }, { id: 'green', name: 'أخضر', colorClass: 'bg-green-600', activeClass: 'ring-2 ring-green-500 ring-offset-2' }, { id: 'dark', name: 'ليلي', colorClass: 'bg-slate-800', activeClass: 'ring-2 ring-slate-600 ring-offset-2' }]; container.innerHTML = themes.map(theme => { const isActive = this.state.theme === theme.id; const ringClass = isActive ? theme.activeClass : ''; return `<button onclick="window.app.setTheme('${theme.id}')" class="p-1 rounded-xl transition ${ringClass}"><div class="w-full h-12 rounded-lg ${theme.colorClass} shadow-sm"></div><span class="text-[10px] font-bold mt-1.5 block text-center text-slate-500">${theme.name}</span></button>`; }).join(''); }
             setDefaultSchoolGender(gender) { if (gender === 'male' || gender === 'female') { this.state.defaultSchoolGender = gender; this.saveData(); } }
+            setDirectorate(value) {
+                const val = value.trim();
+                if(val) {
+                    this.state.directorate = val;
+                    this.saveData();
+                }
+            }
             renderSchoolGenderSettings() { const radios = document.getElementsByName('defaultSchoolGender'); for (const radio of radios) { if (radio.value === this.state.defaultSchoolGender) { radio.checked = true; } } }
+            renderDirectorateSetting() {
+                const input = document.getElementById('settingDirectorate');
+                if (input) {
+                    input.value = this.state.directorate || 'المديرية العامة للتربية والتعليم بمحافظة مسقط';
+                }
+            }
             openSettings() { 
                 this.renderViolationsSettings(); 
                 this.renderSpecializationsSettings(); 
                 this.renderThemeSelector(); 
                 this.renderSchoolGenderSettings(); 
+                this.renderDirectorateSetting();
                 
-                const devSection = document.getElementById('developerSettingsSection');
-                if (devSection) {
-                    if (this.state.currentUser && this.state.currentUser.email === 'alsaher9@gmail.com') {
-                        devSection.classList.remove('hidden-view');
-                        document.getElementById('settingCloudUrl').value = this.state.cloudFunctionUrl || '';
-                    } else {
-                        devSection.classList.add('hidden-view');
-                    }
-                }
+                const keyInput = document.getElementById('settingGeminiKey');
+                if(keyInput) keyInput.value = this.state.geminiApiKey || '';
+
                 document.getElementById('modal-settings')?.classList.remove('hidden-view'); 
             }
 
@@ -2213,5 +2322,5 @@
         }
         window.app = new SchoolApp();
     </script>
-<script src="main-WJNRXRTZ.js" type="module"></script></body>
+</body>
 </html>
