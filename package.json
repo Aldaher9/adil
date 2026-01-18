@@ -1,25 +1,28 @@
 {
-  "name": "school-manager-pro-functions",
-  "version": "2.0.0",
-  "description": "Enhanced Cloud Functions for School Manager Pro with Gemini AI",
+  "name": "school-manager-pro",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "serve": "firebase emulators:start --only functions",
-    "shell": "firebase functions:shell",
-    "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "dev": "ng serve",
+    "build": "ng build",
+    "preview": "ng serve --configuration=production"
   },
-  "engines": {
-    "node": "20"
-  },
-  "main": "index.js",
   "dependencies": {
-    "firebase-admin": "^12.1.0",
-    "firebase-functions": "^5.1.1",
-    "@google/generative-ai": "^0.21.0"
+    "rxjs": "^7.8.2",
+    "@angular/core": "^21.1.0",
+    "@angular/common": "^21.1.0",
+    "@angular/forms": "^21.1.0",
+    "@angular/platform-browser": "^21.1.0",
+    "@angular/build": "^21.1.0",
+    "@angular/cli": "^21.1.0",
+    "@angular/compiler-cli": "^21.1.0",
+    "@angular/compiler": "^21.1.0",
+    "tailwindcss": "latest"
   },
   "devDependencies": {
-    "firebase-functions-test": "^3.1.0"
-  },
-  "private": true
+    "@types/node": "^22.14.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
 }
