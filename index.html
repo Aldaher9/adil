@@ -43,9 +43,6 @@
     <!-- Excel Export/Import -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- Gemini AI SDK (Client-side usage removed, but script can be kept for future features) -->
-    <script src="https://cdn.jsdelivr.net/npm/@google/generative-ai/dist/index.js"></script>
-
     <style>
         :root {
             /* Default Theme: Sky Blue */
@@ -142,6 +139,9 @@
             color: #334155;
             line-height: 1.8;
         }
+        .custom-scrollbar-dark::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar-dark::-webkit-scrollbar-track { background: #1e293b; }
+        .custom-scrollbar-dark::-webkit-scrollbar-thumb { background: #475569; border-radius: 2px; }
 
     </style>
     
@@ -797,6 +797,21 @@
     
     </div>
 
+    <!-- Developer Tools -->
+    <button id="dev-toggle-button" onclick="document.getElementById('debug-log-panel').classList.toggle('hidden-view')" class="hidden-view fixed bottom-20 right-4 z-[100] w-12 h-12 bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full shadow-lg flex items-center justify-center transition no-print">
+        <i class="fas fa-bug"></i>
+    </button>
+    <div id="debug-log-panel" class="hidden-view fixed bottom-36 right-4 z-[100] w-full max-w-md h-80 bg-slate-900/90 backdrop-blur-sm text-white rounded-2xl shadow-2xl p-4 flex flex-col no-print">
+        <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-2">
+            <h3 class="font-bold text-sm text-amber-300 flex items-center gap-2"><i class="fas fa-bug"></i> سجل المطور</h3>
+            <button onclick="document.getElementById('debug-log-panel').classList.add('hidden-view')" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+        </div>
+        <div id="debug-log-content" class="flex-1 overflow-y-auto text-xs font-mono space-y-1 pr-2 custom-scrollbar-dark">
+            <!-- Log messages will be injected here -->
+        </div>
+    </div>
+
+
     <!-- Script Implementation -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script>
@@ -850,7 +865,10 @@
             initFirebaseAndAuth() {
                 const firebaseConfig = { apiKey: "AIzaSyC4NddjijF29YNhowy4SqgRaMPn01oSSEg", authDomain: "school-9416e.firebaseapp.com", projectId: "school-9416e", storageBucket: "school-9416e.firebasestorage.app", messagingSenderId: "680872052240", appId: "1:680872052240:web:96d2e544166ab5f8096c95", measurementId: "G-5EBTV0MV83" };
                 try {
-                    if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                         firebase.initializeApp(firebaseConfig);
+                    }
+                    
                     if (typeof firebase !== 'undefined') {
                         this.db = firebase.firestore(); 
                         this.auth = firebase.auth();
@@ -869,8 +887,56 @@
 
             handleGoogleLogin() { const provider = new firebase.auth.GoogleAuthProvider(); this.auth.signInWithPopup(provider).catch(e => alert("فشل تسجيل الدخول")); }
             skipLogin() { document.getElementById('login-view')?.classList.add('hidden-view'); document.getElementById('app-view')?.classList.remove('hidden-view'); this.renderAll(); document.getElementById('user-profile-container').innerHTML = `<div class="flex items-center gap-3 bg-white/50 px-3 py-1.5 rounded-xl border border-slate-200"><div class="text-xs font-bold text-slate-600 flex items-center gap-2"><i class="fas fa-user-shield text-slate-500"></i><span>زائر</span></div><div class="h-4 w-px bg-slate-300 mx-1"></div><button onclick="window.app.handleLogout()" class="text-red-500 hover:text-red-700 transition cursor-pointer" title="خروج"><i class="fas fa-sign-out-alt"></i></button></div>`; }
-            handleLogout() { if(confirm('هل تريد تسجيل الخروج؟')) { if(this.auth && this.state.currentUser) this.auth.signOut().catch(()=>{}); this.state.currentUser = null; document.getElementById('app-view')?.classList.add('hidden-view'); document.getElementById('login-view')?.classList.remove('hidden-view'); document.getElementById('user-profile-container').innerHTML = ''; } }
+            handleLogout() { 
+                if(confirm('هل تريد تسجيل الخروج؟')) { 
+                    if(this.auth && this.state.currentUser) this.auth.signOut().catch(()=>{}); 
+                    this.state.currentUser = null; 
+                    document.getElementById('app-view')?.classList.add('hidden-view'); 
+                    document.getElementById('login-view')?.classList.remove('hidden-view'); 
+                    document.getElementById('user-profile-container').innerHTML = ''; 
+                    document.getElementById('dev-toggle-button')?.classList.add('hidden-view');
+                    document.getElementById('debug-log-panel')?.classList.add('hidden-view');
+                } 
+            }
             
+            isDeveloper() {
+                return this.state.currentUser?.email === 'alsaher9@gmail.com';
+            }
+
+            logDebug(message, data = null) {
+                if (!this.isDeveloper()) return;
+
+                const panel = document.getElementById('debug-log-panel');
+                const content = document.getElementById('debug-log-content');
+                if (!content) return;
+                
+                if (panel && panel.classList.contains('hidden-view')) {
+                    panel.classList.remove('hidden-view');
+                }
+
+                const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+                const logEntry = document.createElement('div');
+                logEntry.className = 'p-1.5 bg-slate-800 rounded';
+                
+                let html = `<div class="flex justify-between items-center"><span class="text-emerald-400 font-bold">${message}</span><span class="text-slate-500 text-[10px]">${timestamp}</span></div>`;
+
+                if (data) {
+                    try {
+                        const dataStr = JSON.stringify(data, null, 2);
+                        html += `<pre class="text-sky-300 text-[10px] bg-black/20 p-2 rounded mt-1 overflow-x-auto">${dataStr.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
+                    } catch (e) {
+                         html += `<pre class="text-red-400">Could not stringify data.</pre>`;
+                    }
+                }
+
+                logEntry.innerHTML = html;
+                content.appendChild(logEntry);
+                content.scrollTop = content.scrollHeight;
+
+                console.log(`[DEV LOG] ${message}`, data);
+            }
+
+
             renderUserProfile() {
                 const container = document.getElementById('user-profile-container'); if(!container) return;
                 if (this.state.currentUser) {
@@ -907,6 +973,11 @@
                         if (data.dutyLocations) this.state.dutyLocations = data.dutyLocations;
                         if (data.dutySchedule) this.state.dutySchedule = data.dutySchedule;
                         if (data.substitutions) this.state.substitutions = data.substitutions;
+                        
+                        if (this.isDeveloper()) {
+                            document.getElementById('dev-toggle-button')?.classList.remove('hidden-view');
+                        }
+
                         this.applyTheme(); this.renderAll(); this.updateCloudStatus('connected'); this.saveDataToLocal();
                     } else { this.saveData(); }
                 }, e => this.updateCloudStatus('error'));
@@ -916,7 +987,31 @@
             async saveData() {
                 this.saveDataToLocal(); if (!this.state.currentUser) { this.updateCloudStatus('local'); return; }
                 this.updateCloudStatus('saving');
-                try { await this.db.collection("users").doc(this.state.currentUser.uid).set({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, directorate: this.state.directorate, evaluationCriteria: this.state.evaluationCriteria, dutyLocations: this.state.dutyLocations, dutySchedule: this.state.dutySchedule, substitutions: this.state.substitutions, lastSync: new Date(), userName: this.state.currentUser.name }, { merge: true }); this.updateCloudStatus('connected'); } catch (e) { this.updateCloudStatus('error'); }
+                try { 
+                    await this.db.collection("users").doc(this.state.currentUser.uid).set({ 
+                        teachers: this.state.teachers, 
+                        periods: this.state.periods, 
+                        classes: this.state.classes, 
+                        tasks: this.state.tasks, 
+                        agenda: this.state.agenda, 
+                        violationTypes: this.state.violationTypes, 
+                        specializations: this.state.specializations, 
+                        supervisionHistory: this.state.supervisionHistory, 
+                        theme: this.state.theme, 
+                        defaultSchoolGender: this.state.defaultSchoolGender, 
+                        directorate: this.state.directorate, 
+                        evaluationCriteria: this.state.evaluationCriteria, 
+                        dutyLocations: this.state.dutyLocations, 
+                        dutySchedule: this.state.dutySchedule, 
+                        substitutions: this.state.substitutions, 
+                        lastSync: new Date(), 
+                        userName: this.state.currentUser.name,
+                        userEmail: this.state.currentUser.email
+                    }, { merge: true }); 
+                    this.updateCloudStatus('connected'); 
+                } catch (e) { 
+                    this.updateCloudStatus('error'); 
+                }
             }
 
             updateCloudStatus(status) { const el = document.getElementById('cloudStatusIndicator'); if(!el) return; if(status === 'connected') el.innerHTML = '<span class="text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-[10px] font-bold border border-emerald-100 flex items-center gap-1"><i class="fas fa-check-circle"></i> متصل</span>'; else if(status === 'saving') el.innerHTML = '<span class="text-amber-600 bg-amber-50 px-2 py-1 rounded-lg text-[10px] font-bold border border-amber-100 flex items-center gap-1"><i class="fas fa-sync fa-spin"></i> حفظ...</span>'; else if(status === 'local') el.innerHTML = '<span class="text-slate-600 bg-slate-50 px-2 py-1 rounded-lg text-[10px] font-bold border border-slate-200 flex items-center gap-1"><i class="fas fa-hdd"></i> محلي</span>'; else el.innerHTML = '<span class="text-red-600 bg-red-50 px-2 py-1 rounded-lg text-[10px] font-bold border border-red-100 flex items-center gap-1"><i class="fas fa-exclamation-triangle"></i> خطأ</span>'; }
@@ -1696,6 +1791,8 @@
             renderAIReport(content) { const cleanHtml = (content || "").replace(/```html/g, '').replace(/```/g, '').trim(); document.getElementById('aiReportContent').innerHTML = cleanHtml; }
 
             async enhanceReportWithAI() {
+                this.logDebug('enhanceReportWithAI: Initiated.');
+
                 const topic = document.getElementById('repLessonTopic').innerText;
                 const specialization = document.getElementById('repSpecialization').innerText;
 
@@ -1713,13 +1810,13 @@
                     const reportContext = this.buildReportContextText();
                     const gender = this.state.supervisionData.gender;
                     
+                    const payload = { reportContext, specialization, topic, gender };
+                    this.logDebug('enhanceReportWithAI: Calling cloud function with payload:', payload);
+
                     const generateAiReportFunction = this.functions.httpsCallable('generateAiReport');
-                    const result = await generateAiReportFunction({
-                        reportContext,
-                        specialization,
-                        topic,
-                        gender
-                    });
+                    const result = await generateAiReportFunction(payload);
+                    
+                    this.logDebug('enhanceReportWithAI: Cloud function success. Received data:', result.data);
                     
                     const jsonResponse = result.data;
 
@@ -1737,10 +1834,12 @@
                     `;
 
                     this.renderAIReport(htmlResult.trim());
+                    this.logDebug('enhanceReportWithAI: Report rendering complete.');
 
                 } catch (e) {
                     console.error("Cloud Function Error:", e);
                     alert("فشل المعالجة بالذكاء الاصطناعي: " + e.message);
+                    this.logDebug('enhanceReportWithAI: Cloud function ERROR!', { message: e.message, code: e.code, details: e.details });
                 } finally {
                     document.getElementById('aiLoadingOverlay')?.classList.add('hidden-view');
                 }
