@@ -133,7 +133,7 @@ export class ActionModalComponent {
       if (!t) return;
       
       if(confirm(`تأكيد خصم ${v.points} نقاط من المعلم ${t.name} بسبب: ${v.label}؟`)) {
-          await this.store.dockScore(t.id, v.points);
+          await this.store.dockScore(t.id, v);
           this.close.emit();
       }
   }

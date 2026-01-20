@@ -1,95 +1,176 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const { GoogleGenAI, Type } = require("@google/generative-ai");
+// استخدام SDK الجديد @google/genai
+const { GoogleGenAI, Type } = require("@google/genai");
 
 admin.initializeApp();
 
-exports.generateAiReport = functions.region("us-central1").https.onCall(async (data, context) => {
-  // --- PREMIUM USER CHECK ---
-  // Check if the user is authenticated.
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-  }
+// =====================================================
+// ✅ generateAiReport: Gemini API Direct Implementation
+// =====================================================
+exports.generateAiReport = functions
+  .region("us-central1")
+  .runWith({ 
+    secrets: ["GEMINI_API_KEY"], 
+    timeoutSeconds: 300,
+    memory: "512MB"
+  })
+  .https.onCall(async (data, context) => {
+    console.log("🟢 generateAiReport: Request received.");
 
-  // Check if the user is a premium user from Firestore.
-  const uid = context.auth.uid;
-  try {
-    const userDoc = await admin.firestore().collection('users').doc(uid).get();
-    if (!userDoc.exists || userDoc.data().isPremium !== true) {
-        throw new functions.https.HttpsError('permission-denied', 'This is a premium feature. Please upgrade your account.');
-    }
-  } catch (error) {
-     console.error("Firestore user check failed:", error);
-     throw new functions.https.HttpsError('internal', 'Failed to verify user permissions.');
-  }
-  // --- END PREMIUM USER CHECK ---
+    try {
+      // 1. التحقق من المصادقة
+      if (!context.auth) {
+        throw new functions.https.HttpsError(
+          "unauthenticated",
+          "يجب تسجيل الدخول لاستخدام هذه الميزة."
+        );
+      }
+      const uid = context.auth.uid;
 
+      // 2. إدارة الحدود والاشتراكات (Limit Logic)
+      const userRef = admin.firestore().collection("users").doc(uid);
+      const userDoc = await userRef.get();
+      const userData = userDoc.exists ? userDoc.data() : {};
 
-  // Access your API key as an environment variable inside the function handler.
-  // User must set this with: firebase functions:config:set gemini.key="YOUR_API_KEY"
-  const apiKey = functions.config().gemini.key;
-  if (!apiKey) {
-    console.error("Gemini API key not set in environment variables. Run 'firebase functions:config:set gemini.key=\"YOUR_API_KEY\"'");
-    throw new functions.https.HttpsError('failed-precondition', 'The Gemini API key is not configured on the server.');
-  }
-  const ai = new GoogleGenAI({ apiKey });
-
-  const { reportContext, specialization, topic, gender } = data;
-
-  if (!reportContext || !specialization || !topic || !gender) {
-    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with all required arguments.');
-  }
-
-  const contextGender = gender === 'female' ? 'مؤنث (معلمة/طالبات)' : 'مذكر (معلم/طلاب)';
-  const systemInstruction = `أنت خبير تربوي متخصص في كتابة تقارير الزيارات الصفية باللغة العربية. مهمتك هي تحليل البيانات الخام المقدمة وتحويلها إلى تقرير احترافي، بنّاء، ومحفز. يجب أن يكون الأسلوب رسمياً وداعماً. استخدم مصطلحات تربوية دقيقة والتزم بالهيكل المطلوب بدقة.`;
-
-  const responseSchema = {
-    type: Type.OBJECT,
-    properties: {
-        strengths: { type: Type.OBJECT, description: "قسم جوانب الإجادة.", properties: { title: { type: Type.STRING }, points: { type: Type.ARRAY, items: { type: Type.STRING } } } },
-        improvements: { type: Type.OBJECT, description: "قسم جوانب التطوير.", properties: { title: { type: Type.STRING }, points: { type: Type.ARRAY, items: { type: Type.STRING } } } },
-        support: { type: Type.OBJECT, description: "قسم الدعم المقدم.", properties: { title: { type: Type.STRING }, points: { type: Type.ARRAY, items: { type: Type.STRING } } } },
-        recommendations: { type: Type.OBJECT, description: "قسم التوصيات.", properties: { title: { type: Type.STRING }, points: { type: Type.ARRAY, items: { type: Type.STRING } } } }
-    }
-  };
-
-  const userPrompt = `
-      الرجاء تحليل بيانات التقييم الخام التالية وصياغة تقرير زيارة صفية منظم.
-      السياق: مادة "${specialization}", عنوان الدرس "${topic}", نوع المدرسة: ${contextGender}.
+      // تحديد الحد اليومي المسموح به
+      // الأولوية: 1. حد مخصص للمستخدم (customDailyLimit) -> 2. اشتراك مدفوع (100) -> 3. الوضع المجاني (5)
+      let allowedLimit = 5; 
       
-      بيانات التقييم الخام:
-      ${reportContext}
+      if (userData.customDailyLimit && typeof userData.customDailyLimit === 'number') {
+          allowedLimit = userData.customDailyLimit; // حد خاص تم تعيينه من قبلك
+      } else if (userData.isPremium === true) {
+          allowedLimit = 100; // حد المشتركين
+      }
 
-      ملاحظات هامة للتحليل:
-      - ${gender === 'female' ? "استخدم صيغة المؤنث في كامل التقرير (معلمة، طالبات، قامت)." : ""}
-      - قسم "الدعم المقدم" يجب أن يحتوي على اقتراحات عملية مثل "تبادل زيارات مع معلم خبير" أو "حضور ورشة عمل متخصصة".
-      - التزم بالهيكل المحدد في schema بدقة شديدة.
-      - العناوين يجب أن تكون بالضبط كالتالي: "جوانب الإجادة في الأداء وأدلتها", "الجوانب التي تحتاج إلى تطوير في الأداء وأدلتها", "الدعم المقدم", "التوصيات".
-  `;
-  
-  try {
-    const response = await ai.models.generateContent({
+      // التحقق من الاستهلاك اليومي
+      const today = new Date().toLocaleDateString('en-CA'); 
+      let usageData = userData.aiUsage || { date: today, count: 0 };
+
+      if (usageData.date !== today) {
+          usageData = { date: today, count: 0 };
+      }
+
+      if (usageData.count >= allowedLimit) {
+          console.warn(`⚠️ Limit reached for user ${uid}. Limit: ${allowedLimit}`);
+          throw new functions.https.HttpsError(
+              "resource-exhausted",
+              `LIMIT_REACHED` // رمز خاص سنلتقطه في الواجهة
+          );
+      }
+
+      // 3. التحقق من المدخلات
+      const { reportContext, specialization, topic, gender } = data || {};
+      
+      if (!reportContext || !specialization || !topic || !gender) {
+        throw new functions.https.HttpsError("invalid-argument", "البيانات غير مكتملة.");
+      }
+
+      if (reportContext.length > 25000) {
+          throw new functions.https.HttpsError("invalid-argument", "النص طويل جداً.");
+      }
+
+      // 4. تهيئة Gemini
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new functions.https.HttpsError("failed-precondition", "API Key missing.");
+      }
+      
+      const ai = new GoogleGenAI({ apiKey: apiKey });
+      
+      const contextGender = gender === "female" 
+          ? "استخدمي صيغة المؤنث (معلمة، طالبات، قامت)." 
+          : "استخدم صيغة المذكر (معلم، طلاب، قام).";
+
+      const systemInstructionText = `
+أنت خبير تربوي وموجه فني. مهمتك صياغة تقرير زيارة صفية احترافي.
+القاعدة الذهبية للصياغة:
+في قوائم (جوانب الإجادة) و (جوانب التطوير)، يجب أن تبدأ كل نقطة بذكر "عنوان بند التقييم" الأصلي نصاً، متبوعاً بنقطتين رأسيتين (:)، ثم الوصف السلوكي المحسن.
+مثال:
+"التحصيل الدراسي: أظهر الطلبة تمكناً ملحوظاً في استيعاب المفاهيم..."
+"إدارة الصف: تميزت المعلمة بالقدرة العالية على جذب انتباه الطالبات..."
+`;
+
+      const responseSchema = {
+        type: Type.OBJECT,
+        properties: {
+          strengths: { 
+            type: Type.OBJECT, 
+            properties: { 
+              title: { type: Type.STRING }, 
+              points: { type: Type.ARRAY, items: { type: Type.STRING } } 
+            } 
+          },
+          improvements: { 
+            type: Type.OBJECT, 
+            properties: { 
+              title: { type: Type.STRING }, 
+              points: { type: Type.ARRAY, items: { type: Type.STRING } } 
+            } 
+          },
+          support: { 
+            type: Type.OBJECT, 
+            properties: { 
+              title: { type: Type.STRING }, 
+              points: { type: Type.ARRAY, items: { type: Type.STRING } } 
+            } 
+          },
+          recommendations: { 
+            type: Type.OBJECT, 
+            properties: { 
+              title: { type: Type.STRING }, 
+              points: { type: Type.ARRAY, items: { type: Type.STRING } } 
+            } 
+          }
+        }
+      };
+
+      const userPrompt = `
+المادة: ${specialization}
+عنوان الدرس: ${topic}
+السياق: ${contextGender}
+
+البيانات الخام للزيارة (تحتوي على عناوين البنود والتقييمات):
+${reportContext}
+
+المطلوب:
+1. استخراج نقاط القوة (جوانب الإجادة).
+2. استخراج نقاط التطوير.
+3. كتابة التوصيات والدعم.
+هام جداً: في مصفوفة النقاط (points)، ابدأ كل جملة بعنوان البند الخاص بها من البيانات أعلاه.
+`;
+      
+      console.log("🚀 Calling Gemini API (gemini-2.5-flash)...");
+      
+      const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: userPrompt,
         config: {
-            systemInstruction: systemInstruction,
+            systemInstruction: systemInstructionText,
             responseMimeType: "application/json",
-            responseSchema: responseSchema
+            responseSchema: responseSchema,
+            temperature: 0.7
         }
-    });
+      });
 
-    const aiText = response.text;
-    if (!aiText || !aiText.trim()) {
-        throw new functions.https.HttpsError('internal', 'The AI model returned an empty response.');
+      const text = response.text;
+      if (!text) throw new functions.https.HttpsError("internal", "رد فارغ من الذكاء الاصطناعي.");
+      
+      const cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      const jsonResponse = JSON.parse(cleanedText);
+
+      // تحديث العداد
+      await userRef.set({
+          aiUsage: {
+              date: today,
+              count: usageData.count + 1
+          }
+      }, { merge: true });
+
+      return jsonResponse;
+
+    } catch (err) {
+      console.error("🔥 Error:", err);
+      throw err;
     }
-
-    const jsonResponse = JSON.parse(aiText);
-    return jsonResponse;
-
-  } catch (error) {
-    console.error("Gemini API call failed:", error);
-    // It's better to pass a more structured error back to the client.
-    const errorMessage = error.message || 'An unknown error occurred.';
-    throw new functions.https.HttpsError('internal', `Failed to call the Gemini API. ${errorMessage}`);
-  }
-});
+  });

@@ -4,6 +4,12 @@ import { Injectable, signal, computed, effect } from '@angular/core';
 declare var firebase: any;
 declare var XLSX: any;
 
+export interface ViolationLog {
+  date: string;
+  label: string;
+  points: number;
+}
+
 export interface Teacher {
   id: string;
   name: string;
@@ -11,6 +17,7 @@ export interface Teacher {
   score: number;
   phone: string;
   lessons: Lesson[];
+  violations?: ViolationLog[];
 }
 
 export interface Lesson {
@@ -232,9 +239,26 @@ export class SchoolStoreService {
     await this.syncToCloud();
   }
 
-  async dockScore(id: string, amount: number) {
+  async dockScore(id: string, violation: ViolationType) {
+    const todayStr = new Date().toLocaleDateString('ar-EG'); // Or 'en-CA' for ISO
+    const logEntry: ViolationLog = {
+        date: todayStr,
+        label: violation.label,
+        points: violation.points
+    };
+
     this.teachers.update(list => 
-      list.map(t => t.id === id ? { ...t, score: Math.max(0, t.score - amount) } : t)
+      list.map(t => {
+          if (t.id === id) {
+              const currentViolations = t.violations || [];
+              return { 
+                  ...t, 
+                  score: Math.max(0, t.score - violation.points),
+                  violations: [logEntry, ...currentViolations]
+              };
+          }
+          return t;
+      })
     );
     await this.syncToCloud();
   }
@@ -257,15 +281,34 @@ export class SchoolStoreService {
         alert('حدث خطأ أثناء تهيئة مكتبة Excel.');
         return;
     }
-    const data = this.teachers().map(t => ({ 
-        'المعلم': t.name, 
-        'التقييم': t.score + '%', 
-        'الهاتف': t.phone || '-' 
-    }));
+    const data = this.teachers().map(t => {
+        // Format violations log into a single string cell
+        const violationsStr = (t.violations || [])
+            .map(v => `[${v.date}] ${v.label} (-${v.points})`)
+            .join(' \n '); // New line for excel cell
+
+        return { 
+            'المعلم': t.name, 
+            'التقييم': t.score + '%', 
+            'الهاتف': t.phone || '-',
+            'سجل المخالفات': violationsStr || 'لا يوجد'
+        };
+    });
+    
     const ws = XLSX.utils.json_to_sheet(data);
+    
+    // Auto-width columns roughly
+    const wscols = [
+        {wch: 30}, // Name
+        {wch: 10}, // Score
+        {wch: 15}, // Phone
+        {wch: 50}  // Violations log
+    ];
+    ws['!cols'] = wscols;
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Reports");
-    XLSX.writeFile(wb, "School_Report.xlsx");
+    XLSX.writeFile(wb, "School_Report_Advanced.xlsx");
   }
 
   // --- Import Logic ---

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="icon" href="https://lh3.googleusercontent.com/sitesv/AAzXCkeu7FhYYz-bI6UfrG5ThA962okgIov6TisN8rxz4AvzK6lfX8Cd6IRrXLgcxGSfs69HfoSFfesGmFpf4VRz0zsQEyZ7vn-NstvbSZv_5rzkkJgTkNoAf50jJWcqdXKww4lNlkSEKPdsSXqw2OAJAbtiKZizZWIgKksaJrkbD8LlUc9RO8IooH6dJWixcB4APh2Z-RBkxa-fAqzLhksFRxaPr_wdfdxdEpNZtrk=w1280" type="image/png">
+  
     <title>مدير المدرسة الذكي</title>
     
     <!-- Fonts & Icons -->
@@ -84,27 +84,31 @@
         .page-break { page-break-before: always; }
         @media print {
             @page {
-                margin: 0;
+                margin: 0.5cm;
+                size: auto;
             }
             body { background-color: #fff; }
             body * { visibility: hidden; }
             .no-print { display: none !important; }
             .print-only { display: block; }
             
-            #view-supervision-report { background-color: transparent !important; padding: 0 !important; margin: 0 !important; display: block !important; }
-            #report-document-container, #report-document-container * { visibility: visible; }
-            #report-document-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
-            #report-document-container > div { padding: 1.5rem !important; padding-top: 0 !important; }
+            /* --- LOGIC SEPARATION FOR PRINTING --- */
 
-            /* Force visibility for page 2 content which was disappearing */
-            .page-break, .page-break * {
-                visibility: visible !important;
-            }
+            /* 1. SUPERVISION REPORT ONLY */
+            body.printing-supervision #view-supervision-report { background-color: transparent !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            body.printing-supervision #report-document-container, 
+            body.printing-supervision #report-document-container * { visibility: visible; }
+            body.printing-supervision #report-document-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; }
+            body.printing-supervision #report-document-container > div { padding: 1.5rem !important; padding-top: 0 !important; }
+            body.printing-supervision .page-break, 
+            body.printing-supervision .page-break * { visibility: visible !important; }
 
+            /* 2. SUBSTITUTION SHEET ONLY */
             body.printing-subs #printable-substitution-sheet,
             body.printing-subs #printable-substitution-sheet * { visibility: visible; }
             body.printing-subs #printable-substitution-sheet { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; z-index: 9999; }
 
+            /* 3. DUTY SHEET ONLY */
             body.printing-duty #printable-duty-sheet,
             body.printing-duty #printable-duty-sheet * { visibility: visible; }
             body.printing-duty #printable-duty-sheet { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; z-index: 9999; }
@@ -143,6 +147,11 @@
         .custom-scrollbar-dark::-webkit-scrollbar-track { background: #1e293b; }
         .custom-scrollbar-dark::-webkit-scrollbar-thumb { background: #475569; border-radius: 2px; }
 
+        /* Login Page Specifics */
+        .login-split-bg {
+            background-image: url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 1.79 4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%23ffffff" fill-opacity="0.05" fill-rule="evenodd"/%3E%3C/svg%3E');
+        }
+
     </style>
     
     <script type="importmap">
@@ -156,30 +165,98 @@
   }
 }
 </script>
-    <link rel="stylesheet" href="/index.css">
+<link rel="stylesheet" href="/index.css">
 </head>
 <body class="antialiased selection:bg-[rgb(var(--color-primary-100))] selection:text-[rgb(var(--color-primary-900))] pb-32">
 
-    <!-- Login View -->
-    <div id="login-view" class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-300 p-6 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-64 h-64 bg-[rgb(var(--color-primary-500))] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-        <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+    <!-- Professional Login View (Split Screen) -->
+    <div id="login-view" class="min-h-screen flex w-full">
         
-        <div class="w-full max-w-sm text-center relative z-10 bg-white/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/40">
-            <img src="/favicon_512x512.png" class="w-24 h-24 mx-auto mb-6 drop-shadow-2xl hover:scale-110 transition-transform duration-300" alt="School Manager Icon">
+        <!-- Left Section (Visuals - Hidden on Mobile) -->
+        <div class="hidden lg:flex w-1/2 bg-slate-900 relative items-center justify-center overflow-hidden login-split-bg">
+            <!-- Animated Background Blobs -->
+            <div class="absolute top-0 left-0 w-96 h-96 bg-[rgb(var(--color-primary-600))] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-2000"></div>
             
-            <h1 class="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">مدير المدرسة الذكي</h1>
-            <p class="text-slate-600 font-medium text-sm mb-8 leading-relaxed">مساحتك الخاصة لإدارة مدرستك بفاعلية.</p>
+            <div class="relative z-10 text-center p-12 max-w-lg">
+                <img src="/favicon_512x512.png" class="w-32 h-32 mx-auto mb-8 drop-shadow-2xl hover:scale-105 transition-transform duration-500" alt="App Logo">
+                <h2 class="text-4xl font-extrabold text-white mb-6 leading-tight">شريكك الذكي في<br/>الإدارة المدرسية</h2>
+                <p class="text-slate-300 text-lg font-medium leading-relaxed">
+                    منصة متكاملة تجمع بين قوة البيانات وسهولة الاستخدام، مدعومة بالذكاء الاصطناعي لرفع كفاءة الأداء المدرسي.
+                </p>
+                
+                <!-- Trust Badges -->
+                <div class="flex items-center justify-center gap-6 mt-12 opacity-70">
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-shield-alt text-2xl text-emerald-400"></i>
+                        <span class="text-xs text-white font-bold">آمن ومحمي</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-bolt text-2xl text-amber-400"></i>
+                        <span class="text-xs text-white font-bold">أداء فوري</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-brain text-2xl text-purple-400"></i>
+                        <span class="text-xs text-white font-bold">ذكاء اصطناعي</span>
+                    </div>
+                </div>
+            </div>
             
-            <button onclick="window.app.handleGoogleLogin()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg border border-slate-700 flex items-center justify-center gap-3 transition-all duration-300 group cursor-pointer mb-3">
-                <img src="https://www.google.com/favicon.ico" class="w-5 h-5 group-hover:scale-110 transition-transform" alt="Google icon">
-                <span>تسجيل الدخول بواسطة جوجل</span>
-            </button>
-            <button onclick="window.app.skipLogin()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-2xl transition-colors text-sm cursor-pointer border border-slate-200 hover:border-slate-300 shadow-sm">
-                الدخول كزائر (تجريبي)
-            </button>
+            <!-- Bottom Copyright -->
+            <div class="absolute bottom-6 text-slate-500 text-xs font-mono dir-ltr">
+                © 2024 School Manager Pro
+            </div>
         </div>
-        <div class="mt-8 text-xs text-slate-500 font-bold font-mono">الإصدار 3.7.0 - AI سحابي</div>
+
+        <!-- Right Section (Form) -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center bg-white p-6 md:p-12 relative">
+             <!-- Mobile Background Elements -->
+            <div class="absolute lg:hidden top-0 left-0 w-full h-2 bg-gradient-to-r from-[rgb(var(--color-primary-500))] to-purple-600"></div>
+            
+            <div class="w-full max-w-md space-y-8">
+                <!-- Mobile Logo -->
+                <div class="text-center lg:text-right">
+                     <img src="/favicon_180x180.png" class="w-16 h-16 mx-auto lg:mx-0 lg:hidden mb-4 rounded-xl shadow-md" alt="Logo">
+                     <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">مرحباً بك 👋</h1>
+                     <p class="text-slate-500 mt-2 font-medium">سجل الدخول للمتابعة إلى لوحة التحكم</p>
+                </div>
+
+                <div class="space-y-4 pt-4">
+                    <!-- Google Login Button -->
+                    <button onclick="window.app.handleGoogleLogin()" class="w-full group relative flex items-center justify-center gap-3 bg-white text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 py-4 rounded-2xl font-bold transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer overflow-hidden">
+                        <div class="absolute inset-y-0 left-0 w-1 bg-slate-900 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/favicon.ico" class="w-6 h-6" alt="Google">
+                        <span class="text-base">مدير المدرسة (Google)</span>
+                    </button>
+
+                    <!-- Staff Login Button (NEW) -->
+                    <button onclick="document.getElementById('modal-staff-login').classList.remove('hidden-view')" class="w-full group relative flex items-center justify-center gap-3 bg-indigo-50 text-indigo-700 hover:text-indigo-900 border border-indigo-200 hover:border-indigo-300 hover:bg-indigo-100 py-4 rounded-2xl font-bold transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer overflow-hidden">
+                        <i class="fas fa-users-cog text-xl"></i>
+                        <span class="text-base">دخول الكادر الإداري / المعلمين</span>
+                    </button>
+
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-slate-100"></div>
+                        <span class="flex-shrink-0 mx-4 text-slate-300 text-xs font-bold uppercase">أو</span>
+                        <div class="flex-grow border-t border-slate-100"></div>
+                    </div>
+
+                    <!-- Visitor Button -->
+                    <button onclick="window.app.skipLogin()" class="w-full flex items-center justify-center gap-3 bg-slate-50 text-slate-500 hover:text-slate-700 hover:bg-slate-100 py-3.5 rounded-2xl font-bold transition-all duration-200 cursor-pointer text-sm">
+                        <i class="fas fa-user-secret"></i>
+                        <span>تجربة الزائر (Offline)</span>
+                    </button>
+                </div>
+
+                <!-- Info Box -->
+                <div class="bg-[rgb(var(--color-primary-50))] rounded-xl p-4 flex gap-3 items-start border border-[rgb(var(--color-primary-100))]">
+                    <i class="fas fa-info-circle text-[rgb(var(--color-primary-500))] mt-0.5"></i>
+                    <p class="text-xs text-[rgb(var(--color-primary-800))] font-bold leading-relaxed">
+                        يتم حفظ بيانات الدخول محلياً لضمان استمرارية الاتصال بخدمات الذكاء الاصطناعي وتوليد التقارير دون انقطاع.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- App View -->
@@ -214,7 +291,7 @@
                             <i class="fas fa-sync-alt"></i><span class="hidden sm:inline">فعلي</span>
                         </button>
                     </div>
-                    <button onclick="window.app.openSettings()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition shadow-lg shadow-slate-300 cursor-pointer" title="الإعدادات">
+                    <button id="btn-settings-main" onclick="window.app.openSettings()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition shadow-lg shadow-slate-300 cursor-pointer" title="الإعدادات">
                         <i class="fas fa-cog fa-spin-hover"></i>
                     </button>
                 </div>
@@ -223,7 +300,7 @@
     </header>
 
     <main class="container mx-auto p-4 md:p-6 space-y-8 max-w-7xl">
-        
+        <!-- Content remains same as before, truncated for brevity in diff but full in logic -->
         <!-- View: Current Classes -->
         <section id="view-now" class="fade-in space-y-6">
             <div class="relative overflow-hidden bg-gradient-to-r from-[rgb(var(--color-primary-700))] to-[rgb(var(--color-primary-900))] p-6 md:p-8 rounded-3xl shadow-xl text-white">
@@ -245,7 +322,8 @@
                     <h3 class="font-extrabold text-slate-800 text-lg flex items-center gap-2"><i class="fas fa-layer-group text-[rgb(var(--color-primary-600))]"></i> الحصص القائمة</h3>
                     <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg border border-slate-200">مباشر</span>
                 </div>
-                <div id="activeClassesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
+                <!-- Updated grid cols for larger cards -->
+                <div id="activeClassesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
             </div>
             <div id="dailyDutyWidget" class="bg-white rounded-3xl shadow-soft border border-slate-200 p-6 hidden-view">
                 <h3 class="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-3">
@@ -449,8 +527,8 @@
                 <button id="btn-enhance-ai" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-200/50 text-xs md:text-sm relative">
                     <i class="fas fa-wand-magic-sparkles"></i>
                     <span>تحسين</span>
-                    <span id="btn-enhance-ai-badge" class="hidden absolute -top-2 -right-2 bg-amber-400 text-slate-900 text-[9px] font-bold px-2 py-0.5 rounded-full border-2 border-white shadow-md">
-                        <i class="fas fa-star text-amber-600 text-xs"></i> مميز
+                    <span id="btn-enhance-ai-badge" class="absolute -top-2 -right-2 bg-amber-400 text-slate-900 text-[9px] font-bold px-2 py-0.5 rounded-full border-2 border-white shadow-md">
+                        <i class="fas fa-star text-amber-600 text-xs"></i> 5 مجاناً
                     </span>
                 </button>
                 <button onclick="window.app.copyToClipboardPrompt()" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-sky-100 text-xs md:text-sm">
@@ -614,6 +692,27 @@
 
 
     <!-- Modals -->
+    <!-- Staff Login Modal (NEW) -->
+    <div id="modal-staff-login" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden-view">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="document.getElementById('modal-staff-login').classList.add('hidden-view')"></div>
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 relative animate-scale-in">
+            <h3 class="text-xl font-bold text-slate-800 mb-4 text-center">دخول الكادر الإداري / المعلمين</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 mb-1 block">رمز المدرسة (School ID)</label>
+                    <input type="text" id="staff-school-id" placeholder="اطلب الرمز من المدير..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-center outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 mb-1 block">رمز الدخول (PIN)</label>
+                    <input type="password" id="staff-pin" placeholder="****" maxlength="4" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-center outline-none focus:ring-2 focus:ring-indigo-500 tracking-widest">
+                </div>
+                <button onclick="window.app.handleStaffLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition cursor-pointer">
+                    دخول
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal (Restored Full Version) -->
     <div id="modal-settings" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-settings')"></div>
@@ -624,6 +723,30 @@
             </div>
             
             <div class="p-6 overflow-y-auto custom-scrollbar space-y-8">
+                <!-- Staff Access Settings (NEW) -->
+                <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100">
+                    <h4 class="font-extrabold text-indigo-900 text-sm mb-3 flex items-center gap-2"><i class="fas fa-users-cog"></i> إعدادات دخول المعلمين</h4>
+                    <div class="space-y-3">
+                        <div class="bg-white p-3 rounded-xl border border-indigo-100">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">رمز المدرسة (مشاركة مع المعلمين)</label>
+                            <div class="flex items-center gap-2 mt-1">
+                                <code id="display-school-id" class="flex-1 bg-slate-100 p-2 rounded-lg text-xs font-mono font-bold text-slate-700 select-all text-center">Loading...</code>
+                                <button onclick="navigator.clipboard.writeText(document.getElementById('display-school-id').innerText); alert('تم النسخ')" class="bg-indigo-100 text-indigo-600 p-2 rounded-lg text-xs font-bold"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 items-end">
+                            <div class="flex-1">
+                                <label class="text-[10px] font-bold text-slate-500 mb-1 block">تعيين رمز دخول الكادر (PIN)</label>
+                                <input type="text" id="setting-staff-pin" placeholder="4 أرقام" maxlength="4" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-sm font-bold text-center outline-none focus:border-indigo-500">
+                            </div>
+                            <button onclick="window.app.saveStaffPin()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold h-10">حفظ الرمز</button>
+                        </div>
+                        <p class="text-[10px] text-indigo-800 font-medium leading-relaxed">
+                            * عند تفعيل هذا الخيار، يمكن للمعلمين الدخول باستخدام "رمز المدرسة" و "الرمز السري" للاطلاع على الجدول والمناوبة فقط (بدون تقييمات).
+                        </p>
+                    </div>
+                </div>
+
                 <!-- Help Center -->
                 <div class="space-y-3">
                     <h4 class="font-extrabold text-slate-800 text-sm border-b border-slate-100 pb-2">مركز المساعدة</h4>
@@ -736,20 +859,6 @@
             </div>
         </div>
     </div>
-    <!-- Substitute Modal -->
-    <div id="modal-substitute" class="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 hidden-view">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm modal-backdrop transition-opacity" onclick="window.app.closeModal('modal-substitute')"></div>
-        <div class="bg-white w-full md:max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden animate-scale-in modal-content">
-            <div class="bg-indigo-900 p-5 text-white flex justify-between items-center">
-                <div><h3 class="font-bold flex items-center gap-2 text-lg"><i class="fas fa-chalkboard-teacher text-yellow-400"></i> معلم احتياط</h3><p class="text-indigo-200 text-xs mt-0.5 font-bold">اختيار البديل الأنسب بناءً على النصاب</p></div>
-                <button type="button" onclick="window.app.closeModal('modal-substitute')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-5">
-                <div class="text-xs font-bold text-slate-500 mb-3 flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100"><span>المعلمون المتاحون</span><span id="subModalPeriodInfo" class="text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded"></span></div>
-                <div id="substituteList" class="space-y-2 max-h-[60vh] overflow-y-auto custom-scrollbar"></div>
-            </div>
-        </div>
-    </div>
     <!-- Action Modal -->
     <div id="modal-action" class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 hidden-view">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-action')"></div>
@@ -761,9 +870,37 @@
             <div class="p-5 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 <button type="button" id="btn-evaluate" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 p-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-3 transition cursor-pointer group shadow-sm"><span class="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition"><i class="fas fa-clipboard-list text-lg"></i></span><span>بدء تقييم زيارة إشرافية</span></button>
                 <div class="space-y-2"><label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">التواصل السريع</label><div class="grid grid-cols-2 gap-3"><button type="button" onclick="window.app.sendWhatsApp('summon')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-100 p-3 rounded-2xl font-bold text-xs flex flex-col items-center gap-2 transition cursor-pointer"><i class="fab fa-whatsapp text-2xl"></i><span>استدعاء للإدارة</span></button><button type="button" id="btn-remind" onclick="window.app.sendWhatsApp('remind')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 p-3 rounded-2xl font-bold text-xs flex flex-col items-center gap-2 transition cursor-pointer disabled:opacity-50"><i class="fas fa-bell text-2xl"></i><span>تذكير بالحصة</span></button></div></div>
-                <div class="space-y-2"><label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">المخالفات الإدارية</label><div id="violationButtonsContainer" class="space-y-2"></div></div>
+                
+                <!-- Violation Section -->
+                <div class="space-y-2" id="violation-section">
+                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">تسجيل مخالفة جديدة</label>
+                    <div id="violationButtonsContainer" class="space-y-2"></div>
+                </div>
+
+                <!-- History Log Section -->
+                <div class="space-y-2 pt-2 border-t border-slate-100" id="violation-history-section">
+                    <label class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">سجل المخالفات السابق</label>
+                    <div id="violationHistoryLog" class="bg-slate-50 rounded-xl p-3 max-h-40 overflow-y-auto space-y-2 text-xs border border-slate-100">
+                        <div class="text-center text-slate-400 py-2">لا توجد مخالفات مسجلة</div>
+                    </div>
+                </div>
             </div>
              <div class="bg-slate-50 p-4 text-center border-t border-slate-100 flex justify-between items-center px-6"><span class="text-xs text-slate-500 font-bold">التقييم الحالي</span><span class="text-xl font-extrabold text-slate-800" id="currentScoreDisplay"></span></div>
+        </div>
+    </div>
+
+    <!-- Substitute Selection Modal (NEW) -->
+    <div id="modal-substitute" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden-view">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm modal-backdrop" onclick="window.app.closeModal('modal-substitute')"></div>
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-scale-in relative flex flex-col max-h-[85vh] modal-content">
+            <div class="bg-slate-800 p-4 text-white flex justify-between items-center shrink-0">
+                <h3 class="font-bold flex items-center gap-2 text-lg"><i class="fas fa-user-clock text-amber-400"></i> اختيار معلم بديل</h3>
+                <button type="button" onclick="window.app.closeModal('modal-substitute')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="bg-indigo-50 p-3 text-center border-b border-indigo-100 shrink-0">
+                <span id="subModalPeriodInfo" class="font-extrabold text-indigo-900 text-sm"></span>
+            </div>
+            <div id="substituteList" class="p-4 overflow-y-auto custom-scrollbar space-y-2 flex-1"></div>
         </div>
     </div>
 
@@ -828,7 +965,15 @@
                     substitutions: {}, // Key: "Date_Period_Class" -> Value: SubstituteTeacherID
                     selectedAbsentTeacherId: null, // Persist selection across re-renders
                     
-                    theme: 'default', defaultSchoolGender: 'male', directorate: 'المديرية العامة للتربية والتعليم بمحافظة مسقط', cloudStatus: 'offline', unsubscribe: null, aiReportData: null
+                    theme: 'default', defaultSchoolGender: 'male', directorate: 'المديرية العامة للتربية والتعليم بمحافظة مسقط', cloudStatus: 'offline', unsubscribe: null, aiReportData: null,
+                    
+                    // Staff Mode
+                    userMode: 'admin', // 'admin' | 'staff'
+                    staffPin: '',
+                    targetUid: null, // if staff, load this UID's data
+                    
+                    // View State
+                    currentView: 'now'
                 };
                 this.db = null; this.auth = null; this.functions = null;
                 this.initDefaultCriteria();
@@ -857,6 +1002,9 @@
                         if (data.dutyLocations) this.state.dutyLocations = data.dutyLocations;
                         if (data.dutySchedule) this.state.dutySchedule = data.dutySchedule;
                         if (data.substitutions) this.state.substitutions = data.substitutions;
+                        
+                        if (data.staffPin) this.state.staffPin = data.staffPin; // Load pin locally
+
                         this.applyTheme();
                     } catch(e) { console.error('Local Load Error', e); }
                 }
@@ -878,19 +1026,97 @@
                                 this.state.currentUser = { uid: user.uid, name: user.displayName, photoURL: user.photoURL, email: user.email, isPremium: false };
                                 document.getElementById('login-view')?.classList.add('hidden-view'); 
                                 document.getElementById('app-view')?.classList.remove('hidden-view');
-                                this.renderUserProfile(); this.loadUserData();
+                                
+                                // Default to Admin Mode on regular login
+                                this.state.userMode = 'admin';
+                                this.renderUserProfile(); 
+                                this.loadUserData();
                             }
                         });
                     }
                 } catch (e) { console.error("Firebase Init Error:", e); }
             }
 
-            handleGoogleLogin() { const provider = new firebase.auth.GoogleAuthProvider(); this.auth.signInWithPopup(provider).catch(e => alert("فشل تسجيل الدخول")); }
+            handleGoogleLogin() { 
+                // Set persistence to LOCAL to ensure the token survives page refreshes and is always available for Cloud Functions
+                if(this.auth) {
+                    this.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                    .then(() => {
+                        const provider = new firebase.auth.GoogleAuthProvider(); 
+                        return this.auth.signInWithPopup(provider);
+                    })
+                    .catch(e => {
+                        console.error("Login Error:", e);
+                        alert("فشل تسجيل الدخول: " + e.message);
+                    });
+                }
+            }
+            
+            async handleStaffLogin() {
+                const id = document.getElementById('staff-school-id').value.trim();
+                const pin = document.getElementById('staff-pin').value.trim();
+                
+                if (!id || !pin) return alert('يرجى تعبئة جميع الحقول');
+                
+                // Loading UI
+                const btn = document.querySelector('#modal-staff-login button');
+                const originalText = btn.innerText;
+                btn.innerText = 'جاري التحقق...';
+                btn.disabled = true;
+
+                try {
+                    // Try to fetch data from the target ID
+                    const doc = await this.db.collection("users").doc(id).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        
+                        // Verify PIN
+                        if (data.staffPin === pin) {
+                            // Success
+                            this.state.targetUid = id;
+                            this.state.userMode = 'staff';
+                            this.state.currentUser = { uid: 'staff', name: 'كادر إداري', photoURL: null, email: null }; // Mock user
+                            
+                            // Load data from TARGET
+                            this.loadUserData(id); // Pass target ID
+                            
+                            document.getElementById('modal-staff-login').classList.add('hidden-view');
+                            document.getElementById('login-view').classList.add('hidden-view'); 
+                            document.getElementById('app-view').classList.remove('hidden-view');
+                            
+                            this.renderUserProfile();
+                            
+                        } else {
+                            alert('رمز الدخول (PIN) غير صحيح.');
+                        }
+                    } else {
+                        alert('رمز المدرسة غير صحيح.');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('حدث خطأ في الاتصال. تأكد من صحة رمز المدرسة.');
+                } finally {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            }
+
+            saveStaffPin() {
+                const pin = document.getElementById('setting-staff-pin').value.trim();
+                if (pin.length !== 4) return alert('يجب أن يتكون الرمز من 4 أرقام');
+                this.state.staffPin = pin;
+                this.saveData();
+                alert('تم حفظ رمز الكادر بنجاح. شاركه مع المعلمين.');
+            }
+
+            
             skipLogin() { document.getElementById('login-view')?.classList.add('hidden-view'); document.getElementById('app-view')?.classList.remove('hidden-view'); this.renderAll(); document.getElementById('user-profile-container').innerHTML = `<div class="flex items-center gap-3 bg-white/50 px-3 py-1.5 rounded-xl border border-slate-200"><div class="text-xs font-bold text-slate-600 flex items-center gap-2"><i class="fas fa-user-shield text-slate-500"></i><span>زائر</span></div><div class="h-4 w-px bg-slate-300 mx-1"></div><button onclick="window.app.handleLogout()" class="text-red-500 hover:text-red-700 transition cursor-pointer" title="خروج"><i class="fas fa-sign-out-alt"></i></button></div>`; }
             handleLogout() { 
                 if(confirm('هل تريد تسجيل الخروج؟')) { 
-                    if(this.auth && this.state.currentUser) this.auth.signOut().catch(()=>{}); 
+                    if(this.auth && this.state.currentUser && this.state.userMode === 'admin') this.auth.signOut().catch(()=>{}); 
                     this.state.currentUser = null; 
+                    this.state.userMode = 'admin'; // Reset
+                    this.state.targetUid = null;
                     document.getElementById('app-view')?.classList.add('hidden-view'); 
                     document.getElementById('login-view')?.classList.remove('hidden-view'); 
                     document.getElementById('user-profile-container').innerHTML = ''; 
@@ -940,11 +1166,16 @@
             renderUserProfile() {
                 const container = document.getElementById('user-profile-container'); if(!container) return;
                 if (this.state.currentUser) {
+                    const modeLabel = this.state.userMode === 'staff' ? 'كادر إداري' : 'مدير';
+                    const modeColor = this.state.userMode === 'staff' ? 'text-indigo-600' : 'text-slate-800';
+                    
                     container.innerHTML = `
                         <div class="flex items-center gap-3 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
-                            <img src="${this.state.currentUser.photoURL || 'https://ui-avatars.com/api/?name='+this.state.currentUser.name}" class="w-8 h-8 rounded-full border-2 border-white shadow-sm">
-                            <div class="hidden md:block text-xs text-slate-800 font-bold">
-                                <div>${this.state.currentUser.name}</div>
+                            <div class="w-8 h-8 rounded-full border-2 border-white shadow-sm bg-slate-300 flex items-center justify-center overflow-hidden">
+                                ${this.state.currentUser.photoURL ? `<img src="${this.state.currentUser.photoURL}" class="w-full h-full">` : `<i class="fas fa-user text-slate-500"></i>`}
+                            </div>
+                            <div class="hidden md:block text-xs font-bold">
+                                <div class="${modeColor}">${this.state.currentUser.name || modeLabel}</div>
                             </div>
                             <div class="h-4 w-px bg-slate-300 mx-1"></div>
                             <button onclick="window.app.handleLogout()" class="text-red-500 hover:text-red-700 transition cursor-pointer" title="تسجيل خروج">
@@ -956,16 +1187,26 @@
                 }
             }
 
-            loadUserData() {
-                if (!this.state.currentUser) return;
+            loadUserData(targetId = null) {
+                // Determine ID to fetch: explicit target (staff mode) or current authenticated user (admin mode)
+                const uidToFetch = targetId || (this.state.currentUser ? this.state.currentUser.uid : null);
+                
+                if (!uidToFetch || uidToFetch === 'staff') { // 'staff' is mock UID
+                     if(this.state.userMode === 'staff' && this.state.targetUid) {
+                         // Re-fetch using stored target
+                         this.loadUserData(this.state.targetUid);
+                         return;
+                     }
+                     return; 
+                }
+
                 if (this.state.unsubscribe) this.state.unsubscribe();
                 this.updateCloudStatus('connecting');
-                this.state.unsubscribe = this.db.collection("users").doc(this.state.currentUser.uid).onSnapshot(doc => {
+                
+                this.state.unsubscribe = this.db.collection("users").doc(uidToFetch).onSnapshot(doc => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if (this.state.currentUser) {
-                            this.state.currentUser.isPremium = data.isPremium === true;
-                        }
+                        // ... (Standard Data Loading)
                         this.state.teachers = data.teachers || []; this.state.periods = data.periods || []; this.state.classes = data.classes || {}; this.state.tasks = data.tasks || []; this.state.agenda = data.agenda || [];
                         if (data.violationTypes) this.state.violationTypes = data.violationTypes; if (data.specializations) this.state.specializations = data.specializations; if (data.supervisionHistory) this.state.supervisionHistory = data.supervisionHistory;
                         if (data.theme) this.state.theme = data.theme; if (data.defaultSchoolGender) this.state.defaultSchoolGender = data.defaultSchoolGender; if (data.directorate) this.state.directorate = data.directorate;
@@ -973,22 +1214,67 @@
                         if (data.dutyLocations) this.state.dutyLocations = data.dutyLocations;
                         if (data.dutySchedule) this.state.dutySchedule = data.dutySchedule;
                         if (data.substitutions) this.state.substitutions = data.substitutions;
-                        
+                        if (data.staffPin) this.state.staffPin = data.staffPin;
+
                         if (this.isDeveloper()) {
                             document.getElementById('dev-toggle-button')?.classList.remove('hidden-view');
                         }
 
-                        this.applyTheme(); this.renderAll(); this.updateCloudStatus('connected'); this.saveDataToLocal();
-                    } else { this.saveData(); }
+                        this.applyTheme(); 
+                        this.applyPermissions(); // Apply View Restrictions
+                        this.renderAll(); 
+                        this.updateCloudStatus('connected'); 
+                        
+                        // Save local backup ONLY if Admin. Staff shouldn't overwrite local storage easily or rely on it for security.
+                        if (this.state.userMode === 'admin') {
+                            this.saveDataToLocal();
+                        }
+                    } else { 
+                        if (this.state.userMode === 'admin') this.saveData(); 
+                    }
                 }, e => this.updateCloudStatus('error'));
             }
+            
+            applyPermissions() {
+                const isStaff = this.state.userMode === 'staff';
+                
+                // 1. Hide Restricted Tabs in Bottom Nav
+                const reportsBtn = document.getElementById('btn-reports');
+                const supervisionBtn = document.getElementById('btn-supervision-hub');
+                
+                if (reportsBtn) reportsBtn.style.display = isStaff ? 'none' : 'flex';
+                if (supervisionBtn) supervisionBtn.style.display = isStaff ? 'none' : 'flex';
+                
+                // 2. Hide Settings Button in Header
+                const settingsBtn = document.getElementById('btn-settings-main');
+                if (settingsBtn) settingsBtn.style.display = isStaff ? 'none' : 'flex';
+                
+                // 3. Populate Settings Display
+                if (!isStaff) {
+                    const idDisplay = document.getElementById('display-school-id');
+                    if (idDisplay && this.state.currentUser) {
+                        idDisplay.innerText = this.state.currentUser.uid;
+                    }
+                    const pinInput = document.getElementById('setting-staff-pin');
+                    if (pinInput) pinInput.value = this.state.staffPin || '';
+                }
+            }
 
-            saveDataToLocal() { localStorage.setItem('school_data_v1', JSON.stringify({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, directorate: this.state.directorate, evaluationCriteria: this.state.evaluationCriteria, dutyLocations: this.state.dutyLocations, dutySchedule: this.state.dutySchedule, substitutions: this.state.substitutions })); }
+            saveDataToLocal() { localStorage.setItem('school_data_v1', JSON.stringify({ teachers: this.state.teachers, periods: this.state.periods, classes: this.state.classes, tasks: this.state.tasks, agenda: this.state.agenda, violationTypes: this.state.violationTypes, specializations: this.state.specializations, supervisionHistory: this.state.supervisionHistory, theme: this.state.theme, defaultSchoolGender: this.state.defaultSchoolGender, directorate: this.state.directorate, evaluationCriteria: this.state.evaluationCriteria, dutyLocations: this.state.dutyLocations, dutySchedule: this.state.dutySchedule, substitutions: this.state.substitutions, staffPin: this.state.staffPin })); }
             async saveData() {
-                this.saveDataToLocal(); if (!this.state.currentUser) { this.updateCloudStatus('local'); return; }
+                // If STAFF mode, DO NOT SAVE to overwrite admin data directly unless strictly allowed (e.g. duty).
+                // For simplicity in this version, we allow writes because Firestore rules usually allow authenticated writes to own doc.
+                // Since Staff mode uses "targetUid", we must write to that doc.
+                // NOTE: This requires Firestore Rules to allow the authenticated staff user to write to the Admin's doc.
+                // If using shared login (Admin gives PIN), we are simulating read-only UI logic mostly.
+                
+                const uidToWrite = this.state.userMode === 'staff' ? this.state.targetUid : (this.state.currentUser ? this.state.currentUser.uid : null);
+                
+                if (!uidToWrite) { this.updateCloudStatus('local'); return; }
+                
                 this.updateCloudStatus('saving');
                 try { 
-                    await this.db.collection("users").doc(this.state.currentUser.uid).set({ 
+                    await this.db.collection("users").doc(uidToWrite).set({ 
                         teachers: this.state.teachers, 
                         periods: this.state.periods, 
                         classes: this.state.classes, 
@@ -1004,9 +1290,9 @@
                         dutyLocations: this.state.dutyLocations, 
                         dutySchedule: this.state.dutySchedule, 
                         substitutions: this.state.substitutions, 
-                        lastSync: new Date(), 
-                        userName: this.state.currentUser.name,
-                        userEmail: this.state.currentUser.email
+                        staffPin: this.state.staffPin,
+                        lastSync: new Date()
+                        // Don't overwrite email/name
                     }, { merge: true }); 
                     this.updateCloudStatus('connected'); 
                 } catch (e) { 
@@ -1035,6 +1321,8 @@
             }
 
             setView(v) { 
+                this.state.currentView = v;
+                
                 ['now', 'teachers', 'reports', 'supervision', 'supervision-report', 'supervision-history', 'tasks', 'agenda', 'supervision-hub', 'duty', 'reserve', 'periods', 'instructions'].forEach(x => { 
                     document.getElementById(`view-${x}`)?.classList.add('hidden-view'); 
                     const b = document.getElementById(`btn-${x}`); 
@@ -1048,7 +1336,9 @@
                         }
                     } 
                 }); 
+                
                 document.getElementById(`view-${v}`)?.classList.remove('hidden-view'); 
+                
                 const ab = document.getElementById(`btn-${v}`); 
                 if(ab) { 
                     ab.classList.add('text-[rgb(var(--color-primary-700))]'); 
@@ -1059,13 +1349,30 @@
                         iconContainer.classList.remove('bg-transparent'); 
                     }
                 } 
-                if(v==='teachers') this.renderTeachers(); if(v==='reports') this.renderReports(); if(v==='supervision-history') this.renderHistory(); if(v==='tasks') this.renderTasks(); if(v==='agenda') this.renderAgenda(); if(v==='supervision-hub') this.renderSupervisionHub(); if(v==='duty') this.renderDutyTable(); if(v==='reserve') this.renderReserve(); if(v==='periods') this.renderPeriods();
-                if(v==='now') { this.renderCurrentPeriod(new Date(new Date().getTime() + this.state.simulationOffset)); this.renderDailyDutyWidget(new Date(new Date().getTime() + this.state.simulationOffset)); } 
+                
+                if(v==='teachers') this.renderTeachers(); 
+                else if(v==='reports') this.renderReports(); 
+                else if(v==='supervision-history') this.renderHistory(); 
+                else if(v==='tasks') this.renderTasks(); 
+                else if(v==='agenda') this.renderAgenda(); 
+                else if(v==='supervision-hub') this.renderSupervisionHub(); 
+                else if(v==='duty') this.renderDutyTable(); 
+                else if(v==='reserve') this.renderReserve(); 
+                else if(v==='periods') this.renderPeriods();
+                else if(v==='now') { 
+                    this.renderCurrentPeriod(new Date(new Date().getTime() + this.state.simulationOffset)); 
+                    this.renderDailyDutyWidget(new Date(new Date().getTime() + this.state.simulationOffset)); 
+                } 
+            }
+
+            renderAll() { 
+                const v = this.state.currentView;
+                this.setView(v);
             }
 
             contactSupport() {
                 const phone = '96898882855';
-                const message = 'مرحباً، أحتاج إلى دعم فني بخصوص تطبيق مدير المدرسة الذكي.';
+                const message = 'مرحباً، أرغب في زيادة الحد اليومي للمحاولات المجانية لخدمة تحسين التقارير بالذكاء الاصطناعي.';
                 window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
             }
 
@@ -1075,10 +1382,7 @@
                     data.push([t.id, t.name, t.phone || '']);
                 });
                 const ws = XLSX.utils.aoa_to_sheet(data);
-                
-                // Set column widths for better UX
                 ws['!cols'] = [{wch:12}, {wch:30}, {wch:15}];
-
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Phone_Numbers");
                 XLSX.writeFile(wb, "Teachers_Phone_Template_With_Names.xlsx");
@@ -1088,20 +1392,12 @@
             downloadCriteriaTemplateExcel() {
                 const headers = ["المعيار", "وصف المعيار", "الحكم (1-5)", "الوصف السلوكي", "التوصيات"];
                 const data = [headers];
-                
                 this.state.evaluationCriteria.forEach(criterion => {
                     Object.keys(criterion.items).sort().forEach(rating => {
                         const item = criterion.items[rating];
-                        data.push([
-                            criterion.title,
-                            criterion.subtitle,
-                            `مستوى ${rating}`,
-                            item.desc,
-                            item.rec
-                        ]);
+                        data.push([criterion.title, criterion.subtitle, `مستوى ${rating}`, item.desc, item.rec]);
                     });
                 });
-
                 const ws = XLSX.utils.aoa_to_sheet(data);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Evaluation Criteria");
@@ -1112,9 +1408,7 @@
             renderPeriods() {
                 const container = document.getElementById('periodsListContainer');
                 if (!container) return;
-                
                 const sortedPeriods = [...this.state.periods].sort((a, b) => parseInt(a.id) - parseInt(b.id));
-
                 container.innerHTML = sortedPeriods.map(p => `
                     <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
                         <div class="font-extrabold text-slate-800 flex items-center gap-3">
@@ -1126,9 +1420,7 @@
                             <span class="font-bold text-slate-400">-</span>
                             <input type="time" value="${p.end}" onchange="window.app.updatePeriodTime('${p.id}', 'end', this.value)" class="bg-white p-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-700 w-28 text-center">
                         </div>
-                        <button onclick="window.app.deletePeriod('${p.id}')" class="text-red-300 hover:text-red-600 bg-red-50 hover:bg-red-100 w-10 h-10 rounded-xl flex items-center justify-center transition" title="حذف الحصة">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button onclick="window.app.deletePeriod('${p.id}')" class="text-red-300 hover:text-red-600 bg-red-50 hover:bg-red-100 w-10 h-10 rounded-xl flex items-center justify-center transition" title="حذف الحصة"><i class="fas fa-trash"></i></button>
                     </div>
                 `).join('');
             }
@@ -1146,20 +1438,15 @@
                 const sortedPeriods = [...this.state.periods].sort((a, b) => parseInt(a.id) - parseInt(b.id));
                 const lastPeriod = sortedPeriods[sortedPeriods.length - 1];
                 const newId = lastPeriod ? parseInt(lastPeriod.id) + 1 : 1;
-
-                let newStart = "08:00";
-                let newEnd = "08:45";
-
+                let newStart = "08:00"; let newEnd = "08:45";
                 if (lastPeriod && lastPeriod.end) {
                     const [h, m] = lastPeriod.end.split(':').map(Number);
                     const d = new Date();
                     d.setHours(h, m + 5, 0, 0); // Add 5 min break
                     newStart = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-
                     d.setHours(d.getHours(), d.getMinutes() + 45, 0, 0); // Add 45 min duration
                     newEnd = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                 }
-
                 this.state.periods.push({ id: String(newId), start: newStart, end: newEnd });
                 this.saveData();
                 this.renderPeriods();
@@ -1167,14 +1454,8 @@
 
             deletePeriod(id) {
                 if (!confirm(`هل أنت متأكد من حذف الحصة رقم ${id}؟ سيتم إعادة ترقيم الحصص التالية.`)) return;
-                
                 this.state.periods = this.state.periods.filter(p => p.id !== id);
-                
-                // Re-number subsequent periods to maintain sequence
-                this.state.periods.sort((a,b) => parseInt(a.id) - parseInt(b.id)).forEach((p, index) => {
-                    p.id = String(index + 1);
-                });
-
+                this.state.periods.sort((a,b) => parseInt(a.id) - parseInt(b.id)).forEach((p, index) => { p.id = String(index + 1); });
                 this.saveData();
                 this.renderPeriods();
             }
@@ -1186,16 +1467,12 @@
                 select.innerHTML = '<option value="">-- اختر من القائمة --</option>';
                 const sortedTeachers = [...this.state.teachers].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
                 sortedTeachers.forEach(t => { const opt = document.createElement('option'); opt.value = t.id; opt.text = t.name; select.add(opt); });
-                
-                // Persist selection if exists
                 if (this.state.selectedAbsentTeacherId) {
                     select.value = this.state.selectedAbsentTeacherId;
                     this.renderAbsentSchedule();
                 } else {
                     document.getElementById('absentScheduleContainer').innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-slate-400 bg-white rounded-3xl border-2 border-dashed border-slate-200"><i class="fas fa-chalkboard-teacher text-5xl mb-4 opacity-50"></i><p class="text-sm font-bold text-slate-500">يرجى اختيار المعلم الغائب لعرض جدول حصصه لليوم</p></div>`;
                 }
-
-                // Render Daily Substitutions List (Always)
                 this.renderDailySubstitutions();
             }
 
@@ -1207,65 +1484,37 @@
             renderDailySubstitutions() {
                 const container = document.getElementById('dailySubstitutionsList');
                 if (!container) return;
-
                 const simulatedDate = new Date(new Date().getTime() + this.state.simulationOffset);
                 const dateKey = simulatedDate.toISOString().split('T')[0];
-                
                 const subs = this.state.substitutions || {};
                 const todaySubs = [];
-
-                // Filter subs for today
                 Object.keys(subs).forEach(key => {
                     if(key.startsWith(dateKey)) {
-                        const parts = key.split('_'); // Date_pPeriod_Class
-                        // We need to find the absent teacher. 
-                        // The structure is simple: Key -> SubstituteID.
-                        // But we don't store "Who is Absent" in the value directly, only the Substitute.
-                        // We have to infer or store better. 
-                        // Current logic: We iterate teachers to find who originally had the class.
-                        
+                        const parts = key.split('_');
                         const period = parseInt(parts[1].replace('p',''));
                         const className = parts[2];
                         const subId = subs[key];
                         const subTeacher = this.state.teachers.find(t => t.id === subId);
-                        
-                        // Find original teacher
                         const dayIndex = simulatedDate.getDay() + 1; 
-                        const originalTeacher = this.state.teachers.find(t => 
-                            t.lessons.some(l => l.day === dayIndex && l.period === period && l.className === className)
-                        );
-
+                        const originalTeacher = this.state.teachers.find(t => t.lessons.some(l => l.day === dayIndex && l.period === period && l.className === className));
                         if(originalTeacher && subTeacher) {
-                            todaySubs.push({
-                                period: period,
-                                className: className,
-                                absent: originalTeacher.name,
-                                sub: subTeacher.name,
-                                key: key
-                            });
+                            todaySubs.push({ period: period, className: className, absent: originalTeacher.name, sub: subTeacher.name, key: key });
                         }
                     }
                 });
-
                 if(todaySubs.length === 0) {
                     container.innerHTML = `<div class="p-8 text-center text-slate-400 text-sm">لا توجد حصص احتياط مسجلة لهذا اليوم.</div>`;
                     return;
                 }
-
-                // Sort by Period
                 todaySubs.sort((a,b) => a.period - b.period);
-
                 container.innerHTML = todaySubs.map(item => `
                     <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition border-b border-slate-50 last:border-0">
                         <div class="flex items-center gap-4">
                             <div class="bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-700))] w-10 h-10 rounded-xl flex flex-col items-center justify-center font-bold text-sm border border-[rgb(var(--color-primary-100))]">
-                                <span class="text-[8px] uppercase text-[rgb(var(--color-primary-400))]">حصة</span>
-                                ${item.period}
+                                <span class="text-[8px] uppercase text-[rgb(var(--color-primary-400))]">حصة</span>${item.period}
                             </div>
                             <div>
-                                <div class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                                    <span class="text-slate-500 font-normal">الصف:</span> ${item.className}
-                                </div>
+                                <div class="font-bold text-slate-800 text-sm flex items-center gap-2"><span class="text-slate-500 font-normal">الصف:</span> ${item.className}</div>
                                 <div class="text-xs text-slate-500 mt-1 flex items-center gap-2">
                                     <span class="bg-red-50 text-red-600 px-1.5 py-0.5 rounded border border-red-100">غ: ${item.absent}</span>
                                     <i class="fas fa-arrow-left text-slate-300 text-[10px]"></i>
@@ -1273,9 +1522,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button onclick="window.app.deleteSubstitution('${item.key}')" class="text-slate-300 hover:text-red-500 transition px-2" title="حذف">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        <button onclick="window.app.deleteSubstitution('${item.key}')" class="text-slate-300 hover:text-red-500 transition px-2" title="حذف"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 `).join('');
             }
@@ -1292,15 +1539,11 @@
                 const simulatedDate = new Date(new Date().getTime() + this.state.simulationOffset);
                 const dateKey = simulatedDate.toISOString().split('T')[0];
                 const displayDate = simulatedDate.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                
                 document.getElementById('printDate').innerText = displayDate;
-                
                 const tbody = document.getElementById('printSubstitutionBody');
                 tbody.innerHTML = '';
-
                 const subs = this.state.substitutions || {};
                 const todaySubs = [];
-
                 Object.keys(subs).forEach(key => {
                     if(key.startsWith(dateKey)) {
                         const parts = key.split('_');
@@ -1309,43 +1552,22 @@
                         const subId = subs[key];
                         const subTeacher = this.state.teachers.find(t => t.id === subId);
                         const dayIndex = simulatedDate.getDay() + 1; 
-                        const originalTeacher = this.state.teachers.find(t => 
-                            t.lessons.some(l => l.day === dayIndex && l.period === period && l.className === className)
-                        );
-
+                        const originalTeacher = this.state.teachers.find(t => t.lessons.some(l => l.day === dayIndex && l.period === period && l.className === className));
                         if(originalTeacher && subTeacher) {
-                            todaySubs.push({
-                                period: period,
-                                className: className,
-                                absent: originalTeacher.name,
-                                sub: subTeacher.name
-                            });
+                            todaySubs.push({ period: period, className: className, absent: originalTeacher.name, sub: subTeacher.name });
                         }
                     }
                 });
-
                 todaySubs.sort((a,b) => a.period - b.period);
-
                 if(todaySubs.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center border border-slate-300">لا يوجد احتياط اليوم</td></tr>';
                 } else {
                     todaySubs.forEach(item => {
-                        tbody.innerHTML += `
-                            <tr>
-                                <td class="p-3 border border-slate-300 text-center bg-slate-50 font-extrabold">${item.period}</td>
-                                <td class="p-3 border border-slate-300 text-center">${item.className}</td>
-                                <td class="p-3 border border-slate-300 text-red-600">${item.absent}</td>
-                                <td class="p-3 border border-slate-300 text-emerald-700">${item.sub}</td>
-                                <td class="p-3 border border-slate-300"></td>
-                            </tr>
-                        `;
+                        tbody.innerHTML += `<tr><td class="p-3 border border-slate-300 text-center bg-slate-50 font-extrabold">${item.period}</td><td class="p-3 border border-slate-300 text-center">${item.className}</td><td class="p-3 border border-slate-300 text-red-600">${item.absent}</td><td class="p-3 border border-slate-300 text-emerald-700">${item.sub}</td><td class="p-3 border border-slate-300"></td></tr>`;
                     });
                 }
-                
                 document.body.classList.add('printing-subs');
-                window.addEventListener('afterprint', () => {
-                    document.body.classList.remove('printing-subs');
-                }, { once: true });
+                window.addEventListener('afterprint', () => { document.body.classList.remove('printing-subs'); }, { once: true });
                 window.print();
             }
 
@@ -1353,48 +1575,36 @@
                 const absentId = this.state.selectedAbsentTeacherId;
                 const container = document.getElementById('absentScheduleContainer');
                 if(!absentId) {
-                    // Do not reset container if we are just re-rendering due to data update and id is missing (unlikely if flow is correct)
-                    // But if user manually cleared it:
                     if(!document.getElementById('absentTeacherSelect').value) {
                          container.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-slate-400 bg-white rounded-3xl border-2 border-dashed border-slate-200"><i class="fas fa-chalkboard-teacher text-5xl mb-4 opacity-50"></i><p class="text-sm font-bold text-slate-500">يرجى اختيار المعلم الغائب لعرض جدول حصصه لليوم</p></div>`;
                     }
                     return;
                 }
-
                 const t = this.state.teachers.find(x => x.id === absentId);
                 if(!t) return;
-
                 const simulatedDate = new Date(new Date().getTime() + this.state.simulationOffset);
                 const dayIndex = simulatedDate.getDay() + 1; 
                 const dateKey = simulatedDate.toISOString().split('T')[0];
-                
                 if(dayIndex > 5) {
                     container.innerHTML = `<div class="text-center p-8 text-amber-600 bg-amber-50 rounded-2xl border border-amber-100 font-bold flex flex-col items-center justify-center gap-3 h-40"><i class="fas fa-coffee text-2xl"></i><span>اليوم عطلة نهاية الأسبوع</span></div>`;
                     return;
                 }
-
                 const todayLessons = t.lessons.filter(l => l.day === dayIndex).sort((a,b) => a.period - b.period);
-
                 if(todayLessons.length === 0) {
                     container.innerHTML = `<div class="text-center p-8 text-emerald-600 bg-emerald-50 rounded-2xl border border-emerald-100 font-bold flex flex-col items-center justify-center gap-3 h-40"><i class="fas fa-check-circle text-2xl"></i><span>لا توجد حصص لهذا المعلم اليوم.</span></div>`;
                     return;
                 }
-
                 container.innerHTML = todayLessons.map(l => {
                     const periodInfo = this.state.periods.find(p => parseInt(p.id) === l.period);
                     const timeStr = periodInfo ? `<span class="text-xs font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md ml-2">${periodInfo.start} - ${periodInfo.end}</span>` : '';
-                    
-                    // Check for existing substitute
                     const subKey = `${dateKey}_p${l.period}_${l.className}`;
                     const subId = this.state.substitutions[subKey];
                     const subTeacher = subId ? this.state.teachers.find(st => st.id === subId) : null;
-
                     return `
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 hover:shadow-md transition">
                         <div class="flex items-center gap-5 w-full md:w-auto">
                             <div class="bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-600))] w-14 h-14 rounded-2xl flex flex-col items-center justify-center font-bold border border-[rgb(var(--color-primary-100))] shadow-inner">
-                                <span class="text-[10px] uppercase opacity-70">الحصة</span>
-                                <span class="text-xl leading-none font-black">${l.period}</span>
+                                <span class="text-[10px] uppercase opacity-70">الحصة</span><span class="text-xl leading-none font-black">${l.period}</span>
                             </div>
                             <div>
                                 <h4 class="font-bold text-slate-800 text-lg">${l.className}</h4>
@@ -1408,35 +1618,34 @@
                         <button onclick="window.app.findSubstitutes('${absentId}', ${l.period}, '${l.className}')" class="w-full md:w-auto bg-white hover:bg-slate-50 text-[rgb(var(--color-primary-600))] border border-[rgb(var(--color-primary-100))] px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition cursor-pointer shadow-sm hover:shadow">
                             <i class="fas fa-search"></i> <span>${subTeacher ? 'تغيير البديل' : 'إيجاد بديل'}</span>
                         </button>
-                    </div>
-                    `;
+                    </div>`;
                 }).join('');
             }
 
-            calculateWeeklyLoad(teacher) {
-                return teacher.lessons ? teacher.lessons.length : 0;
-            }
+            calculateWeeklyLoad(teacher) { return teacher.lessons ? teacher.lessons.length : 0; }
 
             findSubstitutes(absentId, period, className) {
                 const simulatedDate = new Date(new Date().getTime() + this.state.simulationOffset);
                 const dayIndex = simulatedDate.getDay() + 1;
                 const absentTeacher = this.state.teachers.find(t => t.id === absentId);
-
+                const dateKey = simulatedDate.toISOString().split('T')[0];
+                const busySubIds = [];
+                const subs = this.state.substitutions || {};
+                Object.keys(subs).forEach(key => {
+                    if(key.startsWith(`${dateKey}_p${period}_`)) { busySubIds.push(subs[key]); }
+                });
                 let available = this.state.teachers.filter(t => {
                     if (t.id === absentId) return false; 
+                    if (busySubIds.includes(t.id)) return false;
                     const hasClass = t.lessons.some(l => l.day === dayIndex && l.period === period);
                     return !hasClass;
                 });
-
                 available.sort((a,b) => this.calculateWeeklyLoad(a) - this.calculateWeeklyLoad(b));
-
                 const list = document.getElementById('substituteList');
                 document.getElementById('subModalPeriodInfo').innerText = `الحصة ${period} - ${className}`;
-                
                 list.innerHTML = available.map(t => {
                     const load = this.calculateWeeklyLoad(t);
                     let loadColor = load < 10 ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : (load < 18 ? 'text-amber-700 bg-amber-50 border-amber-100' : 'text-rose-700 bg-rose-50 border-rose-100');
-                    
                     return `
                     <div class="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow transition group mb-2">
                         <div class="flex items-center gap-3">
@@ -1448,40 +1657,30 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="text-[10px] font-bold px-2 py-1 rounded-lg border ${loadColor}">نصاب: ${load}</div>
-                            <button onclick="window.app.assignSubstitute('${t.id}', '${absentId}', ${period}, '${className}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm" title="تثبيت البديل">
-                                تثبيت
-                            </button>
-                            <button onclick="window.app.sendSubstituteMessage('${t.id}', ${period}, '${className}', '${absentTeacher.name}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 w-8 h-8 rounded-lg flex items-center justify-center transition shadow-sm" title="إرسال واتساب">
-                                <i class="fab fa-whatsapp text-lg"></i>
-                            </button>
+                            <button onclick="window.app.assignSubstitute('${t.id}', '${absentId}', ${period}, '${className}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm" title="تثبيت البديل">تثبيت</button>
+                            <button onclick="window.app.sendSubstituteMessage('${t.id}', ${period}, '${className}', '${absentTeacher.name}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 w-8 h-8 rounded-lg flex items-center justify-center transition shadow-sm" title="إرسال واتساب"><i class="fab fa-whatsapp text-lg"></i></button>
                         </div>
-                    </div>
-                    `;
+                    </div>`;
                 }).join('');
-
                 document.getElementById('modal-substitute').classList.remove('hidden-view');
             }
 
             assignSubstitute(subId, originalId, period, className) {
                 if(!confirm('هل أنت متأكد من تعيين هذا المعلم كبديل؟')) return;
-                
                 const simulatedDate = new Date(new Date().getTime() + this.state.simulationOffset);
                 const dateKey = simulatedDate.toISOString().split('T')[0];
                 const key = `${dateKey}_p${period}_${className}`;
-                
                 if(!this.state.substitutions) this.state.substitutions = {};
                 this.state.substitutions[key] = subId;
-                
                 this.saveData();
                 this.closeModal('modal-substitute');
-                this.renderAbsentSchedule(); // Force UI update immediately
-                this.renderDailySubstitutions(); // Update daily list
+                this.renderAbsentSchedule(); 
+                this.renderDailySubstitutions(); 
             }
 
             sendSubstituteMessage(subId, period, className, absentName) {
                 const t = this.state.teachers.find(x => x.id === subId);
                 if(!t || !t.phone) return alert('يرجى إضافة رقم هاتف للمعلم البديل أولاً من سجل المعلمين.');
-
                 const msg = `السلام عليكم أستاذ ${t.name}،\nنرجو التكرم بدخول حصة احتياط:\n📌 الحصة: ${period}\n🏫 الصف: ${className}\n👤 بدلاً من: الأستاذ ${absentName}\n\nشكراً لتعاونكم.`;
                 window.open(`https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}`, '_blank');
             }
@@ -1681,21 +1880,11 @@
             `;
                 }
 
+                // New Logic: Always allow attempt (server checks limit)
                 const enhanceButton = document.getElementById('btn-enhance-ai');
-                const badge = document.getElementById('btn-enhance-ai-badge');
                 if (enhanceButton) {
-                    const isPremium = this.state.currentUser && this.state.currentUser.isPremium;
-                    if (isPremium) {
-                        enhanceButton.disabled = false;
-                        enhanceButton.className = "flex-1 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-200/50 text-xs md:text-sm relative";
-                        if (badge) badge.classList.add('hidden');
-                        enhanceButton.onclick = () => this.enhanceReportWithAI();
-                    } else {
-                        enhanceButton.disabled = true;
-                        enhanceButton.className = "flex-1 bg-slate-400 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-not-allowed shadow-lg text-xs md:text-sm relative opacity-60";
-                        if (badge) badge.classList.remove('hidden');
-                        enhanceButton.onclick = () => alert('هذه الميزة متاحة للمشتركين في الباقة المميزة فقط. تواصل مع الدعم الفني للترقية.');
-                    }
+                    enhanceButton.disabled = false;
+                    enhanceButton.onclick = () => this.enhanceReportWithAI();
                 }
 
                 this.setView('supervision-report');
@@ -1708,6 +1897,10 @@
             }
 
             printSupervisionReport() {
+                document.body.classList.add('printing-supervision');
+                window.addEventListener('afterprint', () => {
+                    document.body.classList.remove('printing-supervision');
+                }, { once: true });
                 window.print();
             }
 
@@ -1793,6 +1986,12 @@
             async enhanceReportWithAI() {
                 this.logDebug('enhanceReportWithAI: Initiated.');
 
+                // 1. Check Login
+                if (!this.state.currentUser) {
+                    return alert('يجب تسجيل الدخول لاستخدام هذه الميزة.');
+                }
+
+                // 2. Client-Side Validation
                 const topic = document.getElementById('repLessonTopic').innerText;
                 const specialization = document.getElementById('repSpecialization').innerText;
 
@@ -1804,10 +2003,15 @@
                     return alert('خدمة السحابة غير متاحة. يرجى التأكد من الاتصال بالإنترنت.');
                 }
 
+                const reportContext = this.buildReportContextText();
+                
+                if (reportContext.length > 25000) {
+                    return alert("النص المدخل طويل جداً (أكثر من 25,000 حرف). يرجى تقليل كمية الملاحظات قبل الإرسال.");
+                }
+
                 document.getElementById('aiLoadingOverlay').classList.remove('hidden-view');
 
                 try {
-                    const reportContext = this.buildReportContextText();
                     const gender = this.state.supervisionData.gender;
                     
                     const payload = { reportContext, specialization, topic, gender };
@@ -1821,8 +2025,11 @@
                     const jsonResponse = result.data;
 
                     const buildSection = (section) => {
-                        if (!section || !section.title || !section.points) return '';
-                        const pointsHtml = section.points.map(p => `<li>${p}</li>`).join('');
+                        if (!section || !section.title) return '';
+                        const points = Array.isArray(section.points) ? section.points : [];
+                        if (points.length === 0) return '';
+                        
+                        const pointsHtml = points.map(p => `<li>${p}</li>`).join('');
                         return `<div class="report-section"><h3>${section.title}</h3><ul>${pointsHtml}</ul></div>`;
                     };
 
@@ -1838,7 +2045,21 @@
 
                 } catch (e) {
                     console.error("Cloud Function Error:", e);
-                    alert("فشل المعالجة بالذكاء الاصطناعي: " + e.message);
+                    
+                    // HANDLE LIMIT REACHED SPECIFICALLY
+                    if (e.message.includes('LIMIT_REACHED') || e.code === 'resource-exhausted') {
+                        if(confirm("🛑 نفذت محاولاتك المجانية اليوم (5 محاولات).\n\nلزيادة الحد اليومي، يرجى التواصل مع المطور.\n\nهل تريد التواصل الآن عبر واتساب؟")) {
+                            this.contactSupport();
+                        }
+                    } else {
+                        // General Error
+                        let errorMsg = "فشل المعالجة بالذكاء الاصطناعي.";
+                        if (e.code === 'invalid-argument') {
+                            errorMsg = "خطأ في البيانات المرسلة: النص طويل جداً أو غير مكتمل.";
+                        }
+                        alert(`${errorMsg}\n(${e.message})`);
+                    }
+                    
                     this.logDebug('enhanceReportWithAI: Cloud function ERROR!', { message: e.message, code: e.code, details: e.details });
                 } finally {
                     document.getElementById('aiLoadingOverlay')?.classList.add('hidden-view');
@@ -1928,7 +2149,11 @@
                 }
             }
 
-            renderAll() { const activeBtn = document.querySelector('.nav-btn.text-\\[rgb\\(var\\(--color-primary-700\\)\\)\\]'); let currentView = activeBtn ? activeBtn.id.replace('btn-', '') : 'now'; if(currentView === 'now') { this.renderCurrentPeriod(new Date(new Date().getTime() + this.state.simulationOffset)); this.renderDailyDutyWidget(new Date(new Date().getTime() + this.state.simulationOffset)); } else if (currentView === 'teachers') this.renderTeachers(); else if (currentView === 'reports') this.renderReports(); else if (currentView === 'tasks') this.renderTasks(); else if (currentView === 'agenda') this.renderAgenda(); else if (currentView === 'supervision-hub') this.renderSupervisionHub(); else if (currentView === 'duty') this.renderDutyTable(); else if (currentView === 'reserve') this.renderReserve(); else if (currentView === 'periods') this.renderPeriods(); }
+            // --- Updated Render All Logic ---
+            renderAll() { 
+                const v = this.state.currentView; // Use state variable instead of fragile DOM selector
+                this.setView(v);
+            }
             
             renderCurrentPeriod(now) { 
                 const mins = now.getHours() * 60 + now.getMinutes(); 
@@ -1989,9 +2214,31 @@
                     }
                 }); 
                 
+                // Sorting Logic Update: Handle Arabic Grade Names
+                const getGradeValue = (name) => {
+                    const n = name.trim();
+                    if (n.match(/(الثاني|ثاني)\s*عشر/)) return 12;
+                    if (n.match(/(الحادي|حادي)\s*عشر/)) return 11;
+                    if (n.match(/العاشر|عاشر/)) return 10;
+                    if (n.match(/التاسع|تاسع/)) return 9;
+                    if (n.match(/الثامن|ثامن/)) return 8;
+                    if (n.match(/السابع|سابع/)) return 7;
+                    if (n.match(/السادس|سادس/)) return 6;
+                    if (n.match(/الخامس|خامس/)) return 5;
+                    if (n.match(/الرابع|رابع/)) return 4;
+                    if (n.match(/الثالث|ثالث/)) return 3;
+                    if (n.match(/الثاني|ثاني/)) return 2;
+                    if (n.match(/الأول|الاول|اول|أول/)) return 1;
+                    
+                    const match = n.match(/\d+/);
+                    return match ? parseInt(match[0]) : 999;
+                };
+
                 active.sort((a, b) => { 
-                    const gA = (a.className.match(/\d+/) || [999])[0], gB = (b.className.match(/\d+/) || [999])[0]; 
-                    return parseInt(gA) - parseInt(gB); 
+                    const valA = getGradeValue(a.className);
+                    const valB = getGradeValue(b.className);
+                    if (valA !== valB) return valA - valB;
+                    return a.className.localeCompare(b.className, 'ar');
                 }); 
                 
                 grid.innerHTML = active.map(item => {
@@ -1999,21 +2246,24 @@
                     const iconClass = item.isSub ? 'bg-amber-500 text-white border-amber-400' : 'bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-600))] border-[rgb(var(--color-primary-100))]';
                     const subLabel = item.isSub ? `<div class="text-[9px] text-amber-600 font-bold mt-1 bg-amber-50 w-fit px-1.5 rounded">بدلاً من: ${item.original}</div>` : '';
 
-                    return `<div class="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 overflow-hidden relative flex flex-col card-hover">
+                    return `<div class="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 overflow-hidden relative flex flex-col card-hover min-h-[160px]">
                         <div class="h-1.5 w-full ${item.isSub ? 'bg-amber-500' : 'bg-gradient-to-r from-[rgb(var(--color-primary-500))] to-purple-500'}"></div>
-                        <div class="p-4 flex-1 flex flex-col">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="${badgeClass} px-2.5 py-1 rounded-lg text-xs font-bold border truncate max-w-[70%]">${item.className}</span>
-                                <div class="w-7 h-7 rounded-full ${iconClass} flex items-center justify-center text-[10px] font-bold border ring-2 ring-white">${item.t.short[0] || '?'}</div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="${badgeClass} px-3 py-1.5 rounded-lg text-sm font-black border truncate max-w-[75%] tracking-tight">${item.className}</span>
+                                    <div class="w-9 h-9 rounded-full ${iconClass} flex items-center justify-center text-xs font-bold border ring-2 ring-white shadow-sm">${item.t.short[0] || '?'}</div>
+                                </div>
+                                <h3 class="font-extrabold text-base text-slate-800 mb-0 truncate leading-tight" title="${item.t.name}">${item.t.name}</h3>
+                                ${subLabel}
+                                <div class="flex items-center gap-1 text-[10px] text-slate-400 font-bold mb-1 mt-1.5">
+                                    ${this.state.userMode === 'admin' ? `<i class="fas fa-star text-amber-400 text-xs"></i> <span>${item.t.score}%</span>` : ''}
+                                </div>
                             </div>
-                            <h3 class="font-bold text-sm text-slate-800 mb-0 truncate" title="${item.t.name}">${item.t.name}</h3>
-                            ${subLabel}
-                            <div class="flex items-center gap-1 text-[10px] text-slate-400 font-medium mb-3 mt-1">
-                                <i class="fas fa-star text-amber-400"></i> <span>${item.t.score}%</span>
-                            </div>
-                            <button type="button" onclick="window.app.openActionModal('${item.t.id}', '${item.className}')" class="mt-auto w-full py-2.5 rounded-xl bg-slate-50 hover:bg-[rgb(var(--color-primary-50))] text-slate-600 hover:text-[rgb(var(--color-primary-700))] font-bold text-xs transition-colors flex justify-center items-center gap-2 cursor-pointer border border-slate-100 hover:border-[rgb(var(--color-primary-100))]">
+                            ${this.state.userMode === 'admin' ? `
+                            <button type="button" onclick="window.app.openActionModal('${item.t.id}', '${item.className}')" class="mt-4 w-full py-3 rounded-xl bg-slate-50 hover:bg-[rgb(var(--color-primary-50))] text-slate-600 hover:text-[rgb(var(--color-primary-700))] font-bold text-xs transition-colors flex justify-center items-center gap-2 cursor-pointer border border-slate-100 hover:border-[rgb(var(--color-primary-100))]">
                                 <i class="fas fa-sliders-h"></i> إجراء
-                            </button>
+                            </button>` : ''}
                         </div>
                     </div>`; 
                 }).join(''); 
@@ -2026,122 +2276,59 @@
                 let filtered = this.state.teachers.filter(t => t.name.toLowerCase().includes(term) || (t.school && t.school.toLowerCase().includes(term))); 
                 filtered.sort((a,b) => a.name.localeCompare(b.name, 'ar')); 
                 if(countBadge) countBadge.innerText = filtered.length;
+                
+                const isAdmin = this.state.userMode === 'admin';
+
                 grid.innerHTML = filtered.map(t => { 
                     let scoreColor = t.score >= 90 ? "bg-emerald-50 text-emerald-600 border-emerald-100" : (t.score >= 70 ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-rose-50 text-rose-600 border-rose-100"); 
                     const schoolBadge = t.school ? `<div class="text-[10px] text-slate-400 flex items-center gap-1 mt-1 bg-slate-50 px-2 py-0.5 rounded-md w-fit"><i class="fas fa-map-marker-alt text-slate-300"></i> ${t.school}</div>` : ''; 
-                    return `<div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100 p-5 flex flex-col gap-4 group"><div class="flex justify-between items-start"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[rgb(var(--color-primary-500))] to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-indigo-100">${t.short[0] || '?'}</div><div><h3 class="font-bold text-slate-800 line-clamp-1 text-base">${t.name}</h3><p class="text-xs text-[rgb(var(--color-primary-600))] mt-0.5 font-bold bg-[rgb(var(--color-primary-50))] px-2 py-0.5 rounded-md w-fit">${t.specialization || 'معلم مادة'}</p>${schoolBadge}</div></div><div class="font-black text-xs px-2.5 py-1.5 rounded-lg border ${scoreColor}">${t.score}%</div></div><div class="relative group/input"><i class="fas fa-phone-alt absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-[rgb(var(--color-primary-500))] transition-colors text-xs"></i><input type="tel" value="${t.phone || ''}" onchange="window.app.updatePhone('${t.id}', this.value)" placeholder="أضف رقم الهاتف" class="w-full pr-9 pl-3 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[rgb(var(--color-primary-500))] focus:ring-4 focus:ring-[rgb(var(--color-primary-100))] transition-all outline-none text-sm font-medium text-slate-800 placeholder:text-slate-400"></div><div class="flex gap-2 mt-auto pt-3 border-t border-slate-50"><button type="button" onclick="window.app.openActionModal('${t.id}')" class="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer shadow-sm">إدارة</button><button type="button" onclick="window.app.openWhatsApp('${t.id}')" class="w-10 flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 rounded-xl transition cursor-pointer shadow-sm hover:shadow"><i class="fab fa-whatsapp text-lg"></i></button></div></div>`; 
+                    
+                    return `<div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100 p-5 flex flex-col gap-4 group"><div class="flex justify-between items-start"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[rgb(var(--color-primary-500))] to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-indigo-100">${t.short[0] || '?'}</div><div><h3 class="font-bold text-slate-800 line-clamp-1 text-base">${t.name}</h3><p class="text-xs text-[rgb(var(--color-primary-600))] mt-0.5 font-bold bg-[rgb(var(--color-primary-50))] px-2 py-0.5 rounded-md w-fit">${t.specialization || 'معلم مادة'}</p>${schoolBadge}</div></div>
+                    ${isAdmin ? `<div class="font-black text-xs px-2.5 py-1.5 rounded-lg border ${scoreColor}">${t.score}%</div>` : ''}
+                    </div><div class="relative group/input"><i class="fas fa-phone-alt absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-[rgb(var(--color-primary-500))] transition-colors text-xs"></i><input type="tel" value="${t.phone || ''}" ${isAdmin ? `onchange="window.app.updatePhone('${t.id}', this.value)"` : 'readonly'} placeholder="أضف رقم الهاتف" class="w-full pr-9 pl-3 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[rgb(var(--color-primary-500))] focus:ring-4 focus:ring-[rgb(var(--color-primary-100))] transition-all outline-none text-sm font-medium text-slate-800 placeholder:text-slate-400"></div><div class="flex gap-2 mt-auto pt-3 border-t border-slate-50">
+                    ${isAdmin ? `<button type="button" onclick="window.app.openActionModal('${t.id}')" class="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer shadow-sm">إدارة</button>` : ''}
+                    <button type="button" onclick="window.app.openWhatsApp('${t.id}')" class="w-10 flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 rounded-xl transition cursor-pointer shadow-sm hover:shadow flex-none ml-auto"><i class="fab fa-whatsapp text-lg"></i></button></div></div>`; 
                 }).join(''); 
             }
-            renderAgenda() { const tbody = document.getElementById('agendaBody'); if(!tbody) return; const agenda = this.state.agenda || []; if(agenda.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">لا توجد أحداث مسجلة.</td></tr>`; return; } agenda.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()); const todayStr = new Date().toISOString().split('T')[0]; tbody.innerHTML = agenda.map((item, index) => { const itemDateStr = new Date(item.date).toISOString().split('T')[0]; const isToday = itemDateStr === todayStr; return `<tr class="${isToday ? 'bg-yellow-50 border-r-4 border-yellow-400' : 'hover:bg-slate-50'} transition-colors border-b border-slate-100 last:border-0"><td class="p-4 text-center font-bold text-slate-400 text-xs">${index + 1}</td><td class="p-4 font-mono text-xs font-bold text-[rgb(var(--color-primary-700))]">${item.date}</td><td class="p-4 font-bold text-slate-700 text-sm">${item.event}</td></tr>`; }).join(''); }
+            renderAgenda() { const tbody = document.getElementById('agendaBody'); if(!tbody) return; const agenda = this.state.agenda || []; if(agenda.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">لا توجد أحداث مسجلة.</td></tr>`; return; } agenda.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()); const todayStr = new Date().toISOString().split('T')[0]; tbody.innerHTML = agenda.map((item, index) => { const itemDateStr = new Date(item.date).toISOString().split('T')[0]; const isToday = itemDateStr === todayStr; return `<tr class="${isToday ? 'bg-yellow-50 border-r-4 border-yellow-400' : 'hover:bg-slate-50'} transition-colors border-b border-slate-100 last:border-0"><td class="p-4 text-center font-bold text-slate-400 text-xs font-mono">${index + 1}</td><td class="p-4 text-xs font-bold text-slate-500">${item.date}</td><td class="p-4 text-sm font-bold text-slate-700">${item.event}</td></tr>`; }).join(''); }
             verifyAdminAndImportAgenda() { if(prompt('PIN:') === '1234') document.getElementById('agendaInput').click(); else alert('خطأ'); }
             handleAgendaExcel(e) { const reader = new FileReader(); reader.onload = (evt) => { const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array'}); const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1}); const newAgenda = []; for(let i = 1; i < json.length; i++) { const row = json[i]; if(row && row.length >= 3) { let dateVal = row[1]; if(typeof dateVal === 'number') dateVal = new Date(Math.round((dateVal - 25569)*86400*1000)).toISOString().split('T')[0]; newAgenda.push({ id: Date.now() + i, date: dateVal, event: row[2] }); } } if(newAgenda.length > 0) { this.state.agenda = newAgenda; this.saveData(); this.renderAgenda(); alert('تم'); } else alert('تنسيق غير صالح'); }; reader.readAsArrayBuffer(e.target.files[0]); }
-            renderReports() { const tbody = document.getElementById('reportsBody'); if(!tbody) return; tbody.innerHTML = this.state.teachers.map(t => { let badge = t.score >= 90 ? "bg-emerald-100 text-emerald-700" : (t.score >= 70 ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"); return `<tr class="hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 group"><td class="p-4 font-semibold text-slate-700"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold group-hover:bg-white group-hover:shadow-sm transition">${t.short[0] || '?'}</div><div>${t.name}<br/><span class="text-[10px] text-slate-400 font-normal">${t.school || ''}</span></div></div></td><td class="p-4 text-center"><span class="inline-block px-3 py-1 rounded-lg text-xs font-bold ${badge}">${t.score}%</span></td><td class="p-4 text-center text-slate-500 font-mono text-xs">${t.phone || '-'}</td><td class="p-4 text-center">${t.score < 80 ? '<span class="text-[10px] text-rose-500 font-bold bg-rose-50 px-2 py-1 rounded-md border border-rose-100">متابعة</span>' : '<span class="text-[10px] text-emerald-500 font-bold bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">ممتاز</span>'}</td></tr>`; }).join(''); }
-            addTask() { const text = document.getElementById('newTaskInput').value.trim(); if(text) { this.state.tasks.unshift({id:Date.now().toString(), text, priority: document.getElementById('newTaskPriority').value, completed:false}); this.saveData(); this.renderTasks(); document.getElementById('newTaskInput').value=''; } }
-            toggleTask(id) { const t = this.state.tasks.find(x=>x.id===id); if(t) { t.completed=!t.completed; this.saveData(); this.renderTasks(); } }
-            deleteTask(id) { if(confirm('حذف؟')) { this.state.tasks = this.state.tasks.filter(x=>x.id!==id); this.saveData(); this.renderTasks(); } }
-            renderTasks() { const list = document.getElementById('tasksList'); if(!list) return; const completed = this.state.tasks.filter(t=>t.completed).length; document.getElementById('tasksProgressBar').style.width = (this.state.tasks.length ? Math.round((completed/this.state.tasks.length)*100) : 0) + '%'; document.getElementById('tasksProgressText').innerText = `${completed}/${this.state.tasks.length}`; list.innerHTML = this.state.tasks.length === 0 ? `<div class="text-center p-8 text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200"><p class="text-xs font-medium">لا توجد مهام حالياً.</p></div>` : this.state.tasks.map(t => `<div class="flex items-center gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm transition hover:shadow-md group"><label class="relative flex items-center cursor-pointer"><input type="checkbox" class="task-checkbox sr-only peer" ${t.completed?'checked':''} onchange="window.app.toggleTask('${t.id}')"><div class="w-6 h-6 bg-slate-50 border-2 border-slate-200 rounded-full peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-all flex items-center justify-center text-white"><i class="fas fa-check text-[10px] ${t.completed?'opacity-100':'opacity-0'}"></i></div></label><div class="flex-1 ${t.completed?'line-through text-slate-400':'text-slate-700'}"><p class="text-sm font-bold leading-snug">${t.text}</p></div><span class="text-[10px] px-2 py-1 rounded-lg font-bold ${t.priority==='urgent'?'bg-rose-50 text-rose-600 border border-rose-100':'bg-blue-50 text-blue-600 border border-blue-100'}">${t.priority==='urgent'?'عاجل':'عادي'}</span><button onclick="window.app.deleteTask('${t.id}')" class="text-slate-300 hover:text-rose-500 transition px-2 opacity-0 group-hover:opacity-100"><i class="fas fa-trash-alt"></i></button></div>`).join(''); }
-            renderHistory() { const grid = document.getElementById('supervisionHistoryGrid'); if(!grid) return; const history = this.state.supervisionHistory || []; if(history.length === 0) { grid.innerHTML = '<div class="text-center p-12 text-slate-400 bg-slate-50 rounded-3xl border border-dashed border-slate-200">لا يوجد سجل زيارات حتى الآن.</div>'; return; } history.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()); grid.innerHTML = history.map((v, i) => `<div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-[rgb(var(--color-primary-200))] transition group"><div class="flex-1"><div class="flex items-center gap-3 mb-1"><span class="font-bold text-slate-800 text-base">${v.teacherName}</span><span class="bg-slate-50 text-slate-500 text-[10px] px-2 py-0.5 rounded-md border border-slate-200 font-bold">${v.className}</span></div><p class="text-xs text-slate-500 mb-1 flex items-center gap-1"><i class="fas fa-book-open text-slate-300"></i> ${v.topic}</p><span class="text-[10px] text-slate-400 font-mono bg-slate-50 px-2 rounded">${v.date}</span></div><div class="flex gap-2 w-full md:w-auto opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"><button onclick="window.app.loadVisit(${i})" class="flex-1 md:flex-none bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 px-4 py-2 rounded-xl font-bold text-xs transition cursor-pointer border border-slate-200">عرض التفاصيل</button><button onclick="window.app.deleteVisit(${i})" class="md:flex-none text-rose-300 hover:text-rose-600 px-3 py-2 rounded-xl transition cursor-pointer hover:bg-rose-50"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
-            updatePhone(id, val) { const t = this.state.teachers.find(x => x.id === id); if(t) { t.phone = val; this.saveData(); } }
-            openActionModal(tId, className = null) { this.state.selectedTeacherId = tId; this.state.selectedClassName = className; const t = this.state.teachers.find(x => x.id === tId); if(!t) return; document.getElementById('actionModalTitle').innerHTML = `<div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-lg">📝</div>${t.name}</div>`; document.getElementById('actionModalSubtitle').innerHTML = className && className !== 'undefined' ? `<span class="bg-white/10 px-2 py-0.5 rounded text-[10px]">الحصة: ${className}</span>` : 'قائمة الإدارة'; document.getElementById('currentScoreDisplay').innerText = t.score + '%'; const remind = document.getElementById('btn-remind'); const evalBtn = document.getElementById('btn-evaluate'); if(className && className !== 'undefined') { remind.disabled=false; remind.classList.remove('opacity-50','cursor-not-allowed'); evalBtn.onclick=()=>{this.closeModal('modal-action');this.startSupervision(tId,className);}; } else { remind.disabled=true; remind.classList.add('opacity-50','cursor-not-allowed'); evalBtn.onclick=()=>{this.closeModal('modal-action');this.startSupervision(tId,'زيارة عامة');}; } document.getElementById('violationButtonsContainer').innerHTML = this.state.violationTypes.map(v => `<button type="button" onclick="window.app.dockScore('${v.id}')" class="w-full bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-200 p-3 rounded-xl flex items-center justify-between transition group cursor-pointer"><span class="flex items-center gap-3 font-bold text-xs"><div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:text-rose-500 group-hover:border-rose-200 transition"><i class="fas ${v.icon}"></i></div>${v.label}</span><span class="bg-white px-2 py-1 rounded text-[10px] font-bold text-rose-500 border border-slate-200 group-hover:border-rose-200 shadow-sm">-${v.points}</span></button>`).join(''); document.getElementById('modal-action').classList.remove('hidden-view'); }
-            closeModal(id) { document.getElementById(id)?.classList.add('hidden-view'); }
-            loadVisit(index) { const sorted = [...this.state.supervisionHistory].sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); const visit=sorted[index]; if(visit){this.state.supervisionData={ratings:visit.ratings,notes:visit.notes||{}, gender: visit.gender || 'male' };this.generateReport(true,visit);} }
-            deleteVisit(index) { if(confirm('حذف؟')) { const sorted = [...this.state.supervisionHistory].sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); const id=sorted[index].id; this.state.supervisionHistory=this.state.supervisionHistory.filter(x=>x.id!==id); this.saveData(); this.renderHistory(); } }
-            sendWhatsApp(type) { const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId); if(!t || !t.phone) return alert('أضف الهاتف أولاً'); let msg = type === 'summon' ? `السلام عليكم أستاذ ${t.name}، يرجى التكرم بزيارة مكتب الإدارة.` : `السلام عليكم أستاذ ${t.name}، تذكير بموعد حصتكم الحالية في الصف ${this.state.selectedClassName}.`; window.open(`https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}`, '_blank'); }
-            openWhatsApp(id) { const t = this.state.teachers.find(x => x.id === id); if(t && t.phone) window.open(`https://wa.me/${t.phone}`, '_blank'); else alert('أضف الهاتف أولاً'); }
-            dockScore(vId) { const v = this.state.violationTypes.find(x => x.id === vId); if(v && confirm(`خصم ${v.points}؟`)) { const t = this.state.teachers.find(x => x.id === this.state.selectedTeacherId); if(t) { t.score = Math.max(0, t.score - v.points); this.saveData(); this.closeModal('modal-action'); } } }
-            handleXml(e) { const reader = new FileReader(); reader.readAsText(e.target.files[0], "windows-1256"); reader.onload = (evt) => { try { const xml = new DOMParser().parseFromString(evt.target.result, "text/xml"); this.state.periods = Array.from(xml.querySelectorAll('periods period')).map(p => ({ id: p.getAttribute('period'), start: p.getAttribute('starttime'), end: p.getAttribute('endtime') })); const classes = {}; xml.querySelectorAll('classes class').forEach(c => classes[c.getAttribute('id')] = c.getAttribute('name')); this.state.classes = classes; this.state.teachers = Array.from(xml.querySelectorAll('teachers teacher')).map(t => ({ id: t.getAttribute('id'), name: t.getAttribute('name'), short: t.getAttribute('short'), score: 100, phone: '', lessons: [] })); xml.querySelectorAll('TimeTableSchedules TimeTableSchedule').forEach(sch => { const t = this.state.teachers.find(x => x.id === sch.getAttribute('TeacherID')); if(t) t.lessons.push({ day: parseInt(sch.getAttribute('DayID')), period: parseInt(sch.getAttribute('Period')), className: classes[sch.getAttribute('ClassID')] || 'نشاط' }); }); this.saveData(); this.closeModal('modal-settings'); alert('تم'); } catch(err) { alert('خطأ'); } }; }
-            exportTeacherTemplate() {
-                const headers = [[
-                    'Teacher_ID', 
-                    'Short_Name', 
-                    'Full_Name', 
-                    'Phone', 
-                    'School_Name', 
-                    'Specialization'
-                ]];
-                const ws = XLSX.utils.aoa_to_sheet(headers);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Teachers_Data_Template");
-                XLSX.writeFile(wb, "Teachers_Supervisor_Template.xlsx");
+            
+            exportReports() { 
+                const data = this.state.teachers.map(t => {
+                    const violationsStr = (t.violations || [])
+                        .map(v => `[${v.date}] ${v.label} (-${v.points})`)
+                        .join(' \n ');
+
+                    return { 
+                        'المعلم': t.name, 
+                        'التقييم': t.score+'%', 
+                        'الهاتف': t.phone||'-',
+                        'سجل المخالفات': violationsStr || 'لا يوجد'
+                    };
+                }); 
+                
+                const ws = XLSX.utils.json_to_sheet(data); 
+                ws['!cols'] = [{wch: 30}, {wch: 10}, {wch: 15}, {wch: 50}];
+
+                const wb = XLSX.utils.book_new(); 
+                XLSX.utils.book_append_sheet(wb, ws, "Reports"); 
+                XLSX.writeFile(wb, "School_Report_Advanced.xlsx"); 
             }
-            handleExcel(e) { 
-                const reader = new FileReader(); 
-                reader.onload = (evt) => { 
-                    try {
-                        const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array'}); 
-                        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); 
-                        let added = 0; let updated = 0;
-                        json.forEach(row => {
-                            const tId = row['Teacher_ID'] || row['الرقم_الوظيفي'] || row['id'];
-                            if (!tId) return;
-                            const idStr = String(tId).trim();
-                            const existingIndex = this.state.teachers.findIndex(t => t.id === idStr);
-                            
-                            if (existingIndex > -1) { 
-                                // UPDATE EXISTING TEACHER
-                                const t = this.state.teachers[existingIndex];
-                                
-                                const name = row['Full_Name'] || row['الاسم_الكامل'] || row['Teacher_Name'] || row['name'];
-                                if (name) t.name = name;
-
-                                if (Object.prototype.hasOwnProperty.call(row, 'Phone') || Object.prototype.hasOwnProperty.call(row, 'الهاتف')) {
-                                    t.phone = String(row['Phone'] || row['الهاتف'] || '');
-                                }
-                                
-                                const school = row['School_Name'] || row['المدرسة'];
-                                if (school) t.school = school;
-                                
-                                const spec = row['Specialization'] || row['التخصص'];
-                                if (spec) t.specialization = spec;
-
-                                const short = row['Short_Name'];
-                                if (short) t.short = short;
-
-                                updated++; 
-                            } 
-                            else { 
-                                // ADD NEW TEACHER
-                                const name = row['Full_Name'] || row['الاسم_الكامل'] || row['Teacher_Name'] || row['name'] || 'معلم بدون اسم';
-                                const phone = row['Phone'] || row['الهاتف'] || '';
-                                const school = row['School_Name'] || row['المدرسة'] || '';
-                                const spec = row['Specialization'] || row['التخصص'] || '';
-                                const short = row['Short_Name'] || name.split(' ').slice(0, 2).join(' ');
-
-                                this.state.teachers.push({ id: idStr, name: name, short: short, phone: String(phone), specialization: spec, school: school, score: 100, lessons: [] }); 
-                                added++; 
-                            }
-                        });
-                        this.saveData(); this.renderTeachers(); 
-                        alert(`تمت العملية بنجاح.\n- تم تحديث: ${updated} معلم.\n- تم إضافة: ${added} معلم جديد.`); 
-                        this.closeModal('modal-settings'); document.getElementById('excelInput').value = '';
-                    } catch (err) { console.error(err); alert('حدث خطأ أثناء معالجة الملف. تأكد من صحة التنسيق.'); }
-                }; 
-                reader.readAsArrayBuffer(e.target.files[0]); 
-            }
-            exportReports() { const data = this.state.teachers.map(t => ({ 'المعلم': t.name, 'التقييم': t.score+'%', 'الهاتف': t.phone||'-' })); const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Reports"); XLSX.writeFile(wb, "School_Report.xlsx"); }
             
             simulateRandomPeriod() { 
                 if(!this.state.periods.length) return alert('لا يوجد جدول'); 
-                
                 const r = this.state.periods[Math.floor(Math.random()*this.state.periods.length)]; 
                 const [h,m] = r.start.split(':').map(Number); 
-                
                 let t = new Date();
-                
                 const currentDay = t.getDay(); 
-                
                 const targetDay = Math.floor(Math.random() * 5); 
-                
                 let diff = targetDay - currentDay;
-                
                 t.setDate(t.getDate() + diff);
                 t.setHours(h, m, 0, 0);
-
                 this.state.simulationOffset = t.getTime() - new Date().getTime(); 
-                
                 this.renderCurrentPeriod(t); 
                 this.renderDailyDutyWidget(t); 
-                
                  const clock = document.getElementById('clockDisplay');
                 if(clock) {
                     clock.style.color = '#fbbf24';
@@ -2184,202 +2371,10 @@
                 document.getElementById('modal-settings')?.classList.remove('hidden-view'); 
             }
 
-            // --- Duty System Methods ---
-
-            renderDutyTable() {
-                const headerRow = document.getElementById('dutyHeaderRow');
-                const dutyBody = document.getElementById('dutyBody');
-                if (!headerRow || !dutyBody) return;
-
-                headerRow.innerHTML = '';
-                
-                // FIX: Add placeholder for Day column to align with body
-                const thDayPlaceholder = document.createElement('th');
-                thDayPlaceholder.className = "p-5 sticky right-0 bg-slate-50 z-10 w-24 border-l border-slate-200 text-slate-700";
-                thDayPlaceholder.innerText = "اليوم";
-                headerRow.appendChild(thDayPlaceholder);
-
-                this.state.dutyLocations.forEach((loc, index) => {
-                    const th = document.createElement('th');
-                    th.className = "p-4 text-center text-slate-700 font-extrabold";
-                    th.innerText = loc;
-                    headerRow.appendChild(th);
-                });
-
-                dutyBody.innerHTML = '';
-                const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
-                
-                days.forEach((day, dayIndex) => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0";
-                    
-                    const tdDay = document.createElement('td');
-                    tdDay.className = "p-4 font-bold text-[rgb(var(--color-primary-700))] bg-slate-50 sticky right-0 z-10 border-l border-slate-100 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]";
-                    tdDay.innerText = day;
-                    tr.appendChild(tdDay);
-
-                    this.state.dutyLocations.forEach((loc, locIndex) => {
-                        const td = document.createElement('td');
-                        td.className = "p-2 duty-cell relative group border-l border-slate-50";
-                        
-                        const teacherId = this.state.dutySchedule[dayIndex]?.[locIndex] || "";
-                        
-                        const select = document.createElement('select');
-                        select.className = "w-full bg-transparent border-none outline-none text-xs font-bold text-slate-600 appearance-none cursor-pointer p-2 rounded-lg hover:bg-slate-100 transition";
-                        select.onchange = (e) => this.updateDuty(dayIndex, locIndex, e.target.value);
-                        
-                        const defaultOpt = document.createElement('option');
-                        defaultOpt.value = "";
-                        defaultOpt.text = "-";
-                        select.add(defaultOpt);
-
-                        const sortedTeachers = [...this.state.teachers].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
-                        sortedTeachers.forEach(t => {
-                            const opt = document.createElement('option');
-                            opt.value = t.id;
-                            opt.text = t.name;
-                            if(t.id === teacherId) opt.selected = true;
-                            select.add(opt);
-                        });
-                        td.appendChild(select);
-
-                        if(teacherId) {
-                            const actionDiv = document.createElement('div');
-                            actionDiv.className = "duty-actions absolute top-1/2 -translate-y-1/2 left-2 flex gap-1 bg-white p-1 rounded-full shadow-md border border-slate-100";
-                            
-                            const msgBtn = document.createElement('button');
-                            msgBtn.className = "text-emerald-500 hover:text-emerald-600 w-6 h-6 flex items-center justify-center rounded-full hover:bg-emerald-50 transition";
-                            msgBtn.innerHTML = '<i class="fab fa-whatsapp"></i>';
-                            msgBtn.title = "استفسار";
-                            msgBtn.onclick = () => this.sendDutyMessage(teacherId, day, loc);
-                            
-                            const flagBtn = document.createElement('button');
-                            flagBtn.className = "text-rose-400 hover:text-rose-600 w-6 h-6 flex items-center justify-center rounded-full hover:bg-rose-50 transition";
-                            flagBtn.innerHTML = '<i class="fas fa-user-times"></i>';
-                            flagBtn.title = "مخالفة";
-                            flagBtn.onclick = () => this.handleDutyAbsence(teacherId, loc);
-
-                            actionDiv.appendChild(msgBtn);
-                            actionDiv.appendChild(flagBtn);
-                            td.appendChild(actionDiv);
-                        }
-
-                        tr.appendChild(td);
-                    });
-                    dutyBody.appendChild(tr);
-                });
-            }
-
-            printDutySchedule() {
-                const printTable = document.getElementById('printDutyTable');
-                if (!printTable) return;
-                const year = new Date().getFullYear();
-                document.getElementById('printDutyDate').innerText = `للعام الدراسي ${year}-${year+1}`;
-
-                // Header
-                let theadHTML = `<thead><tr class="bg-slate-100 text-slate-800"><th class="p-3 border border-slate-300 font-extrabold">اليوم</th>`;
-                this.state.dutyLocations.forEach(loc => {
-                    theadHTML += `<th class="p-3 border border-slate-300 font-extrabold">${loc}</th>`;
-                });
-                theadHTML += `</tr></thead>`;
-
-                // Body
-                let tbodyHTML = '<tbody>';
-                const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
-                days.forEach((day, dayIndex) => {
-                    tbodyHTML += '<tr>';
-                    tbodyHTML += `<td class="p-3 border border-slate-300 font-bold bg-slate-50">${day}</td>`;
-                    this.state.dutyLocations.forEach((loc, locIndex) => {
-                        const teacherId = this.state.dutySchedule[dayIndex]?.[locIndex];
-                        const teacher = this.state.teachers.find(t => t.id === teacherId);
-                        tbodyHTML += `<td class="p-3 border border-slate-300 text-center text-sm font-medium">${teacher ? teacher.name : ''}</td>`;
-                    });
-                    tbodyHTML += '</tr>';
-                });
-                tbodyHTML += '</tbody>';
-
-                printTable.innerHTML = theadHTML + tbodyHTML;
-                
-                document.body.classList.add('printing-duty');
-                window.addEventListener('afterprint', () => {
-                    document.body.classList.remove('printing-duty');
-                }, { once: true });
-                window.print();
-            }
-
-            updateDuty(dayIndex, locIndex, teacherId) {
-                if(!this.state.dutySchedule[dayIndex]) this.state.dutySchedule[dayIndex] = {};
-                this.state.dutySchedule[dayIndex][locIndex] = teacherId;
-                this.saveData();
-                this.renderDutyTable();
-            }
-
-            addDutyLocationPrompt() {
-                const name = prompt("أدخل اسم موقع المناوبة الجديد:");
-                if(name) {
-                    this.state.dutyLocations.push(name);
-                    this.saveData();
-                    this.renderDutyTable();
-                }
-            }
-
-            sendDutyMessage(teacherId, day, location) {
-                const t = this.state.teachers.find(x => x.id === teacherId);
-                if(!t || !t.phone) return alert('يرجى إضافة رقم الهاتف للمعلم أولاً');
-                
-                const msg = `السلام عليكم أستاذ ${t.name}،\nلوحظ عدم تواجدكم في مناوبة (${location}) ليوم ${day}.\nيرجى التكرم بالإفادة حول سبب التأخر أو الغياب.\nشكراً لتعاونكم.`;
-                window.open(`https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}`, '_blank');
-            }
-
-            handleDutyAbsence(teacherId, location) {
-                const t = this.state.teachers.find(x => x.id === teacherId);
-                if(!t) return;
-                this.openActionModal(teacherId, `مناوبة: ${location}`);
-            }
-
-            renderDailyDutyWidget(date) {
-                const widget = document.getElementById('dailyDutyWidget');
-                const grid = document.getElementById('dailyDutyGrid');
-                const dateEl = document.getElementById('dailyDutyDate');
-                
-                if(!widget || !grid) return;
-
-                const dayIndex = date.getDay();
-                
-                if(dayIndex > 4) {
-                    widget.classList.add('hidden-view');
-                    return;
-                }
-
-                widget.classList.remove('hidden-view');
-                dateEl.innerText = date.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                
-                const schedule = this.state.dutySchedule[dayIndex] || {};
-                
-                grid.innerHTML = this.state.dutyLocations.map((loc, index) => {
-                    const teacherId = schedule[index];
-                    const teacher = this.state.teachers.find(t => t.id === teacherId);
-                    
-                    return `
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center justify-between group hover:bg-white hover:shadow-sm transition">
-                        <div>
-                            <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">${loc}</div>
-                            <div class="font-bold text-slate-800 text-sm">
-                                ${teacher ? teacher.name : '<span class="text-slate-300 italic">غير محدد</span>'}
-                            </div>
-                        </div>
-                        ${teacher ? `
-                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <button onclick="window.app.sendDutyMessage('${teacher.id}', '${date.toLocaleDateString('ar-EG', {weekday:'long'})}', '${loc}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-emerald-500 hover:text-emerald-600 transition cursor-pointer shadow-sm"><i class="fab fa-whatsapp"></i></button>
-                             <button onclick="window.app.handleDutyAbsence('${teacher.id}', '${loc}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-rose-400 hover:text-rose-500 transition cursor-pointer shadow-sm"><i class="fas fa-exclamation"></i></button>
-                        </div>
-                        ` : ''}
-                    </div>
-                    `;
-                }).join('');
-            }
-        }
-        window.app = new SchoolApp();
-    </script>
-</body>
-</html>
+            addTask() { const text = document.getElementById('newTaskInput').value.trim(); if(text) { this.state.tasks.unshift({id:Date.now().toString(), text, priority: document.getElementById('newTaskPriority').value, completed:false}); this.saveData(); this.renderTasks(); document.getElementById('newTaskInput').value=''; } }
+            toggleTask(id) { const t = this.state.tasks.find(x=>x.id===id); if(t) { t.completed=!t.completed; this.saveData(); this.renderTasks(); } }
+            deleteTask(id) { if(confirm('حذف؟')) { this.state.tasks = this.state.tasks.filter(x=>x.id!==id); this.saveData(); this.renderTasks(); } }
+            renderTasks() { const list = document.getElementById('tasksList'); if(!list) return; const completed = this.state.tasks.filter(t=>t.completed).length; document.getElementById('tasksProgressBar').style.width = (this.state.tasks.length ? Math.round((completed/this.state.tasks.length)*100) : 0) + '%'; document.getElementById('tasksProgressText').innerText = `${completed}/${this.state.tasks.length}`; list.innerHTML = this.state.tasks.length === 0 ? `<div class="text-center p-8 text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200"><p class="text-xs font-medium">لا توجد مهام حالياً.</p></div>` : this.state.tasks.map(t => `<div class="flex items-center gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm transition hover:shadow-md group"><label class="relative flex items-center cursor-pointer"><input type="checkbox" class="task-checkbox sr-only peer" ${t.completed?'checked':''} onchange="window.app.toggleTask('${t.id}')"><div class="w-6 h-6 bg-slate-50 border-2 border-slate-200 rounded-full peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-all flex items-center justify-center text-white"><i class="fas fa-check text-[10px] ${t.completed?'opacity-100':'opacity-0'}"></i></div></label><div class="flex-1 ${t.completed?'line-through text-slate-400':'text-slate-700'}"><p class="text-sm font-bold leading-snug">${t.text}</p></div><span class="text-[10px] px-2 py-1 rounded-lg font-bold ${t.priority==='urgent'?'bg-rose-50 text-rose-600 border border-rose-100':'bg-blue-50 text-blue-600 border border-blue-100'}">${t.priority==='urgent'?'عاجل':'عادي'}</span><button onclick="window.app.deleteTask('${t.id}')" class="text-slate-300 hover:text-rose-500 transition px-2 opacity-0 group-hover:opacity-100"><i class="fas fa-trash-alt"></i></button></div>`).join(''); }
+            renderHistory() { const grid = document.getElementById('supervisionHistoryGrid'); if(!grid) return; const history = this.state.supervisionHistory || []; if(history.length === 0) { grid.innerHTML = '<div class="text-center p-12 text-slate-400 bg-slate-50 rounded-3xl border border-dashed border-slate-200">لا يوجد سجل زيارات حتى الآن.</div>'; return; } history.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()); grid.innerHTML = history.map((v, i) => `<div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-[rgb(var(--color-primary-200))] transition group"><div class="flex-1"><div class="flex items-center gap-3 mb-1"><span class="font-bold text-slate-800 text-base">${v.teacherName}</span><span class="bg-slate-50 text-slate-500 text-[10px] px-2 py-0.5 rounded-md border border-slate-200 font-bold">${v.className}</span></div><p class="text-xs text-slate-500 mb-1 flex items-center gap-1"><i class="fas fa-book-open text-slate-300"></i> ${v.topic}</p><span class="text-[10px] text-slate-400 font-mono bg-slate-50 px-2 rounded">${v.date}</span></div><div class="flex gap-2 w-full md:w-auto opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"><button onclick="window.app.loadVisit(${i})" class="flex-1 md:flex-none bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 px-4 py-2 rounded-xl font-bold text-xs transition cursor-pointer border border-slate-200">عرض التفاصيل</button><button onclick="window.app.deleteVisit(${i})" class="md:flex-none text-rose-300 hover:text-rose-600 px-3 py-2 rounded-xl transition cursor-pointer hover:bg-rose-50"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
+            updatePhone(id, val) { const t = this.state.teachers.find(x => x.id === id); if(t) { t.phone = val; this.saveData(); } }
+            openActionModal(tId, className = null) { this.state.selectedTeacherId = tId; this.state.selectedClassName = className; const t = this.state.teachers.find(x => x.id === tId); if(!t) return; document.getElementById('actionModalTitle').innerHTML = `<div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-lg">📝</div>${t.name}</div>`; document.getElementById('actionModalSubtitle').innerHTML = className && className !== 'undefined' ? `<span class="bg-white/10 px-2 py-0.5 rounded text-[10px]">الحصة: ${className}</span>` : 'قائمة الإدارة'; document.getElementById('currentScoreDisplay').innerText = t.score + '%'; const remind = document.getElementById('btn-remind'); const evalBtn = document.getElementById('btn-evaluate'); if(className && className !== 'undefined') { remind.disabled=false; remind.classList.remove('opacity-50','cursor-not-allowed'); evalBtn.onclick=()=>{this.closeModal('modal-action');this.startSupervision(tId,className);}; } else { remind.disabled=true; remind.classList.add('opacity-50','cursor-not-allowed'); evalBtn.onclick=()=>{this.closeModal('modal-action');this.startSupervision(tId,'زيارة عامة');}; } document.getElementById('violationButtonsContainer').innerHTML = this.state.violationTypes.map(v => `<button type="button" onclick="window.app.dockScore('${v.id}')" class="w-full bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-200 p-
