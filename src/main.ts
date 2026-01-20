@@ -1,1 +1,9 @@
-// Angular bootstrap disabled in favor of Vanilla JS for portability
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations()
+  ]
+}).catch(err => console.error(err));

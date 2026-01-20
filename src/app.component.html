@@ -1,90 +1,258 @@
-<!-- Header (Top Fixed) -->
-<header class="bg-indigo-900 text-white shadow-md sticky top-0 z-40">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-        <!-- Title & Status -->
-        <h1 class="text-lg font-bold flex items-center gap-2">
-            <i class="fas fa-university text-yellow-400 text-xl"></i>
-            <div class="flex flex-col">
-                <span class="leading-none">مدير المدرسة</span>
-                @if (store.cloudStatus() === 'connected') {
-                    <span class="text-[9px] mt-1 bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded-full border border-green-500/30 w-fit flex items-center gap-1">
-                        <i class="fas fa-circle text-[5px] animate-pulse"></i> متصل
-                    </span>
-                } @else if (store.cloudStatus() === 'saving') {
-                    <span class="text-[9px] mt-1 bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-500/30 w-fit flex items-center gap-1">
-                        <i class="fas fa-sync fa-spin text-[6px]"></i> حفظ...
-                    </span>
-                } @else {
-                    <span class="text-[9px] mt-1 bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full border border-red-500/30 w-fit flex items-center gap-1">
-                        <i class="fas fa-wifi-slash"></i> غير متصل
-                    </span>
-                }
-            </div>
-        </h1>
-
-        <!-- Clock & Controls -->
-        <div class="flex gap-2 items-center">
-            <div class="bg-black/20 px-3 py-1.5 rounded-lg border border-white/10 backdrop-blur-sm flex items-center gap-2">
-                <i class="fas fa-clock text-indigo-300 text-xs"></i>
-                <span class="font-mono font-bold text-green-400 dir-ltr text-sm">
-                    {{ store.currentTime() | date:'HH:mm:ss' }}
-                </span>
-            </div>
-            <button (click)="store.addSimulationHour()" class="text-xs bg-white/10 hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-lg transition text-indigo-200 hover:text-white" title="تقديم ساعة">
-                <i class="fas fa-forward"></i>
-            </button>
+<!-- Enhanced Header with Glassmorphism Effect -->
+<header class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-2xl sticky top-0 z-50 backdrop-blur-lg bg-opacity-95">
+  <div class="container mx-auto px-4 py-4">
+    <div class="flex justify-between items-center">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+          <i class="fas fa-graduation-cap text-white text-2xl"></i>
         </div>
+        <div class="flex flex-col">
+          <h1 class="text-xl font-black leading-none">{{ store.schoolSettings().schoolName }}</h1>
+          
+          <!-- Cloud Status -->
+          @if (store.cloudStatus() === 'connected') {
+            <span class="text-[10px] mt-1 bg-green-500/30 text-green-200 px-2 py-0.5 rounded-full border border-green-400/50 w-fit flex items-center gap-1 backdrop-blur-sm">
+              <i class="fas fa-circle text-[5px] animate-pulse"></i> متصل بالسحابة
+            </span>
+          } @else if (store.cloudStatus() === 'saving') {
+            <span class="text-[10px] mt-1 bg-amber-500/30 text-amber-200 px-2 py-0.5 rounded-full border border-amber-400/50 w-fit flex items-center gap-1 backdrop-blur-sm">
+              <i class="fas fa-sync fa-spin text-[7px]"></i> جاري الحفظ...
+            </span>
+          } @else {
+            <span class="text-[10px] mt-1 bg-red-500/30 text-red-200 px-2 py-0.5 rounded-full border border-red-400/50 w-fit flex items-center gap-1 backdrop-blur-sm">
+              <i class="fas fa-wifi-slash text-[7px]"></i> غير متصل
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Right Side Controls -->
+      <div class="flex items-center gap-3">
+        
+        <!-- Digital Clock -->
+        <div class="hidden md:flex items-center gap-2 bg-black/30 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 shadow-inner">
+          <i class="fas fa-clock text-indigo-300 text-sm"></i>
+          <span class="font-mono font-bold text-green-400 text-base">
+            {{ store.currentTime() | date:'HH:mm:ss' }}
+          </span>
+        </div>
+
+        <!-- Notifications Bell -->
+        <button 
+          (click)="toggleNotifications()"
+          class="relative w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center transition-all duration-300 border border-white/20 group">
+          <i class="fas fa-bell text-lg group-hover:scale-110 transition-transform"></i>
+          @if (unreadNotifications().filter(n => !n.read).length > 0) {
+            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-[10px] font-bold flex items-center justify-center notification-badge border-2 border-indigo-900">
+              {{ unreadNotifications().filter(n => !n.read).length }}
+            </span>
+          }
+        </button>
+
+        <!-- Theme Toggle -->
+        <button 
+          (click)="toggleTheme()"
+          class="w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center transition-all duration-300 border border-white/20 group">
+          @if (store.currentTheme() === 'light') {
+            <i class="fas fa-moon text-lg group-hover:scale-110 transition-transform"></i>
+          } @else {
+            <i class="fas fa-sun text-lg group-hover:scale-110 transition-transform"></i>
+          }
+        </button>
+
+        <!-- Sync Button -->
+        <button 
+          (click)="syncNow()"
+          [disabled]="store.cloudStatus() === 'saving'"
+          class="w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center transition-all duration-300 border border-white/20 group disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="fas fa-sync-alt text-lg group-hover:rotate-180 transition-transform duration-500"
+             [class.fa-spin]="store.cloudStatus() === 'saving'"></i>
+        </button>
+
+        <!-- Fast Forward Time (Dev Tool) -->
+        <button 
+          (click)="store.addSimulationHour()" 
+          class="hidden md:flex w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl items-center justify-center transition-all duration-300 border border-white/20 group"
+          title="تقديم ساعة للاختبار">
+          <i class="fas fa-forward text-lg group-hover:scale-110 transition-transform"></i>
+        </button>
+
+      </div>
     </div>
+  </div>
 </header>
 
-<!-- Main Content (Padded for Bottom Nav) -->
-<main class="container mx-auto p-4 md:p-6 pb-28">
+<!-- Notifications Dropdown -->
+@if (showNotifications()) {
+  <div class="fixed inset-0 z-40" (click)="toggleNotifications()">
+    <div class="absolute top-20 left-4 w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[32rem] overflow-hidden slide-in"
+         (click)="$event.stopPropagation()">
+      
+      <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-slate-700 dark:to-slate-800">
+        <div class="flex items-center justify-between">
+          <h3 class="font-black text-slate-800 dark:text-white flex items-center gap-2">
+            <i class="fas fa-bell text-indigo-600"></i>
+            الإشعارات
+          </h3>
+          <button 
+            (click)="store.clearAllNotifications()"
+            class="text-xs text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold">
+            مسح الكل
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-y-auto max-h-[28rem] custom-scrollbar">
+        @for (notification of unreadNotifications().slice(0, 10); track notification.id) {
+          <div class="p-4 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+               [class.bg-slate-50]="!notification.read"
+               (click)="store.markNotificationAsRead(notification.id)">
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm"
+                   [class]="notification.type === 'success' ? 'bg-green-100 text-green-600' :
+                           notification.type === 'error' ? 'bg-red-100 text-red-600' :
+                           notification.type === 'warning' ? 'bg-amber-100 text-amber-600' :
+                           'bg-blue-100 text-blue-600'">
+                <i [class]="notification.type === 'success' ? 'fas fa-check' :
+                           notification.type === 'error' ? 'fas fa-times' :
+                           notification.type === 'warning' ? 'fas fa-exclamation' :
+                           'fas fa-info'"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-sm text-slate-800 dark:text-white">{{ notification.title }}</div>
+                <div class="text-xs text-slate-600 dark:text-slate-300 mt-1">{{ notification.message }}</div>
+                <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-2">
+                  {{ notification.timestamp | date:'short' }}
+                </div>
+              </div>
+              @if (!notification.read) {
+                <div class="w-2 h-2 bg-indigo-600 rounded-full"></div>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div class="p-8 text-center text-slate-400 dark:text-slate-500">
+            <i class="fas fa-inbox text-4xl mb-2"></i>
+            <p class="text-sm">لا توجد إشعارات</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Main Content Area -->
+<main class="container mx-auto p-4 md:p-6 pb-24 min-h-[calc(100vh-12rem)] bg-slate-50 dark:bg-slate-900">
+  <div class="slide-in">
     @switch (currentView()) {
-        @case ('now') {
-            <app-current-classes (onAction)="openModal($event)" />
-        }
-        @case ('teachers') {
-            <app-teacher-manager (onAction)="openModal($event)" />
-        }
-        @case ('reports') {
-            <app-reports />
-        }
+      @case ('dashboard') {
+        <app-dashboard />
+      }
+      @case ('now') {
+        <app-current-classes (onAction)="openModal($event)" />
+      }
+      @case ('teachers') {
+        <app-teacher-manager (onAction)="openModal($event)" />
+      }
+      @case ('reports') {
+        <app-reports />
+      }
     }
+  </div>
 </main>
 
-<!-- Bottom Navigation Bar -->
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40 pb-safe">
-    <div class="flex justify-around items-center h-16 px-2">
-        @for (item of navItems; track item.view) {
-            <button 
-                (click)="setView(item.view)" 
-                [class]="currentView() === item.view ? 'text-indigo-700' : 'text-slate-400 hover:text-slate-600'"
-                class="flex-1 flex flex-col items-center justify-center gap-1 py-1 transition-all duration-300 group">
-                <div [class]="currentView() === item.view ? 'bg-indigo-50' : 'bg-transparent group-hover:bg-slate-50'" 
-                     class="w-10 h-8 flex items-center justify-center rounded-xl transition-colors">
-                    <i class="fas fa-{{item.icon}} text-xl mb-0.5"></i>
-                </div>
-                <span class="text-[10px] font-bold">{{ item.label }}</span>
-            </button>
-        }
+<!-- Enhanced Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-700 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-40 pb-safe">
+  <div class="flex justify-around items-center h-20 px-2">
+    @for (item of navItems; track item.view) {
+      <button 
+        (click)="setView(item.view)" 
+        class="flex-1 flex flex-col items-center justify-center gap-1.5 py-2 transition-all duration-300 group relative">
         
-        <!-- Tab: Settings (Action) -->
-        <button (click)="showSettings.set(true)" class="flex-1 flex flex-col items-center justify-center gap-1 py-1 text-slate-400 hover:text-slate-600 transition-all duration-300 group">
-             <div class="w-10 h-8 flex items-center justify-center rounded-xl bg-transparent group-hover:bg-slate-50 transition-colors">
-                <i class="fas fa-cog text-xl mb-0.5"></i>
-             </div>
-            <span class="text-[10px] font-bold">الإعدادات</span>
-        </button>
-    </div>
+        <!-- Active Indicator -->
+        @if (currentView() === item.view) {
+          <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-10 h-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
+        }
+
+        <!-- Icon Container -->
+        <div 
+          class="w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300"
+          [class]="currentView() === item.view 
+            ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-lg scale-110' 
+            : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 group-hover:bg-slate-200 dark:group-hover:bg-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-300 group-hover:scale-105'">
+          <i class="fas fa-{{item.icon}} text-xl"></i>
+        </div>
+
+        <!-- Label -->
+        <span 
+          class="text-[11px] font-bold transition-colors"
+          [class]="currentView() === item.view 
+            ? 'text-indigo-600 dark:text-indigo-400' 
+            : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300'">
+          {{ item.label }}
+        </span>
+      </button>
+    }
+    
+    <!-- Settings Tab -->
+    <button 
+      (click)="showSettings.set(true)" 
+      class="flex-1 flex flex-col items-center justify-center gap-1.5 py-2 transition-all duration-300 group">
+      <div class="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 group-hover:bg-slate-200 dark:group-hover:bg-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-300 group-hover:scale-105 transition-all duration-300">
+        <i class="fas fa-cog text-xl group-hover:rotate-90 transition-transform duration-500"></i>
+      </div>
+      <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
+        الإعدادات
+      </span>
+    </button>
+  </div>
 </nav>
 
 <!-- Modals -->
-<app-action-modal 
-    [teacher]="selectedTeacher()" 
+@if (selectedTeacher()) {
+  <app-action-modal 
+    [teacher]="selectedTeacher()!" 
     [className]="selectedClassName()"
     (close)="closeModal()" 
-/>
+  />
+}
 
 @if (showSettings()) {
-    <app-settings-modal (close)="showSettings.set(false)" />
+  <app-settings-modal (close)="showSettings.set(false)" />
 }
+
+<!-- Custom Scrollbar Styles -->
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Dark mode scrollbar */
+  .dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: #1e293b;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+</style>
