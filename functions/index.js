@@ -19,7 +19,7 @@ exports.generateAiReport = functions
     console.log("🟢 generateAiReport: Request received.");
 
     try {
-      // 1. التحقق من المصادقة
+      // 1. التحقق من المصادقة (للمدير فقط)
       if (!context.auth) {
         throw new functions.https.HttpsError(
           "unauthenticated",
@@ -34,13 +34,12 @@ exports.generateAiReport = functions
       const userData = userDoc.exists ? userDoc.data() : {};
 
       // تحديد الحد اليومي المسموح به
-      // الأولوية: 1. حد مخصص للمستخدم (customDailyLimit) -> 2. اشتراك مدفوع (100) -> 3. الوضع المجاني (5)
       let allowedLimit = 5; 
       
       if (userData.customDailyLimit && typeof userData.customDailyLimit === 'number') {
-          allowedLimit = userData.customDailyLimit; // حد خاص تم تعيينه من قبلك
+          allowedLimit = userData.customDailyLimit; 
       } else if (userData.isPremium === true) {
-          allowedLimit = 100; // حد المشتركين
+          allowedLimit = 100; 
       }
 
       // التحقق من الاستهلاك اليومي
@@ -55,7 +54,7 @@ exports.generateAiReport = functions
           console.warn(`⚠️ Limit reached for user ${uid}. Limit: ${allowedLimit}`);
           throw new functions.https.HttpsError(
               "resource-exhausted",
-              `LIMIT_REACHED` // رمز خاص سنلتقطه في الواجهة
+              `LIMIT_REACHED` 
           );
       }
 
