@@ -1,5 +1,5 @@
 {
-  "name": "School Manager Pro",
-  "description": "نظام إدارة مدرسية ذكي متصل بالسحابة لمتابعة الحصص والمعلمين.",
-  "requestFramePermissions": []
+  "name": "School Reinforcement System",
+  "description": "A web application for teachers to scan student QR codes and award reinforcement points, with an admin dashboard for reporting.",
+  "requestFramePermissions": ["camera"]
 }

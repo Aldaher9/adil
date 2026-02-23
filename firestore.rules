@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isTeacher() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || request.auth.uid == userId; // Users can create their own doc on signup
+    }
+
+    // Students collection
+    match /students/{studentId} {
+      allow read: if isAuthenticated(); // Teachers and admins can read
+      allow create, update: if isAuthenticated(); // Teachers add points (update totalPoints)
+      allow delete: if isAdmin();
+    }
+
+    // Reinforcement Phrases
+    match /reinforcement_phrases/{phraseId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Reinforcements Log
+    match /reinforcements/{logId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated(); // Teachers create logs
+      allow update, delete: if isAdmin();
+    }
+  }
+}
