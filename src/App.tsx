@@ -1,87 +1,54 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./lib/auth-context";
-import Layout from "./components/Layout";
-import Login from "./pages/Login";
-import TeacherDashboard from "./pages/TeacherDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import { isFirebaseConfigured } from "./lib/firebase";
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-function ConfigWarning() {
-  if (isFirebaseConfigured) return null;
-  
+import { useState, useEffect } from 'react';
+import { GameBoard } from './components/GameBoard';
+import { Lobby } from './components/Lobby';
+import { GameState } from './types/game';
+import { subscribeToRoom } from './services/firebase';
+
+export default function App() {
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [view, setView] = useState<'lobby' | 'game'>('lobby');
+  const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
+
+  const handleStartGame = (initialState: GameState, roomId?: string) => {
+    setGameState(initialState);
+    if (roomId) setCurrentRoomId(roomId);
+    setView('game');
+  };
+
+  const handleLeaveGame = () => {
+    setGameState(null);
+    setCurrentRoomId(null);
+    setView('lobby');
+  };
+
+  // Subscribe to Firebase updates if in a room
+  useEffect(() => {
+    if (currentRoomId && view === 'game') {
+      const unsubscribe = subscribeToRoom(currentRoomId, (newState) => {
+        setGameState(newState);
+      });
+      return () => unsubscribe();
+    }
+  }, [currentRoomId, view]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-90 p-4">
-      <div className="bg-white rounded-xl p-8 max-w-md w-full text-center shadow-2xl">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-3xl">⚠️</span>
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Configuration Required</h2>
-        <p className="text-gray-600 mb-6">
-          Please set up your Firebase configuration in the environment variables to continue.
-        </p>
-        <div className="bg-gray-50 p-4 rounded-lg text-left text-sm font-mono text-gray-700 overflow-x-auto">
-          VITE_FIREBASE_API_KEY=...<br/>
-          VITE_FIREBASE_AUTH_DOMAIN=...<br/>
-          VITE_FIREBASE_PROJECT_ID=...
-        </div>
-      </div>
+    <div className="min-h-screen bg-neutral-900 text-white font-sans overflow-hidden">
+      {view === 'lobby' && <Lobby onStartGame={handleStartGame} />}
+      {view === 'game' && gameState && (
+        <GameBoard 
+          gameState={gameState} 
+          onLeave={handleLeaveGame} 
+          setGameState={setGameState}
+          roomId={currentRoomId}
+        />
+      )}
     </div>
   );
 }
 
-function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) {
-  const { user, role, loading } = useAuth();
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  
-  if (!user) return <Navigate to="/login" />;
-  
-  if (allowedRoles && role && !allowedRoles.includes(role)) {
-    return <Navigate to="/" />; // Or unauthorized page
-  }
-
-  return <>{children}</>;
-}
-
-function RoleRedirect() {
-  const { role, loading } = useAuth();
-  
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  
-  if (role === 'admin') return <Navigate to="/admin" />;
-  return <Navigate to="/teacher" />;
-}
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <ConfigWarning />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          
-          <Route element={<Layout />}>
-            <Route path="/" element={
-              <ProtectedRoute>
-                <RoleRedirect />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/teacher" element={
-              <ProtectedRoute allowedRoles={['teacher', 'admin']}>
-                <TeacherDashboard />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/admin" element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  );
-}

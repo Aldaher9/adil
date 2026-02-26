@@ -1,5 +1,5 @@
 {
-  "name": "School Reinforcement System",
-  "description": "A web application for teachers to scan student QR codes and award reinforcement points, with an admin dashboard for reporting.",
-  "requestFramePermissions": ["camera"]
+  "name": "Jakaro Pro",
+  "description": "A professional, multiplayer Jakaro board game with real-time capabilities, AI opponents, and team modes.",
+  "requestFramePermissions": []
 }
